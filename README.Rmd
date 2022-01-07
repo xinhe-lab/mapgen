@@ -36,6 +36,6 @@ library(Mapgen)
 
 ## Usage
 
-Please follow the [vignettes](https://kevinlkx.github.io/Mapgen/articles/index.html) 
+Please follow the [tutorials](https://kevinlkx.github.io/Mapgen/articles/index.html) 
 to learn how to use the package. 
 
