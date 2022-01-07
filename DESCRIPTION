@@ -1,12 +1,30 @@
 Package: Mapgen
-Title: What the Package Does (One Line, Title Case)
+Title: Performs gene mapping based on functional fine mapping
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R: c(
+    person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
+    person("Alan", "Selewa", email = "selewa@uchicago.edu", role = c("aut")),
+    person("Xin", "He", role = c("aut", "cph"), email = "xinhe@uchicago.edu"))
+Description: Performs gene mapping based on fine mapping with functional annotations.
+Depends: R (>= 3.5.1)
+License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
+Imports:
+    tidyverse,
+    tibble,
+    dplyr,
+    vroom,
+    bigsnpr,
+    data.table,
+    GenomicRanges,
+    ggplot2
+Remotes:
+    stephenslab/susieR,
+    bioc::3.3/plyranges,
+    bioc::3.3/rtracklayer
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+
+
+

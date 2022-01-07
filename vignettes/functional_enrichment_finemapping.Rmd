@@ -1,0 +1,79 @@
+---
+title: "Functional enrichment and fine mapping priors with TORUS and SuSiE"
+author: Alan Selewa, Kaixuan Luo
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Enrichment analysis using TORUS 
+===============================
+
+We perform enrichment analysis with TORUS, which requires annotation files in `.bed` format. 
+
+To generate input files for TORUS, use the `PrepareTorusFiles()` function, which takes the GWAS summary statistics, and a directory with bed files.
+Your bed file should contain only 3 columns (chr, start, end) and chromosomes should be just the number (no "chr"). 
+
+*Currently only hg19/b37 coordinates are accepted. You will get wrong results if you use hg38/other.*
+
+```{r PrepareTorusFiles, eval=FALSE}
+torus.files <- PrepareTorusFiles(gwas, bed_annotations = bed_annotations)
+```
+
+Now that the appropriate files have been generated (they are in .temp/), let's run TORUS. 
+
+`RunTorus()` returns: enrichment level of each annotation in log2 units, 
+and SNP level priors, which will be used as priors for finemapping.
+
+```{r RunTorus, eval=FALSE}
+torus.result <- RunTorus(torus_annot_file = torus.files[[1]], torus_zscore_file = torus.files[[2]])
+```
+
+TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. 
+
+We run `RunTorusFDR()` to get the probability of each chunk containing a causal variant. 
+We can filter out chunks with low probability, thus saving us on computational time!
+
+```{r RunTorusFDR, eval=FALSE}
+torus.fdr <- RunTorusFDR()
+```
+
+Run SuSiE with functional priors from TORUS
+============================================
+
+Prepare a data frame with both GWAS summary statistics and SNP-level priors from TORUS.
+
+`PrepareSusieData()` takes a parameter called `fdr_thresh` which is the FDR associated with each chunk. 
+This value is 10% by default, and chunks with FDR < 10% are removed. 
+(We set it to 1 here just to keep all chunks but you will want to lower this or just use default.)
+
+```{r PrepareSusieData, eval=FALSE}
+susie.df <- PrepareSusieData(sumstats = gwas, torus_pip = torus.result$snp_pip, torus_fdr = torus.fdr, fdr_thresh = 1)
+```
+
+With this data frame, we can perform fine mapping using SuSiE. 
+
+We use `RunFinemapping()` to get out results. 
+This will be quite slow if chunks contain many SNPs( O(n^2) where n is # of SNPs). 
+Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP. 
+
+```{r RunFinemapping, eval=FALSE}
+susie_finemap_L1 <- RunFinemapping(sumstats = susie.df, bigSNP = bigSNP)
+```
+
+`susie_finemap_L1` is a list of SuSiE results, one for each chunk/LD block. 
+
+Usually we are just interested in the SuSiE PIP, which gives the probability of a SNP being causal. 
+We can annotate our cleaned summary statistics with this information using `merge_susie_sumstats()`
+
+```{r merge_susie_sumstats, eval=FALSE}
+gwas_finemapped <- merge_susie_sumstats(susie_results = susie_finemap_L1, sumstats = susie.df)
+```
+
+`gwas_finemapped` gives us fine mapping summary statistics. 
+We will have a column called `susie_pip` which is the probability for a SNP being causal. 
+
+
+

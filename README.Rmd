@@ -1,0 +1,36 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# Mapgen
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+Mapgen is an R package that perform gene mapping using functionally-informed genetic fine mapping.
+
+## Installation
+
+You can install the development version of Mapgen from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("kevinlkx/Mapgen")
+```
+
+After installing, check that it loads properly:
+``` r
+library(Mapgen)
+```
+
