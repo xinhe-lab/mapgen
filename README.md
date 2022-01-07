@@ -24,3 +24,9 @@ After installing, check that it loads properly:
 ``` r
 library(Mapgen)
 ```
+
+## Usage
+
+Please follow the
+[vignettes](https://kevinlkx.github.io/Mapgen/articles/index.html) to
+learn how to use the package.

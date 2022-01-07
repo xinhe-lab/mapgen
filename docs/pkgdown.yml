@@ -2,6 +2,6 @@ pandoc: 2.14.0.3
 pkgdown: 2.0.1
 pkgdown_sha: ~
 articles:
-  quick_finemapping: quick_finemapping.html
-last_built: 2022-01-06T19:20Z
+  functional_enrichment_finemapping: functional_enrichment_finemapping.html
+last_built: 2022-01-07T18:02Z
 
