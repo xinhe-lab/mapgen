@@ -1,0 +1,111 @@
+---
+title: "Gene mapping tutorial"
+author: Kaixuan Luo
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Input data
+===================
+
+Our gene mapping procedure takes variant-level PIPs from genetic fine mapping 
+(probability for a SNP being causal), together 
+with functional annotation data, and computes gene-level PIPs 
+(probability for a gene being causal).
+
+We require the following input data:
+
+  * Genetic fine mapping result
+  * Gene annotations (exons, introns, UTRs, etc.)
+  * Functional annotation data, including: pcHiC links, ABC scores, 
+  open chromatin regions (OCRs), enhancer regions (histone ChIP-seq peaks), etc. 
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(Mapgen)
+suppressMessages(library(data.table))
+suppressMessages(library(tidyverse))
+suppressMessages(library(GenomicRanges))
+```
+
+Load fine-mapping results. 
+```{r load-finemapping-res}
+finemap <- readRDS("../inst/extdata/aFib_Finemapped.tble.rds")
+finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
+                                          pos = 'pos', pip = 'susie_pip', 
+                                          pval = 'pval', zscore = 'zscore', 
+                                          cs = 'CS', locus = 'locus',  
+                                          cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'),
+                                          pip.thresh = 1e-5, filterCS = FALSE)
+head(finemap.gr)
+```
+
+Load genomic annotations (prepared for hg19), including pcHiC data
+```{r load-annotations}
+genomic.annots <- readRDS('../inst/extdata/genomic.annots.hg19.gr.rds')
+
+gene.annots <- genomic.annots$genes
+
+```
+
+Add ABC scores from heart ventricle (downloaded from Nasser *et al.* *Nature* 2021 paper)
+```{r process_ABC}
+ABC <- data.table::fread('../inst/extdata/heart_ventricle-ENCODE_ABC.tsv.gz')
+ABC.gr <- process_ABC(ABC, ABC.thresh = 0.015, full.element = TRUE)
+ABC.gr <- ABC.gr[ABC.gr$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
+genomic.annots$ABC <- ABC.gr
+```
+
+Define active promoters and enhancer regions
+```{r active.promoters}
+genomic.annots$active.promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, genomic.annots$OCRs_hg19, minoverlap = 100)
+
+genomic.annots$enhancer_regions <- genomic.annots$OCRs_hg19
+```
+
+Run gene mapping
+===================
+
+Run gene mapping using the following settings: 
+
+  * enhancer_loop_method = "ABC.pcHiC.nearby20kb", 
+  * intron.mode = FALSE,
+  * distance weight = 5e4 (50kb). 
+
+SNP view table
+```{r run-gene-mapping, message=FALSE, warning=FALSE}
+snp.gene.pip.mat <- compute_gene_pip(finemap.gr, 
+                                    genomic.annots,
+                                    enhancer_loop_method = "ABC.pcHiC.nearby20kb",
+                                    intron.mode = FALSE,
+                                    c.dist = 50000, 
+                                    dist.to = "tss",
+                                    cols.to.keep = c("snp","chr","pos",'a0', 'a1', "locus", "cs", "pip", "gene_name", "category", "weight", "frac_pip", "gene_pip"))
+
+head(snp.gene.pip.mat)
+
+```
+
+Gene view table
+```{r extract_gene_level_result}
+
+gene.pip.res <- extract_gene_level_result(snp.gene.pip.mat, gene.annots)
+
+head(gene.pip.res)
+```
+
+80% Gene credible set
+```{r gene-cs}
+gene.cs.df <- gene_cs(snp.gene.pip.mat, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
+
+head(gene.cs.df)
+```
+
+Find the nearest gene for the top SNP in each locus
+```{r nearest-genes}
+nearest_genes.df <- find_nearest_genes(finemap.gr, gene.annots, dist.to = "genebody")
+head(nearest_genes.df)
+```
+

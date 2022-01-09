@@ -5,14 +5,14 @@
 \title{Find all genes (promoters) within 1MB genes and assign weights based on distance}
 \usage{
 gene_by_distance(
-  snp.gr,
+  snps.gr,
   promoters.gr,
   c.dist = 1e+05,
   dist.to = c("tss", "midpoint", "end")
 )
 }
 \arguments{
-\item{snp.gr}{Genomic Ranges with the SNP locations.}
+\item{snps.gr}{Genomic Ranges with the SNP locations.}
 
 \item{promoters.gr}{Genomic Ranges with the gene promoter locations.}
 

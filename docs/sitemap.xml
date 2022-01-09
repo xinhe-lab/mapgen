@@ -1,135 +1,156 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/articles/functional_enrichment_finemapping.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/articles/functional_enrichment_finemapping.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/articles/gene_mapping.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/articles/gene_mapping_procedure.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/articles/gene_mapping_tutorial.html</loc>
   </url>
   <url>
-    <loc>/reference/LDblock_view_summary.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/articles/index.html</loc>
   </url>
   <url>
-    <loc>/reference/PrepareSusieData.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/articles/workflow_overview.html</loc>
   </url>
   <url>
-    <loc>/reference/PrepareTorusFiles.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/authors.html</loc>
   </url>
   <url>
-    <loc>/reference/RunCleaner.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/index.html</loc>
   </url>
   <url>
-    <loc>/reference/RunFinemapping.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/LDblock_view_summary.html</loc>
   </url>
   <url>
-    <loc>/reference/RunTorus.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/PrepareSusieData.html</loc>
   </url>
   <url>
-    <loc>/reference/RunTorusFDR.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/PrepareTorusFiles.html</loc>
   </url>
   <url>
-    <loc>/reference/annotator.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/RunCleaner.html</loc>
   </url>
   <url>
-    <loc>/reference/annotator_merged.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/RunFinemapping.html</loc>
   </url>
   <url>
-    <loc>/reference/assign.locus.snp.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/RunTorus.html</loc>
   </url>
   <url>
-    <loc>/reference/clean_sumstats.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/RunTorusFDR.html</loc>
   </url>
   <url>
-    <loc>/reference/compute_gene_pip_by_hierarchies.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/annotator.html</loc>
   </url>
   <url>
-    <loc>/reference/extract_gene_level_result.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/annotator_merged.html</loc>
   </url>
   <url>
-    <loc>/reference/filter_coaccess.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/assign.locus.snp.html</loc>
   </url>
   <url>
-    <loc>/reference/find_nearest_genes.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/clean_sumstats.html</loc>
   </url>
   <url>
-    <loc>/reference/gene_by_distance.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/compute_gene_pip.html</loc>
   </url>
   <url>
-    <loc>/reference/gene_cs.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/compute_gene_pip_by_hierarchies.html</loc>
   </url>
   <url>
-    <loc>/reference/gene_manhattan_plot.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/extract_gene_level_result.html</loc>
   </url>
   <url>
-    <loc>/reference/gene_view_summary.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/filter_coaccess.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/find_nearest_genes.html</loc>
   </url>
   <url>
-    <loc>/reference/load_ABC.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/gene_by_distance.html</loc>
   </url>
   <url>
-    <loc>/reference/load_finemapping_sumstat.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/gene_cs.html</loc>
   </url>
   <url>
-    <loc>/reference/load_genomic_annots.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/gene_manhattan_plot.html</loc>
   </url>
   <url>
-    <loc>/reference/load_narrowpeaks.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/gene_view_summary.html</loc>
   </url>
   <url>
-    <loc>/reference/load_pcHiC.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/make_genomic_annots.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/load_ABC.html</loc>
   </url>
   <url>
-    <loc>/reference/merge_susie_sumstats.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/load_finemapping_sumstat.html</loc>
   </url>
   <url>
-    <loc>/reference/partition_pip_annots.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/load_genomic_annots.html</loc>
   </url>
   <url>
-    <loc>/reference/partition_pip_regions.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/load_narrowpeaks.html</loc>
   </url>
   <url>
-    <loc>/reference/process_coaccess.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/load_pcHiC.html</loc>
   </url>
   <url>
-    <loc>/reference/process_finemapping_sumstat.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/make_genomic_annots.html</loc>
   </url>
   <url>
-    <loc>/reference/run.susie.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/merge_susie_sumstats.html</loc>
   </url>
   <url>
-    <loc>/reference/snp_view_summary.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/partition_pip_annots.html</loc>
   </url>
   <url>
-    <loc>/reference/structure_plot.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/partition_pip_regions.html</loc>
   </url>
   <url>
-    <loc>/reference/substract_exons.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/process_ABC.html</loc>
   </url>
   <url>
-    <loc>/reference/sum_pip_annots.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/process_coaccess.html</loc>
   </url>
   <url>
-    <loc>/reference/sum_pip_regions.html</loc>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/process_finemapping_sumstat.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/process_pcHiC.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/run.susie.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/snp_view_summary.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/structure_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/substract_exons.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/sum_pip_annots.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/Mapgen/reference/sum_pip_regions.html</loc>
   </url>
 </urlset>

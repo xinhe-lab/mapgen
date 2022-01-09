@@ -27,12 +27,21 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Tutorials
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/functional_enrichment_finemapping.html">Functional enrichment and fine mapping priors with TORUS and SuSiE</a>
+      <a href="../articles/workflow_overview.html">Workflow overview</a>
+    </li>
+    <li>
+      <a href="../articles/functional_enrichment_finemapping.html">Functional enrichment and fine mapping with TORUS and SuSiE</a>
+    </li>
+    <li>
+      <a href="../articles/gene_mapping_procedure.html">Gene mapping procedure</a>
+    </li>
+    <li>
+      <a href="../articles/gene_mapping_tutorial.html">Gene mapping tutorial</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
@@ -55,7 +64,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gene_by_distance</span><span class="op">(</span>
-  <span class="va">snp.gr</span>,
+  <span class="va">snps.gr</span>,
   <span class="va">promoters.gr</span>,
   c.dist <span class="op">=</span> <span class="fl">1e+05</span>,
   dist.to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tss"</span>, <span class="st">"midpoint"</span>, <span class="st">"end"</span><span class="op">)</span>
@@ -64,7 +73,7 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>snp.gr</dt>
+    <dl><dt>snps.gr</dt>
 <dd><p>Genomic Ranges with the SNP locations.</p></dd>
 <dt>promoters.gr</dt>
 <dd><p>Genomic Ranges with the gene promoter locations.</p></dd>

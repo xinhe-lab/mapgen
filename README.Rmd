@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-Mapgen is an R package that perform gene mapping using functionally-informed genetic fine mapping.
+Mapgen is an R package that performs gene mapping using functionally-informed genetic fine mapping.
 
 ## Installation
 

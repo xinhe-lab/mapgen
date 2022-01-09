@@ -1,65 +1,80 @@
 
-#' @title Load finemapping summary statistics data
-#'
-#' @param finemapping.file Filename of finemapping summary statistics data
-#' @param SNP Name of the SNP ID (rsID) column in the finemapping summary statistics data
-#' @param CHR Name of the CHR column in the finemapping summary statistics data
-#' @param POS Name of the POS column in the finemapping summary statistics data
-#' @param PVAL Name of the P-value column in the finemapping data frame
-#' @param CS Name of the CS column in the finemapping data frame
-#' @import tidyverse
-#' @export
-#'
-load_finemapping_sumstat <- function(finemapping.file,
-                                     SNP = 'SNP',
-                                     CHR = 'CHR',
-                                     POS = 'BP',
-                                     PVAL = 'pval',
-                                     CS = 'cs'){
-
-  cat('Load fine-mapping summary statistics data ... \n')
-  finemap <- data.table::fread(finemapping.file)
-
-  finemap <- finemap %>% dplyr::rename(snp = all_of(SNP), chr = all_of(CHR), pos = all_of(POS))
-
-  if( PVAL %in% colnames(finemap) ){
-    finemap <- dplyr::rename(finemap, pval = all_of(PVAL))
-  }else{
-    finemap$pval <- NA
-  }
-
-  if( CS %in% colnames(finemap) ){
-    finemap <- dplyr::rename(finemap, cs = all_of(CS))
-  }else{
-    finemap$cs <- NA
-  }
-
-  return(finemap)
-
-}
-
-
-#' @title Process fine-mapping summary statistics data
+#' @title Process fine mapping summary statistics data
 #'
 #' @param finemap A data frame of fine-mapping summary statistics
+#' @param snp Name of the SNP ID (rsID) column in the summary statistics data
+#' @param chr Name of the chr column in the summary statistics data frame
+#' @param pos Name of the position column in the summary statistics data frame
+#' @param pip Name of the PIP column in the summary statistics data frame
+#' @param pval Name of the P-value column in the summary statistics data frame
+#' @param zscore Name of the z-score column in the summary statistics data frame
+#' @param cs Name of the CS column in the summary statistics data frame
+#' @param locus Name of the locus column in the summary statistics data frame
+#' @param cols.to.keep columns to keep in the returned data frame
 #' @param pip.thresh PIP threshold (default = 1e-5).
 #' @param filterCS If TRUE, limiting to SNPs within credible sets.
 #' @param maxCS Maximum number of credible sets (default = 10).
 #' @import tidyverse
+#' @return A GRanges object with cleaned and filtered fine-mapping summary statistics
 #' @export
-process_finemapping_sumstat <- function(finemap, pip.thresh = 1e-5, filterCS = FALSE, maxCS = 10){
-  finemap <- finemap %>% dplyr::select(snp, pip, chr, pos, pval, cs)
+process_finemapping_sumstat <- function(finemap,
+                                        snp = 'snp',
+                                        chr = 'chr',
+                                        pos = 'pos',
+                                        pip = 'pip',
+                                        pval = 'pval',
+                                        zscore = 'zscore',
+                                        cs = 'cs',
+                                        locus = 'locus',
+                                        cols.to.keep = c('snp','chr','pos', 'pip', 'pval', 'zscore','cs', 'locus'),
+                                        pip.thresh = 1e-5,
+                                        filterCS = FALSE,
+                                        maxCS = 10){
 
-  # Remove duplicated SNPs with multiple PIPs
-  finemap <- finemap %>% dplyr::arrange(desc(pip)) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
+  cat('Process fine mapping summary statistics ...\n')
+  finemap <- finemap %>% dplyr::rename(snp = all_of(snp),
+                                       chr = all_of(chr),
+                                       pos = all_of(pos),
+                                       pip = all_of(pip))
+
+  if( pval %in% colnames(finemap) ){
+    finemap <- dplyr::rename(finemap, pval = all_of(pval))
+  }else{
+    finemap$pval <- NA
+  }
+
+  if( zscore %in% colnames(finemap) ){
+    finemap <- dplyr::rename(finemap, zscore = all_of(zscore))
+  }else{
+    finemap$zscore <- NA
+  }
+
+  if( cs %in% colnames(finemap) ){
+    finemap <- dplyr::rename(finemap, cs = all_of(cs))
+  }else{
+    finemap$cs <- NA
+  }
+
+  if( locus %in% colnames(finemap) ){
+    finemap <- dplyr::rename(finemap, locus = all_of(locus))
+  }else{
+    finemap$locus <- NA
+  }
+
+  # Remove SNPs with multiple PIPs
+  if(any(duplicated(paste(finemap$chr, finemap$pos)))){
+    cat('Remove SNPs with multiple PIPs...\n')
+    finemap <- finemap %>% dplyr::arrange(desc(pip)) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
+  }
 
   finemap.gr <- GenomicRanges::makeGRangesFromDataFrame(finemap, start.field = 'pos', end.field = 'pos', keep.extra.columns = TRUE)
   finemap.gr$chr <- finemap$chr
   finemap.gr$pos <- finemap$pos
+  mcols(finemap.gr) <- mcols(finemap.gr)[,cols.to.keep]
   GenomeInfoDb::seqlevelsStyle(finemap.gr) <- 'UCSC'
 
   if( pip.thresh > 0 ) {
-    cat('Filter SNPs with pip >', pip.thresh, '\n')
+    cat('Filter SNPs with PIP threshold of', pip.thresh, '\n')
     finemap.gr <- finemap.gr[finemap.gr$pip > pip.thresh, ]
   }
 
@@ -72,41 +87,12 @@ process_finemapping_sumstat <- function(finemap, pip.thresh = 1e-5, filterCS = F
 
 }
 
-#' @title Load genomic annotations
+#' @title Process pcHiC data and save as a GRanges object
 #'
-#' @param genomic_annots_file Genomic annotation rds file
-#'
-#' @export
-load_genomic_annots <- function(genomic.annots.file){
-
-  if( !file.exists(genomic.annots.file) ){
-    stop('Genomic annotation file is not availble!')
-  }
-  cat('Load genomic annotations ...\n')
-
-  genomic.annots <- readRDS(genomic.annots.file)
-
-  genomic.annots$promoters$tss <- NA
-  plus_strand <- which(strand(genomic.annots$promoters) == '+')
-  minus_strand <- which(strand(genomic.annots$promoters) == '-')
-  genomic.annots$promoters$tss[plus_strand] <- end(genomic.annots$promoters[plus_strand])
-  genomic.annots$promoters$tss[minus_strand] <- start(genomic.annots$promoters[minus_strand])
-
-  return(genomic.annots)
-}
-
-#' @title Load pcHiC data and save as a GRanges object
-#'
-#' @param pcHiC.file pcHiC file downloaded from Jung et al.
-#' (https://pubmed.ncbi.nlm.nih.gov/31501517/)
+#' @param pcHiC a data frame of pcHiC data
 #' @import tidyverse
 #' @export
-load_pcHiC <- function(pcHiC.file){
-
-  if( !file.exists(pcHiC.file) ){stop('pcHiC file is not availble!')}
-  cat('Load pcHiC data...\n')
-
-  pcHiC <- data.table::fread(pcHiC.file)
+process_pcHiC <- function(pcHiC){
 
   pcHiC <- pcHiC %>% dplyr::select(Promoter, Interacting_fragment)
   # separate genes connecting to the same fragment
@@ -127,42 +113,35 @@ load_pcHiC <- function(pcHiC.file){
 }
 
 
-#' @title Load ABC scores and save as a GRanges object
+#' @title Process ABC scores and save as a GRanges object
 #'
-#' @param ABC.file ABC file downloaded from Nasser et al.
-#' (https://www.engreitzlab.org/resources).
-#' @param ABC.thresh Significance threshold of ABC scores (default = 0).
-#' @param full.element Logitic; if TRUE, use full length of ABC elements.
+#' @param ABC.df a data frame of ABC scores
+#' @param ABC.thresh Significance threshold of ABC scores (default = 0.015).
+#' @param full.element Logical; if TRUE, use full length of ABC elements.
 #' Otherwise, use the narrow regions provided in the ABC data.
 #' @param flank  Flanking regions around ABC elements (default = 0).
 #' @import tidyverse
 #' @export
-load_ABC <- function(ABC.file, ABC.thresh = 0, full.element = TRUE, flank = 0){
-
-  if( !file.exists(ABC.file) ){stop('ABC file is not availble!')}
-
-  cat('Load ABC data...\n')
-
-  ABC <- data.table::fread(ABC.file)
+process_ABC <- function(ABC.df, ABC.thresh = 0.015, full.element = TRUE, flank = 0){
 
   if(full.element){
-    ABC <- ABC %>%
+    ABC.df <- ABC.df %>%
       tidyr::separate(name, c(NA, 'element_region'), sep = '\\|', remove = FALSE) %>%
       tidyr::separate(element_region, c(NA, 'element_location'), sep = '\\:') %>%
       tidyr::separate(element_location, c('element_start', 'element_end'), sep = '\\-') %>%
-      tidyr::mutate(start = as.numeric(element_start), end = as.numeric(element_end))
+      dplyr::mutate(start = as.numeric(element_start), end = as.numeric(element_end))
   }
 
-  ABC <- ABC %>%
+  ABC.df <- ABC.df %>%
     dplyr::rename(gene_name = TargetGene) %>%
     dplyr::filter(ABC.Score >= ABC.thresh)
 
   if(flank > 0){
-    ABC$start <- ABC$start - flank
-    ABC$end <- ABC$end + flank
+    ABC.df$start <- ABC.df$start - flank
+    ABC.df$end <- ABC.df$end + flank
   }
 
-  ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
+  ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC.df, keep.extra.columns = TRUE)
   GenomeInfoDb::seqlevelsStyle(ABC.gr) <- 'UCSC'
 
   return(ABC.gr)

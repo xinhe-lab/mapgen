@@ -2,10 +2,19 @@
 % Please edit documentation in R/load_data.R
 \name{process_finemapping_sumstat}
 \alias{process_finemapping_sumstat}
-\title{Process fine-mapping summary statistics data}
+\title{Process fine mapping summary statistics data}
 \usage{
 process_finemapping_sumstat(
   finemap,
+  snp = "snp",
+  chr = "chr",
+  pos = "pos",
+  pip = "pip",
+  pval = "pval",
+  zscore = "zscore",
+  cs = "cs",
+  locus = "locus",
+  cols.to.keep = c("snp", "chr", "pos", "pip", "pval", "cs", "locus"),
   pip.thresh = 1e-05,
   filterCS = FALSE,
   maxCS = 10
@@ -14,12 +23,33 @@ process_finemapping_sumstat(
 \arguments{
 \item{finemap}{A data frame of fine-mapping summary statistics}
 
+\item{snp}{Name of the SNP ID (rsID) column in the summary statistics data}
+
+\item{chr}{Name of the chr column in the summary statistics data frame}
+
+\item{pos}{Name of the position column in the summary statistics data frame}
+
+\item{pip}{Name of the PIP column in the summary statistics data frame}
+
+\item{pval}{Name of the P-value column in the summary statistics data frame}
+
+\item{zscore}{Name of the z-score column in the summary statistics data frame}
+
+\item{cs}{Name of the CS column in the summary statistics data frame}
+
+\item{locus}{Name of the locus column in the summary statistics data frame}
+
+\item{cols.to.keep}{columns to keep in the returned data frame}
+
 \item{pip.thresh}{PIP threshold (default = 1e-5).}
 
 \item{filterCS}{If TRUE, limiting to SNPs within credible sets.}
 
 \item{maxCS}{Maximum number of credible sets (default = 10).}
 }
+\value{
+A GRanges object with cleaned and filtered fine-mapping summary statistics
+}
 \description{
-Process fine-mapping summary statistics data
+Process fine mapping summary statistics data
 }

@@ -4,14 +4,21 @@
 \alias{find_nearest_genes}
 \title{Find nearest genes (by distance to TSS or gene body)}
 \usage{
-find_nearest_genes(snp.gr, gene.gr, dist.to = c("tss", "genebody"))
+find_nearest_genes(
+  gwas.gr,
+  genes.gr,
+  dist.to = c("tss", "genebody"),
+  cols.to.keep = c("snp", "chr", "pos", "nearest_gene")
+)
 }
 \arguments{
-\item{snp.gr}{GenomicRange object of SNP information}
+\item{gwas.gr}{GRanges object of the GWAS summary statistics}
 
-\item{gene.gr}{GenomicRange object of gene information}
+\item{genes.gr}{GRanges object of gene information}
 
 \item{dist.to}{Find nearest genes by distance to TSS or gene body}
+
+\item{cols.to.keep}{columns to keep in the returned GRanges object}
 }
 \description{
 Find nearest genes (by distance to TSS or gene body)

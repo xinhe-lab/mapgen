@@ -2,15 +2,18 @@
 % Please edit documentation in R/gene_mapping.R
 \name{extract_gene_level_result}
 \alias{extract_gene_level_result}
-\title{Extract gene level result from SNP level gene mapping result}
+\title{Extract gene-level result from SNP-level gene mapping result}
 \usage{
-extract_gene_level_result(snp.gene.pip.res, gene.annots)
+extract_gene_level_result(snp.gene.pip.mat, gene.annots)
 }
 \arguments{
-\item{snp.gene.pip.res}{A data frame of SNP level gene mapping result}
+\item{snp.gene.pip.mat}{A data frame of SNP-level gene mapping result}
 
-\item{gene.annots}{a GRange object of gene annotations}
+\item{gene.annots}{a GRanges object of gene annotations}
+}
+\value{
+a data frame of gene PIP result
 }
 \description{
-Extract gene level result from SNP level gene mapping result
+Extract gene-level result from SNP-level gene mapping result
 }

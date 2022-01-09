@@ -1,5 +1,5 @@
 ---
-title: "Functional enrichment and fine mapping priors with TORUS and SuSiE"
+title: "Functional enrichment and fine mapping with TORUS and SuSiE"
 author: Alan Selewa, Kaixuan Luo
 output: html_document
 ---

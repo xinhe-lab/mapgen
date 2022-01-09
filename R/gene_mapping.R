@@ -1,164 +1,158 @@
 
 #' @title Map SNPs to genes and assign weights
 #'
-#' @param finemap.gr Genomic Ranges of finemapping result.
+#' @param finemap.gr Genomic Ranges of fine mapping result.
 #' @param genomic.annots A list of genomic annotations.
-#' @param intron.mode If FALSE, do not assign intronic SNPs to genes containing the introns.
-#' @param active_promoter_method Method to define active promoters.
 #' @param enhancer_loop_method Enhancer loop method
+#' @param intron.mode Logical. If TRUE, assign intronic SNPs to genes containing the introns.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 1e5 (100kb).
-#' @param dist.to Compute distance to TSS, gene midpoint, or end (right point).
+#' @param dist.to Option to compute snp-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).
 #' @param cols.to.keep columns to keep in the SNP gene weights
 #' @import GenomicRanges
 #' @import tidyverse
-#'
+#' @return A matrix of SNP-to-gene mapping result with gene PIPs
 #' @export
-compute_gene_pip_by_hierarchies <- function(finemap.gr,
-                                            genomic.annots,
-                                            intron.mode = TRUE,
-                                            active_promoter_method = c('OCRs', 'pcHiC', 'ABC', 'distance','none'),
-                                            enhancer_loop_method = 'ABC.pcHiC.nearby20kb',
-                                            c.dist = 1e5,
-                                            dist.to = c('end', 'tss', 'midpoint'),
-                                            cols.to.keep = c('snp','chr','pos','ref','alt','locus','pip','gene_name', 'category', 'weight')) {
+compute_gene_pip <- function(finemap.gr,
+                             genomic.annots,
+                             enhancer_loop_method = 'ABC.pcHiC.nearby20kb',
+                             intron.mode = FALSE,
+                             c.dist = 1e5,
+                             dist.to = c('tss', 'midpoint'),
+                             cols.to.keep = c('snp','chr','pos', 'pip', 'locus', 'gene_name', 'category', 'weight', 'frac_pip', 'gene_pip')) {
 
   cat('Map SNPs to genes and assign weights ...\n')
 
-  active_promoter_method <- match.arg(active_promoter_method)
   dist.to <- match.arg(dist.to)
 
-  ## Define annotation categories
+  # Define annotation categories
 
-  # Exon and active promoters
-
-  # Define active promoters
-  if(active_promoter_method == 'OCRs' || is.null(genomic.annots$active.promoters)){
-    cat('Define active promoter by overlapping with OCRs ...\n')
-    genomic.annots$active.promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, genomic.annots$OCRs_hg19, minoverlap = 100)
-  }else if(active_promoter_method == 'pcHiC'){
-    cat('Define active promoter by promoters of pcHiC target ...\n')
-    genomic.annots$active.promoters <- genomic.annots$promoters[genomic.annots$promoters$gene_name %in% genomic.annots$pcHiC$gene_name]
-  }else if(active_promoter_method == 'ABC'){
-    cat('Define active promoter by promoters of ABC target ...\n')
-    genomic.annots$active.promoters <- genomic.annots$promoters[genomic.annots$promoters$gene_name %in% genomic.annots$ABC$gene_name]
-  }else if(active_promoter_method == 'distance'){
-    cat('Define active promoter by distance (2kb) ...\n')
-    genomic.annots$active.promoters <- genomic.annots$promoters
-  }else if(active_promoter_method == 'none'){
-    cat('Do not use promoters...\n')
-    genomic.annots$active.promoters <- NULL
-
-  }
-
-  if(active_promoter_method == 'none'){
+  ## Exon and active promoters category
+  if(is.null(genomic.annots$active.promoters)){
     exons_active_promoters <- list(exons=genomic.annots$exons)
   }else{
     exons_active_promoters <- list(exons=genomic.annots$exons, active.promoters=genomic.annots$active.promoters)
   }
 
-  # Enhancer loops
-  if(grepl('base', enhancer_loop_method, ignore.case = T) || is.na(enhancer_loop_method)){
-    cat('No enhancer loops. \n')
-    enhancer_loops <- NULL
-  }else{
-    enhancer_loops <- list()
-    if(grepl('ABC', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$ABC)){
-      cat('Include ABC scores in enhancer loops ... \n')
-      enhancer_loops$ABC <- genomic.annots$ABC[, c('gene_name')]
-    }
-
-    if(grepl('pcHiC', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$pcHiC)){
-      cat('Include pcHiC in enhancer loops ... \n')
-      enhancer_loops$pcHiC <- genomic.annots$pcHiC[, c('gene_name')]
-    }
-
-    if(grepl('coacc', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$coacc)){
-      cat('Include coacc in enhancer loops ... \n')
-      enhancer_loops$coacc <- genomic.annots$coacc[, c('gene_name')]
-    }
-
-    if(grepl('nearby', enhancer_loop_method, ignore.case = T)){
-      if(grepl('nearby20kb', enhancer_loop_method, ignore.case = T)){
-        cat('Include enhancers with nearby promoters (20kb) in enhancer loops ... \n')
-        enhancer_loops$nearby20kb <- genomic.annots$enhancer_nearby_promoter_20kb[, c('gene_name')]
-      }else if(grepl('nearby10kb', enhancer_loop_method, ignore.case = T)){
-        cat('Include enhancers with nearby promoters (10kb) in enhancer loops ... \n')
-        enhancer_loops$nearby10kb <- genomic.annots$enhancer_nearby_promoter_10kb[, c('gene_name')]
-      }
+  ## Enhancer loops category
+  enhancer_loops <- list()
+  if(grepl('ABC', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$ABC)){
+    cat('Include ABC scores in enhancer loops ... \n')
+    enhancer_loops$ABC <- genomic.annots$ABC[, c('gene_name')]
+  }
+  if(grepl('pcHiC', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$pcHiC)){
+    cat('Include pcHiC in enhancer loops ... \n')
+    enhancer_loops$pcHiC <- genomic.annots$pcHiC[, c('gene_name')]
+  }
+  if(grepl('coacc', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$coacc)){
+    cat('Include coacc in enhancer loops ... \n')
+    enhancer_loops$coacc <- genomic.annots$coacc[, c('gene_name')]
+  }
+  if(grepl('nearby', enhancer_loop_method, ignore.case = T)){
+    if(grepl('nearby20kb', enhancer_loop_method, ignore.case = T)){
+      cat('Include enhancers with nearby promoters (20kb) in enhancer loops ... \n')
+      enhancer_loops$nearby20kb <- genomic.annots$enhancer_nearby_promoter_20kb[, c('gene_name')]
+    }else if(grepl('nearby10kb', enhancer_loop_method, ignore.case = T)){
+      cat('Include enhancers with nearby promoters (10kb) in enhancer loops ... \n')
+      enhancer_loops$nearby10kb <- genomic.annots$enhancer_nearby_promoter_10kb[, c('gene_name')]
     }
   }
 
-  # Introns and UTRs
+  ## Introns and UTRs category
   if(intron.mode) {
     cat('Assign intronic SNPs to genes containing the introns ...\n')
     intron_utrs <- list(introns=genomic.annots$introns, UTRs=genomic.annots$UTRs)
   }else{
-    cat('Do not directly assign intronic SNPs to genes containing the introns ...\n')
     intron_utrs <- list(UTRs=genomic.annots$UTRs)
   }
 
-  ## Overlap finemapped SNPs with each of our annotations
-  cat('Overlapping finemapped SNPs with annotations ...\n')
+  # Assign SNPs to genes
+  cat('Assigning SNPs to genes...\n')
 
-  # Hierarchy level 1: first assign SNPs in exons and active promoters.
-  cat('Hierarchy level 1: Assign SNPs in exons and active promoters ...\n')
-  exons_active_promoters_overlap <- lapply(exons_active_promoters, function(x){plyranges::join_overlap_inner(x, finemap.gr)})
-  snps.in <- unique(unlist(GenomicRanges::GRangesList(exons_active_promoters_overlap))$snp)
-  finemap.gr <- finemap.gr[!(finemap.gr$snp %in% snps.in),]
+  ## Hierarchy level 1: first assign SNPs in exons and active promoters.
+  if(!is.null(exons_active_promoters)){
+    cat('Assign SNPs in exons and active promoters ...\n')
+    exons_active_promoters_overlap <- lapply(exons_active_promoters, function(x){plyranges::join_overlap_inner(x, finemap.gr)})
+    snps.in <- unique(unlist(GenomicRanges::GRangesList(exons_active_promoters_overlap))$snp)
+    finemap.gr <- finemap.gr[!(finemap.gr$snp %in% snps.in),]
+  }else{
+    exons_active_promoters_overlap <- NULL
+  }
 
-  # Hierarchy level 2A: assign SNPs in enhancers to linked genes through enhancer loops.
+  ## Hierarchy level 2A: assign SNPs in enhancers to linked genes through enhancer loops.
   if(length(enhancer_loops) > 0){
-    cat('Hierarchy level 2: Assign SNPs in enhancers to linked genes through enhancer loops ...\n')
+    cat('Assign SNPs in enhancers to linked genes through enhancer loops ...\n')
     enhancer_loops_overlap <- lapply(enhancer_loops, function(x){plyranges::join_overlap_inner(x, finemap.gr)})
     snps.in <- unique(unlist(GenomicRanges::GRangesList(enhancer_loops_overlap))$snp)
     finemap.gr <- finemap.gr[!(finemap.gr$snp %in% snps.in),]
   }else{
-    cat('Hierarchy level 2: Skipped. No enhancer loops ... \n')
     enhancer_loops_overlap <- NULL
   }
 
-  # Hierarchy level 3: assign the other SNPs in enhancer regions to genes with distance weights.
-  cat('Hierarchy level 3: Use enhancer mode. Assign SNPs in enhancer regions to genes with distance weights ...\n')
-  finemap_in_enhancer_regions <- IRanges::subsetByOverlaps(finemap.gr, genomic.annots$enhancer_regions)
-  enhancer_snps_genes_by_distance <- list(enhancer.regions = gene_by_distance(snp.gr = finemap_in_enhancer_regions, promoters.gr = genomic.annots$promoters, c.dist = c.dist, dist.to = dist.to))
-  finemap.gr <- finemap.gr[!(finemap.gr$snp %in% finemap_in_enhancer_regions$snp),]
+  ## Hierarchy level 2B: assign SNPs in enhancer regions to genes by distance weighting.
+  if(!is.null(genomic.annots$enhancer_regions)){
+    cat('Assign SNPs in enhancer regions to genes by distance weighting ...\n')
+    finemap_in_enhancer_regions <- IRanges::subsetByOverlaps(finemap.gr, genomic.annots$enhancer_regions)
+    enhancer_snps_genes_by_distance <- list(enhancer.regions = gene_by_distance(snps.gr = finemap_in_enhancer_regions,
+                                                                                promoters.gr = genomic.annots$promoters,
+                                                                                c.dist = c.dist,
+                                                                                dist.to = dist.to))
+    finemap.gr <- finemap.gr[!(finemap.gr$snp %in% finemap_in_enhancer_regions$snp),]
+  }else{
+    enhancer_snps_genes_by_distance <- NULL
+  }
 
-  # Hierarchy level 4: assign SNPs in introns/UTRs to genes containing the introns/UTRs.
-  cat('Hierarchy level 4: Assign SNPs in introns/UTRs... \n')
-  intron_utr_overlap <- lapply(intron_utrs, function(x){plyranges::join_overlap_inner(x, finemap.gr)})
-  snps.in <- unique(unlist(GenomicRanges::GRangesList(intron_utr_overlap))$snp)
-  finemap.gr <- finemap.gr[!(finemap.gr$snp %in% snps.in),]
+  ## Hierarchy level 3: assign SNPs in introns/UTRs to genes containing the introns/UTRs.
+  if(!is.null(genomic.annots$enhancer_regions)){
+    cat('Assign SNPs in introns/UTRs... \n')
+    intron_utr_overlap <- lapply(intron_utrs, function(x){plyranges::join_overlap_inner(x, finemap.gr)})
+    snps.in <- unique(unlist(GenomicRanges::GRangesList(intron_utr_overlap))$snp)
+    finemap.gr <- finemap.gr[!(finemap.gr$snp %in% snps.in),]
+  }else{
+    intron_utr_overlap <- NULL
+  }
 
-  # Hierarchy level 5: assign the rest SNPs (intergenic) to genes with distance weights.
-  cat('Hierarchy level 5: Assign SNPs (intergenic) to genes with distance weights ...\n')
-  intergenic_snps_genes_by_distance <- list(intergenic = gene_by_distance(snp.gr = finemap.gr, promoters.gr = genomic.annots$promoters, c.dist = c.dist, dist.to = dist.to))
-  snp.overlap.list <- c(exons_active_promoters_overlap, enhancer_loops_overlap, enhancer_snps_genes_by_distance, intron_utr_overlap, intergenic_snps_genes_by_distance)
+  ## Hierarchy level 4: assign the rest SNPs (intergenic) to genes by distance weighting.
+  if(length(finemap.gr) > 0){
+    cat('Assign intergenic SNPs to genes by distance weighting ...\n')
+    intergenic_snps_genes_by_distance <- list(intergenic = gene_by_distance(snps.gr = finemap.gr,
+                                                                            promoters.gr = genomic.annots$promoters,
+                                                                            c.dist = c.dist,
+                                                                            dist.to = dist.to))
+  }else{
+    intergenic_snps_genes_by_distance <- NULL
+  }
 
-  ## Assign weights
+  snp.overlap.list <- c(exons_active_promoters_overlap,
+                        enhancer_loops_overlap,
+                        enhancer_snps_genes_by_distance,
+                        intron_utr_overlap,
+                        intergenic_snps_genes_by_distance)
+
+  # Assign weights to SNP-gene pairs
   cat('Assign weights to SNP-gene pairs ... \n')
   mat.list <- lapply(names(snp.overlap.list), function(x){
-    snp.overlap.list[[x]] %>%
-      as_tibble() %>%
+    snp.overlap.list[[x]] %>% as_tibble() %>%
       dplyr::mutate(category = x) %>%
       dplyr::distinct(gene_name, snp, category, .keep_all = T)
   })
 
-  weights.mat <- Reduce(bind_rows, mat.list) %>% dplyr::select(all_of(cols.to.keep))
+  weights.mat <- Reduce(bind_rows, mat.list)
   weights.mat$weight <- ifelse( weights.mat$category %in% c(names(exons_active_promoters_overlap), names(enhancer_loops_overlap), names(intron_utr_overlap)),
-                               1, weights.mat$weight )
+                                1, weights.mat$weight )
 
-  ## Combine results from different categories
+  # Combine results from different categories
   weights.mat <- weights.mat %>%
     dplyr::arrange(category) %>%
     dplyr::group_by(snp, gene_name) %>%
     dplyr::mutate(category = paste(category, collapse = ',')) %>%
     dplyr::distinct(snp, gene_name, .keep_all = TRUE)
 
-  cat('SNP-gene pairs in each category: \n')
-  print(table(weights.mat$category))
+  # cat('SNP-gene pairs in each category: \n')
+  # print(table(weights.mat$category))
 
   cat('Compute gene PIP ... \n')
-  # For each SNP, distribute PIP of a SNP to all linked genes. So weights of a SNP get normalized across genes (each SNP's weights of all genes should sum to 1)
+  # For each SNP, distribute PIP of a SNP to all linked genes.
+  # So weights of a SNP get normalized across genes (each SNP's weights of all genes should sum to 1)
   normalized.weights.mat <- weights.mat %>%
     dplyr::distinct(snp, gene_name, .keep_all = T) %>%
     dplyr::group_by(snp) %>%
@@ -178,29 +172,32 @@ compute_gene_pip_by_hierarchies <- function(finemap.gr,
   snp.gene.pip.mat <- normalized.weights.mat %>% dplyr::left_join(., gene.pip.mat)
   snp.gene.pip.mat <- snp.gene.pip.mat[!is.na(snp.gene.pip.mat$gene_name),]
 
+  snp.gene.pip.mat <- snp.gene.pip.mat %>% dplyr::select(all_of(cols.to.keep))
+
   return(snp.gene.pip.mat)
 }
 
 
-#' @title Extract gene level result from SNP level gene mapping result
+#' @title Extract gene-level result from SNP-level gene mapping result
 #'
-#' @param snp.gene.pip.res A data frame of SNP level gene mapping result
-#' @param gene.annots a GRange object of gene annotations
+#' @param snp.gene.pip.mat A data frame of SNP-level gene mapping result
+#' @param gene.annots a GRanges object of gene annotations
 #' @import tidyverse
+#' @return a data frame of gene PIP result
 #' @export
-extract_gene_level_result <- function(snp.gene.pip.res, gene.annots) {
+extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
   cat('Extract gene level result ...\n')
 
-  snp.gene.pip.res <- snp.gene.pip.res[!is.na(snp.gene.pip.res$gene_name),]
+  snp.gene.pip.mat <- snp.gene.pip.mat[!is.na(snp.gene.pip.mat$gene_name),]
 
   gene.locations <- as.data.frame(gene.annots)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
   gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
 
-  m <- match(snp.gene.pip.res$gene_name, gene.locations$gene_name)
-  snp.gene.pip.res$gene_chr <- gene.locations[m, 'seqnames']
-  snp.gene.pip.res$gene_pos <- gene.locations[m, 'tss']
+  m <- match(snp.gene.pip.mat$gene_name, gene.locations$gene_name)
+  snp.gene.pip.mat$gene_chr <- gene.locations[m, 'seqnames']
+  snp.gene.pip.mat$gene_pos <- gene.locations[m, 'tss']
 
-  gene.pip.res <- snp.gene.pip.res[, c('gene_chr', 'gene_pos', 'gene_name', 'gene_pip')] %>%
+  gene.pip.res <- snp.gene.pip.mat[, c('gene_chr', 'gene_pos', 'gene_name', 'gene_pip')] %>%
     dplyr::distinct(gene_name, .keep_all = TRUE) %>%
     dplyr::rename(chr = gene_chr, pos = gene_pos)
 
@@ -250,10 +247,10 @@ gene_cs <- function(snp.gene.pip.mat,
     gene.cs.df <- gene.cumsum.df %>%
       dplyr::group_by(locus) %>%
       dplyr::summarise(gene_cs = paste0(gene_name, collapse=','),
-                gene_cs_locus_pip = paste(paste0(gene_name, '(',round(locus_gene_pip,3),')'), collapse=','),
-                top_gene = gene_name[1],
-                top_locus_gene_pip = locus_gene_pip[1],
-                top_gene_pip = gene_pip[1])
+                       gene_cs_locus_pip = paste(paste0(gene_name, '(',round(locus_gene_pip,3),')'), collapse=','),
+                       top_gene = gene_name[1],
+                       top_locus_gene_pip = locus_gene_pip[1],
+                       top_gene_pip = gene_pip[1])
   }else{
     # for each locus, keep the genes with gene locus PIP cumsum > 0.8
     gene.cumsum.df <- locus.gene.pip.df %>%
@@ -266,31 +263,29 @@ gene_cs <- function(snp.gene.pip.mat,
     gene.cs.df <- gene.cumsum.df %>%
       dplyr::group_by(locus) %>%
       dplyr::summarise(gene_cs = paste0(gene_name, collapse=','),
-                gene_cs_pip = paste(paste0(gene_name, '(',round(gene_pip,3),')'), collapse=','),
-                top_gene = gene_name[1],
-                top_gene_pip = gene_pip[1])
+                       gene_cs_pip = paste(paste0(gene_name, '(',round(gene_pip,3),')'), collapse=','),
+                       top_gene = gene_name[1],
+                       top_gene_pip = gene_pip[1])
   }
 
-  return(list(gene.cumsum.df = gene.cumsum.df,
-              gene.cs.df = gene.cs.df,
-              locus.gene.pip.df = locus.gene.pip.df))
+  return(gene.cs.df)
 }
 
 
 
 #' @title Find all genes (promoters) within 1MB genes and assign weights based on distance
 #'
-#' @param snp.gr Genomic Ranges with the SNP locations.
+#' @param snps.gr Genomic Ranges with the SNP locations.
 #' @param promoters.gr Genomic Ranges with the gene promoter locations.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance.
 #' Weight = exp(-dist/c). Default = 1e5 (100kb).
 #'
-gene_by_distance <- function(snp.gr, promoters.gr, c.dist = 1e5,
+gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 1e5,
                              dist.to = c('tss', 'midpoint', 'end')){
 
   # get all promoters within 1MB
   res <- plyranges::join_overlap_inner(x = promoters.gr,
-                                       y = snp.gr,
+                                       y = snps.gr,
                                        maxgap = 1e6)
 
   if(dist.to == 'tss'){
@@ -310,36 +305,47 @@ gene_by_distance <- function(snp.gr, promoters.gr, c.dist = 1e5,
 
 #' @title Find nearest genes (by distance to TSS or gene body)
 #'
-#' @param snp.gr GenomicRange object of SNP information
-#' @param gene.gr GenomicRange object of gene information
+#' @param gwas.gr GRanges object of the GWAS summary statistics
+#' @param genes.gr GRanges object of gene information
 #' @param dist.to Find nearest genes by distance to TSS or gene body
+#' @param cols.to.keep columns to keep in the returned GRanges object
 #' @import tidyverse
 #' @export
 #'
-find_nearest_genes <- function(snp.gr, gene.gr,
-                               dist.to = c('tss', 'genebody')){
+find_nearest_genes <- function(gwas.gr,
+                               genes.gr,
+                               dist.to = c('tss', 'genebody'),
+                               cols.to.keep = c('snp','chr','pos', 'nearest_gene')){
 
   dist.to <- match.arg(dist.to)
 
-  GenomeInfoDb::seqlevelsStyle(snp.gr) <- 'UCSC'
-  GenomeInfoDb::seqlevelsStyle(gene.gr) <- 'UCSC'
+  GenomeInfoDb::seqlevelsStyle(gwas.gr) <- 'UCSC'
+  GenomeInfoDb::seqlevelsStyle(genes.gr) <- 'UCSC'
 
-  gene.locations <- as.data.frame(gene.gr)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
+  if(!is.null(gwas.gr$zscore)){
+    gwas.gr <- gwas.gr[order(abs(gwas.gr$zscore), decreasing = TRUE), ]
+  }else{
+    gwas.gr <- gwas.gr[order(gwas.gr$pval), ]
+  }
 
-  snp.gr$nearest_gene <- NA
+  snps.gr <- gwas.gr[!duplicated(gwas.gr$locus), ]
+
+  gene.locations <- as.data.frame(genes.gr)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
+
+  snps.gr$nearest_gene <- NA
 
   if(dist.to == 'tss'){
     gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
     gene.locations$start <- gene.locations$end <- gene.locations$tss
     gene.locations.gr <- GenomicRanges::makeGRangesFromDataFrame(gene.locations, keep.extra.columns = T)
 
-    snp.nearest.gene.idx <- GenomicRanges::nearest(snp.gr, gene.locations.gr)
-    snp.gr$nearest_gene <- gene.locations.gr$gene_name[snp.nearest.gene.idx]
+    snp.nearest.gene.idx <- GenomicRanges::nearest(snps.gr, gene.locations.gr)
+    snps.gr$nearest_gene <- gene.locations.gr$gene_name[snp.nearest.gene.idx]
   }else if(dist.to == 'genebody'){
     gene.locations.gr <- GenomicRanges::makeGRangesFromDataFrame(gene.locations, keep.extra.columns = T)
-    snp.nearest.gene.hits <- as.data.frame(nearest(snp.gr, gene.locations.gr, select = 'all'))
+    snp.nearest.gene.hits <- as.data.frame(nearest(snps.gr, gene.locations.gr, select = 'all'))
     colnames(snp.nearest.gene.hits) <- c('snp_idx', 'gene_idx')
-    snp.nearest.gene.hits$snp <- snp.gr$snp[snp.nearest.gene.hits$snp_idx]
+    snp.nearest.gene.hits$snp <- snps.gr$snp[snp.nearest.gene.hits$snp_idx]
     snp.nearest.gene.hits$gene_name <- gene.locations.gr$gene_name[snp.nearest.gene.hits$gene_idx]
 
     snp.nearest.gene.df <- snp.nearest.gene.hits %>%
@@ -349,11 +355,12 @@ find_nearest_genes <- function(snp.gr, gene.gr,
 
     snp.nearest.gene.df$nearestGene <- as.character(snp.nearest.gene.df$nearestGene)
 
-    snp.gr$nearest_gene <- snp.nearest.gene.df$nearestGene[match(snp.gr$snp, snp.nearest.gene.df$snp)]
+    snps.gr$nearest_gene <- snp.nearest.gene.df$nearestGene[match(snps.gr$snp, snp.nearest.gene.df$snp)]
 
   }
 
-  return(snp.gr)
+  res <- as.data.frame(snps.gr)[, cols.to.keep]
+  return(res)
 }
 
 
