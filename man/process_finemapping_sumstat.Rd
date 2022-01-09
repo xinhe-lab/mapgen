@@ -14,7 +14,7 @@ process_finemapping_sumstat(
   zscore = "zscore",
   cs = "cs",
   locus = "locus",
-  cols.to.keep = c("snp", "chr", "pos", "pip", "pval", "cs", "locus"),
+  cols.to.keep = c("snp", "chr", "pos", "pip", "pval", "zscore", "cs", "locus"),
   pip.thresh = 1e-05,
   filterCS = FALSE,
   maxCS = 10
