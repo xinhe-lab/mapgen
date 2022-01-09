@@ -5,8 +5,7 @@ articles:
   functional_enrichment_finemapping: functional_enrichment_finemapping.html
   gene_mapping_procedure: gene_mapping_procedure.html
   gene_mapping_tutorial: gene_mapping_tutorial.html
-  workflow_overview: workflow_overview.html
-last_built: 2022-01-09T05:28Z
+last_built: 2022-01-09T05:39Z
 urls:
   reference: https://kevinlkx.github.io/Mapgen/reference
   article: https://kevinlkx.github.io/Mapgen/articles

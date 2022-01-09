@@ -13,8 +13,6 @@ navbar:
     articles:
       text: Tutorials
       menu:
-      - text: Workflow overview
-        href: articles/workflow_overview.html
       - text: Functional enrichment and fine mapping with TORUS and SuSiE
         href: articles/functional_enrichment_finemapping.html
       - text: Gene mapping procedure
