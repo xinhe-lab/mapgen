@@ -1,11 +1,12 @@
 Package: Mapgen
-Title: Performs gene mapping using functionally-informed genetic fine mapping
+Title: Performs gene mapping based on functionally-informed genetic fine mapping
 Version: 0.0.0.9000
 Authors@R: c(
     person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
     person("Alan", "Selewa", email = "selewa@uchicago.edu", role = c("aut")),
+    person("Sebastian", "Pott", email = "spott@uchicago.edu", role = c("aut")),
     person("Xin", "He", role = c("aut", "cph"), email = "xinhe@uchicago.edu"))
-Description: Mapgen is an R package that performs functionally-informed genetic fine mapping and gene mapping.
+Description: Mapgen is an R package that performs gene mapping based on functionally-informed genetic fine mapping.
 Depends: R (>= 3.5.1)
 License: MIT + file LICENSE
 Encoding: UTF-8

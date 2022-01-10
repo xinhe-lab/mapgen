@@ -6,8 +6,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-Mapgen is an R package that performs functionally-informed genetic fine
-mapping and gene mapping.
+Mapgen is an R package that performs gene mapping based on
+functionally-informed genetic fine mapping.
 
 ## Installation
 
