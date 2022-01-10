@@ -7,7 +7,7 @@
 find_nearest_genes(
   gwas.gr,
   genes.gr,
-  dist.to = c("tss", "genebody"),
+  dist.to = c("genebody", "tss"),
   cols.to.keep = c("snp", "chr", "pos", "nearest_gene")
 )
 }
@@ -16,7 +16,7 @@ find_nearest_genes(
 
 \item{genes.gr}{GRanges object of gene information}
 
-\item{dist.to}{Find nearest genes by distance to TSS or gene body}
+\item{dist.to}{Find nearest genes by distance to gene body or TSS.}
 
 \item{cols.to.keep}{columns to keep in the returned GRanges object}
 }

@@ -12,13 +12,15 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     tidyverse,
-    tibble,
     dplyr,
-    vroom,
-    bigsnpr,
+    tidyr,
+    tibble,
     data.table,
     GenomicRanges,
-    ggplot2
+    ggplot2,
+    ggrepel,
+    vroom,
+    bigsnpr
 Remotes:
     stephenslab/susieR,
     bioc::3.3/plyranges,

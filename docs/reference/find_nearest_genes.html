@@ -32,10 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/functional_enrichment_finemapping.html">Functional enrichment and fine mapping with TORUS and SuSiE</a>
-    </li>
-    <li>
-      <a href="../articles/gene_mapping_procedure.html">Gene mapping procedure</a>
+      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping tutorial</a>
     </li>
     <li>
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping tutorial</a>
@@ -63,7 +60,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">find_nearest_genes</span><span class="op">(</span>
   <span class="va">gwas.gr</span>,
   <span class="va">genes.gr</span>,
-  dist.to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tss"</span>, <span class="st">"genebody"</span><span class="op">)</span>,
+  dist.to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"genebody"</span>, <span class="st">"tss"</span><span class="op">)</span>,
   cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snp"</span>, <span class="st">"chr"</span>, <span class="st">"pos"</span>, <span class="st">"nearest_gene"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -75,7 +72,7 @@
 <dt>genes.gr</dt>
 <dd><p>GRanges object of gene information</p></dd>
 <dt>dist.to</dt>
-<dd><p>Find nearest genes by distance to TSS or gene body</p></dd>
+<dd><p>Find nearest genes by distance to gene body or TSS.</p></dd>
 <dt>cols.to.keep</dt>
 <dd><p>columns to keep in the returned GRanges object</p></dd>
 </dl></div>

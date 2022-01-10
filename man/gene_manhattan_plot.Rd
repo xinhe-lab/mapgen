@@ -5,43 +5,47 @@
 \title{Make gene manhattan plot}
 \usage{
 gene_manhattan_plot(
-  gene.pip,
+  gene.pip.res,
   chr = "chr",
   pos = "pos",
-  gene = "gene_name",
-  pip = "gene_pip",
-  highlight = FALSE,
-  annotate = FALSE,
-  sig.pip = 0.5,
-  annotate.pip = NULL,
-  highlight.genes = NULL,
-  ylim = NULL,
-  title = "",
-  max.overlaps = 20
+  gene_name = "gene_name",
+  gene_pip = "gene_pip",
+  sig.pip = 0.8,
+  highlight = TRUE,
+  ylim = 1.25,
+  point.size = 2,
+  label.size = point.size * 2,
+  font.size = 15,
+  max.overlaps = 10,
+  title = ""
 )
 }
 \arguments{
-\item{gene.pip}{Gene level finemapping result}
+\item{gene.pip.res}{Gene level finemapping result}
 
 \item{chr}{Name of the chr column in the gene finemapping summary statistics data}
 
-\item{gene}{Name of the gene name column in the gene finemapping summary statistics data}
+\item{pos}{Name of the pos column in the gene finemapping summary statistics data}
 
-\item{pip}{Name of the gene PIP column in the gene finemapping summary statistics data}
+\item{gene_name}{Name of the gene name column in the gene finemapping summary statistics data}
 
-\item{sig.pip}{Signficance cutoff of gene PIP}
+\item{gene_pip}{Name of the gene PIP column in the gene finemapping summary statistics data}
 
-\item{annotate.pip}{annotate genes with gene PIP > annotate.pip}
+\item{sig.pip}{Signficant gene PIP (default: 0.8)}
 
-\item{highlight.genes}{Genes to highlight}
+\item{highlight}{Highlight genes with gene PIP > sig.pip}
 
-\item{ylim}{Truncate gene PIP to ylim value in the plot}
+\item{ylim}{Truncate gene PIP to ylim value in the plot (default: 1.25).}
+
+\item{point.size}{Size of the points.}
+
+\item{label.size}{Size of the labels.}
+
+\item{font.size}{Font size of the text.}
+
+\item{max.overlaps}{Exclude text labels that overlap too many things (default: 10).}
 
 \item{title}{Title of the plot}
-
-\item{max.overlaps}{Limit of overlapping labels (ggrepel setting)}
-
-\item{POS}{Name of the pos column in the gene finemapping summary statistics data}
 }
 \description{
 Make gene manhattan plot

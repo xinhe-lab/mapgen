@@ -307,14 +307,14 @@ gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 1e5,
 #'
 #' @param gwas.gr GRanges object of the GWAS summary statistics
 #' @param genes.gr GRanges object of gene information
-#' @param dist.to Find nearest genes by distance to TSS or gene body
+#' @param dist.to Find nearest genes by distance to gene body or TSS.
 #' @param cols.to.keep columns to keep in the returned GRanges object
 #' @import tidyverse
 #' @export
 #'
 find_nearest_genes <- function(gwas.gr,
                                genes.gr,
-                               dist.to = c('tss', 'genebody'),
+                               dist.to = c('genebody', 'tss'),
                                cols.to.keep = c('snp','chr','pos', 'nearest_gene')){
 
   dist.to <- match.arg(dist.to)

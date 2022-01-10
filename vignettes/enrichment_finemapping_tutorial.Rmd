@@ -1,0 +1,120 @@
+---
+title: "Quick tutorial for fine mapping"
+author: Alan Selewa, Kaixuan Luo
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+Welcome to this tutorial where we perform finemapping on a small GWAS dataset that is included with this package. Try to reproduce this analysis to ensure everything is installed properly.
+
+We begin by attaching our `bigsnpr` object. This is our reference panel of genotypes which we use to compute LD between SNPs. If you are in the He lab, you can just use the following chunk. Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) and use `bigsnpr::readBed()` to create the `.rds` file below.
+
+```{r}
+bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
+```
+
+
+Here we show a quick run-through of the enrichment and finemapping procedure using a test summary statistics.
+
+First we run `RunCleaner()`, which takes our summary statistics in either tab or comma delimited. 
+It also takes a character vector of the 8 column names needed. 
+The columns needed have to be given in the following order:  
+  
+* chromosome (just the number, no "chr", hg19!)  
+* position (base pair position, hg19!)  
+* beta (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))  
+* standard error (SE)  
+* reference allele (A,C,T,G)  
+* association/effect allele (A,C,T,G)  
+* some kind of SNP ID (rsID, or chr:position:a1:a2)  
+* p-value  
+  
+```{r}
+library(Mapgen)
+
+fpath <- system.file("extdata", "test_sumstats.txt.gz", package="Mapgen")
+gwas <- RunCleaner(sumstats = fpath, 
+                   ColsToKeep = c('chr','position_b37','bcac_onco2_beta','bcac_onco2_se','a0','a1','phase3_1kg_id','bcac_onco2_P1df_Wald'),
+                   bigSNP = bigSNP)
+```
+
+Check that the output is cleaned and has appropriate columns:
+
+```{r}
+gwas[,c('chr','pos','beta','se','snp','pval','zscore')]
+```
+
+
+Next, we must perform enrichment analysis with TORUS, 
+which requires annotation files in `.bed` format. 
+Use the `PrepareTorusFiles()` function, which takes the previous output, 
+and a directory with bed files. 
+Your bed file should contain only 3 columns (chr, start, end) and 
+chromosomes should be just the number (no "chr"). 
+
+*Currently only hg19/b37 coordinates are accepted. You will get wrong results if you use hg38/other.*
+
+```{r}
+bed_annotations = system.file("extdata", "test_bed_dir/", package="Mapgen")
+torus.files <- PrepareTorusFiles(gwas, bed_annotations = bed_annotations)
+```
+
+Now that the appropriate files have been generated (they are in .temp/), lets run TORUS. 
+`RunTorus()` returns two things: enrichment level of each annotation in log2 units, 
+and the SNP-level priors for finemapping.
+
+```{r}
+torus.result <- RunTorus(torus_annot_file = torus.files[[1]], torus_zscore_file = torus.files[[2]])
+```
+
+TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. 
+We run `RunTorusFDR()` to get the probability of each chunk containing a causal variant. 
+We can filter our chunks with low probability, thus saving us on computational time!
+
+```{r}
+torus.fdr <- RunTorusFDR()
+```
+
+Lets add the TORUS results back onto our cleaned summary statistics. 
+`PrepareSusieData()` takes a parameter called `fdr_thresh` which is the FDR associated with each chunk. 
+This value is 10% by default, and chunks with FDR < 10% are removed. 
+We set it to 1 here just to keep all chunks but you will want to lower this or just use default.
+
+```{r}
+susie.df <- PrepareSusieData(sumstats = gwas, torus_pip = torus.result$snp_pip, torus_fdr = torus.fdr, fdr_thresh = 1)
+```
+
+We see we have a new column called `torus_pip` 
+
+```{r}
+susie.df[,c('chr','pos','beta','se','snp','pval','zscore','torus_pip')]
+```
+
+With this data frame, we can perform finemapping. We use `RunFinemapping()` to get out results. 
+This will be quite slow if chunks contain many SNPs( O(n^2) where n is # of SNPs). 
+
+```{r}
+susie_finemap_L1 <- RunFinemapping(sumstats = susie.df, bigSNP = bigSNP)
+```
+
+`susie_finemap_L1` is a list of SuSiE results, one for each chunk/LD block. 
+Usually we are just interested in the SuSiE PIP, 
+which gives the probability of a SNP being causal. 
+We can annotate our cleaned summary statistics with this information using `merge_susie_sumstats()`
+
+```{r}
+gwas_finemapped <- merge_susie_sumstats(susie_results = susie_finemap_L1, sumstats = susie.df)
+```
+
+Lets look at the final cleaned, and finemapped summary statistics. 
+We see we have a new column called `susie_pip` which is the probability of being causal. 
+Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP. 
+
+```{r}
+gwas_finemapped[,c('chr','pos','beta','se','snp','pval','zscore','torus_pip','susie_pip')]
+```
+
+
