@@ -27,10 +27,10 @@ compute_gene_pip <- function(finemap.gr,
   # Define annotation categories
 
   ## Exon and active promoters category
-  if(is.null(genomic.annots$active_promoters)){
-    exons_active_promoters <- list(exons=genomic.annots$exons)
-  }else{
+  if(!is.null(genomic.annots$active_promoters)){
     exons_active_promoters <- list(exons=genomic.annots$exons, active_promoters=genomic.annots$active_promoters)
+  }else{
+    exons_active_promoters <- list(exons=genomic.annots$exons)
   }
 
   ## Enhancer loops category
