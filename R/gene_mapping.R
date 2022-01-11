@@ -5,18 +5,18 @@
 #' @param genomic.annots A list of genomic annotations.
 #' @param enhancer_loop_method Enhancer loop method
 #' @param intron.mode Logical. If TRUE, assign intronic SNPs to genes containing the introns.
-#' @param c.dist A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 1e5 (100kb).
+#' @param c.dist A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 50000 (50kb).
 #' @param dist.to Option to compute snp-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).
 #' @param cols.to.keep columns to keep in the SNP gene weights
 #' @import GenomicRanges
 #' @import tidyverse
-#' @return A matrix of SNP-to-gene mapping result with gene PIPs
+#' @return A data frame of SNP-level view of gene mapping result
 #' @export
 compute_gene_pip <- function(finemap.gr,
                              genomic.annots,
                              enhancer_loop_method = 'ABC.pcHiC.nearby20kb',
                              intron.mode = FALSE,
-                             c.dist = 1e5,
+                             c.dist = 50000,
                              dist.to = c('tss', 'midpoint'),
                              cols.to.keep = c('snp','chr','pos', 'pip', 'locus', 'gene_name', 'category', 'weight', 'frac_pip', 'gene_pip')) {
 
@@ -172,7 +172,9 @@ compute_gene_pip <- function(finemap.gr,
   snp.gene.pip.mat <- normalized.weights.mat %>% dplyr::left_join(., gene.pip.mat)
   snp.gene.pip.mat <- snp.gene.pip.mat[!is.na(snp.gene.pip.mat$gene_name),]
 
-  snp.gene.pip.mat <- snp.gene.pip.mat %>% dplyr::select(all_of(cols.to.keep))
+  snp.gene.pip.mat <- snp.gene.pip.mat %>%
+    dplyr::select(all_of(cols.to.keep)) %>%
+    as.data.frame()
 
   return(snp.gene.pip.mat)
 }
@@ -183,7 +185,7 @@ compute_gene_pip <- function(finemap.gr,
 #' @param snp.gene.pip.mat A data frame of SNP-level gene mapping result
 #' @param gene.annots a GRanges object of gene annotations
 #' @import tidyverse
-#' @return a data frame of gene PIP result
+#' @return a data frame of gene-level view of gene mapping result
 #' @export
 extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
   cat('Extract gene level result ...\n')
@@ -199,18 +201,28 @@ extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
 
   gene.pip.res <- snp.gene.pip.mat[, c('gene_chr', 'gene_pos', 'gene_name', 'gene_pip')] %>%
     dplyr::distinct(gene_name, .keep_all = TRUE) %>%
-    dplyr::rename(chr = gene_chr, pos = gene_pos)
+    dplyr::rename(chr = gene_chr, pos = gene_pos) %>%
+    as.data.frame()
 
   return(gene.pip.res)
 
 }
 
-#' @title Get gene credible sets from SNP level gene mapping table
+#' @title Get credible gene sets from SNP level gene mapping table
 #'
 #' @param snp.gene.pip.mat A data frame of SNP level gene mapping table
-#' @param by.locus Logical, if TRUE, get credible sets based on locus level gene PIP
-#' @param gene.cs.percent.thresh percentage threshold for gene credible sets
+#' @param by.locus Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
+#' If FALSE, get credible gene sets based on gene PIP.
+#' @param gene.cs.percent.thresh percentage threshold for credible gene sets
 #' @import tidyverse
+#' @return a data frame of credible gene set result. Columns are:
+#' gene_cs: credible gene sets,
+#' gene_cs_locus_pip: credible gene sets and corresponding locus-level gene PIPs.
+#' gene_cs_pip: credible gene sets and corresponding gene PIPs.
+#' top_gene:  genes with highest gene PIP at each locus.
+#' top_locus_gene_pip: locus-level gene PIP for the top gene.
+#' Locus-level gene PIP only includes SNPs within a locus, so this value may be lower than the gene PIP.
+#' top_gene_pip:  gene PIP of the top gene.
 #' @export
 gene_cs <- function(snp.gene.pip.mat,
                     by.locus = TRUE,
@@ -243,7 +255,6 @@ gene_cs <- function(snp.gene.pip.mat,
       dplyr::mutate(gene_pip_csum = cumsum(locus_gene_pip)) %>%
       dplyr::slice(1:which(gene_pip_csum >= gene.cs.percent.thresh)[1])
 
-    # create gene cs table
     gene.cs.df <- gene.cumsum.df %>%
       dplyr::group_by(locus) %>%
       dplyr::summarise(gene_cs = paste0(gene_name, collapse=','),
@@ -252,14 +263,13 @@ gene_cs <- function(snp.gene.pip.mat,
                        top_locus_gene_pip = locus_gene_pip[1],
                        top_gene_pip = gene_pip[1])
   }else{
-    # for each locus, keep the genes with gene locus PIP cumsum > 0.8
+    # for each locus, keep the genes with gene PIP cumsum > 0.8
     gene.cumsum.df <- locus.gene.pip.df %>%
       dplyr::group_by(locus) %>%
       dplyr::arrange(desc(gene_pip)) %>%
       dplyr::mutate(gene_pip_csum = cumsum(gene_pip)) %>%
       dplyr::slice(1:which(gene_pip_csum >= gene.cs.percent.thresh)[1])
 
-    # create gene cs table
     gene.cs.df <- gene.cumsum.df %>%
       dplyr::group_by(locus) %>%
       dplyr::summarise(gene_cs = paste0(gene_name, collapse=','),
@@ -278,9 +288,9 @@ gene_cs <- function(snp.gene.pip.mat,
 #' @param snps.gr Genomic Ranges with the SNP locations.
 #' @param promoters.gr Genomic Ranges with the gene promoter locations.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance.
-#' Weight = exp(-dist/c). Default = 1e5 (100kb).
+#' Weight = exp(-dist/c). Default = 50000 (50kb).
 #'
-gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 1e5,
+gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000,
                              dist.to = c('tss', 'midpoint', 'end')){
 
   # get all promoters within 1MB
