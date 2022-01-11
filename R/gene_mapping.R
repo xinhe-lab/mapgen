@@ -228,7 +228,7 @@ gene_cs <- function(snp.gene.pip.mat,
                     by.locus = TRUE,
                     gene.cs.percent.thresh = 0.8){
 
-  # add locus level gene PIP
+  # Get locus level gene PIP
   # For each locus - gene pair, sum over the fractional PIPs for SNPs in the locus and linked to the gene
   snp.locus.gene.pip.mat <- snp.gene.pip.mat %>%
     dplyr::group_by(locus, gene_name) %>%
@@ -239,7 +239,7 @@ gene_cs <- function(snp.gene.pip.mat,
     dplyr::select(locus, gene_name, gene_pip, locus_gene_pip) %>%
     dplyr::distinct(locus, gene_name, .keep_all=TRUE)
 
-  # check if gene PIP is equal to the sum of gene-locus PIP
+  # check to make sure gene PIP is equal to the sum of gene-locus PIP
   for(gene in unique(locus.gene.pip.df$gene_name)){
     if(!all.equal(sum(locus.gene.pip.df$locus_gene_pip[locus.gene.pip.df$gene_name == gene]),
                   locus.gene.pip.df$gene_pip[locus.gene.pip.df$gene_name == gene][1])){
