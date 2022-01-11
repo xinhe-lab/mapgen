@@ -32,7 +32,7 @@ We developed a novel gene mapping procedure to prioritize target genes:
   probability of a gene being causal (Methods). 
   
   4. Similar to variant-level fine mapping, 
-  we also define a “gene credible set”, the set of genes that 
+  we also define a “credible gene set”, the set of genes that 
   capture the causal signal at a locus with high probability (80% in our study)
 
 ```{r gene-mapping-diagram, echo=FALSE, fig.cap="Schematic of gene-level PIP calculation. s: SNP, g: gene", out.width = '75%'}
@@ -155,7 +155,7 @@ gene.pip.res <- extract_gene_level_result(snp.gene.pip.mat, gene.annots)
 head(gene.pip.res)
 ```
 
-80% Gene credible set
+Obtain 80% credible gene set
 ```{r gene-cs}
 gene.cs.df <- gene_cs(snp.gene.pip.mat, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
 
