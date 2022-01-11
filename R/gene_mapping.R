@@ -1,12 +1,12 @@
 
-#' @title Map SNPs to genes and assign weights
+#' @title Compute gene PIPs based on fine-mapping result and functional annotations.
 #'
-#' @param finemap.gr Genomic Ranges of fine mapping result.
+#' @param finemap.gr Genomic Ranges of fine-mapping result.
 #' @param genomic.annots A list of genomic annotations.
 #' @param enhancer_loop_method Enhancer loop method
 #' @param intron.mode Logical. If TRUE, assign intronic SNPs to genes containing the introns.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 50000 (50kb).
-#' @param dist.to Option to compute snp-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).
+#' @param dist.to Option to compute SNP-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).
 #' @param cols.to.keep columns to keep in the SNP gene weights
 #' @import GenomicRanges
 #' @import tidyverse
@@ -215,7 +215,7 @@ extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
 #' If FALSE, get credible gene sets based on gene PIP.
 #' @param gene.cs.percent.thresh percentage threshold for credible gene sets
 #' @import tidyverse
-#' @return a data frame of credible gene set result. Columns are:
+#' @return a data frame of credible gene set result. Columns:
 #' gene_cs: credible gene sets,
 #' gene_cs_locus_pip: credible gene sets and corresponding locus-level gene PIPs.
 #' gene_cs_pip: credible gene sets and corresponding gene PIPs.
@@ -289,9 +289,13 @@ gene_cs <- function(snp.gene.pip.mat,
 #' @param promoters.gr Genomic Ranges with the gene promoter locations.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance.
 #' Weight = exp(-dist/c). Default = 50000 (50kb).
+#' @param dist.to Option to compute SNP-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).
+#' @return a GRanges object with SNP to gene distance and weights calculated based on distance.
 #'
 gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000,
-                             dist.to = c('tss', 'midpoint', 'end')){
+                             dist.to = c('tss', 'midpoint')){
+
+  dist.to <- match.arg(dist.to)
 
   # get all promoters within 1MB
   res <- plyranges::join_overlap_inner(x = promoters.gr,
@@ -302,8 +306,6 @@ gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000,
     res$gene_pos <- res$tss
   }else if(dist.to == 'midpoint'){
     res$gene_pos <- round((start(res) + end(res))/2)
-  }else{
-    res$gene_pos <- end(res)
   }
 
   res$distance <- abs(res$pos - res$gene_pos)
@@ -313,7 +315,7 @@ gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000,
 }
 
 
-#' @title Find nearest genes (by distance to TSS or gene body)
+#' @title Find the nearest genes for top SNPs in each locus.
 #'
 #' @param gwas.gr GRanges object of the GWAS summary statistics
 #' @param genes.gr GRanges object of gene information
@@ -321,6 +323,7 @@ gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000,
 #' @param cols.to.keep columns to keep in the returned GRanges object
 #' @import tidyverse
 #' @export
+#' @return a data frame with SNP location and nearest gene.
 #'
 find_nearest_genes <- function(gwas.gr,
                                genes.gr,
