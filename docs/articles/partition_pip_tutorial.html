@@ -91,8 +91,8 @@
 <p>Here, we show an example using data from our heart single-cell study. We assigned the likely cell type(s) through which the causal variants act in each locus using fine-mapped SNPs, and cell-type specific open chromatin regions (OCRs).</p>
 <p><strong>Required input data</strong>:</p>
 <ul>
-<li>Genetic fine-mapping result</li>
-<li>Functional annotations (cell-type specific OCRs in this example).</li>
+<li>Fine-mapping summary statistics.</li>
+<li>A list of annotation regions (cell-type specific OCRs in this example).</li>
 </ul>
 <p>Load R packages</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -134,19 +134,19 @@
 <p>Load genomic annotations (hg19).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/genomic.annots.hg19.gr.rds'</span><span class="op">)</span></code></pre></div>
-<p>Load annotations and cell type OCR peaks (disjoint regions).</p>
+<p>Load annotations and cell type OCR peaks (disjoint regions). This is a list of GRanges objects.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">OCRs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/disjoint_OCRs_hg19.grlist.rds'</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">OCRs</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##                       Length Class   Mode</span>
-<span class="co">## Cardiomyocyte         55488  GRanges S4  </span>
-<span class="co">## Endothelial           17392  GRanges S4  </span>
-<span class="co">## Fibroblast            27193  GRanges S4  </span>
-<span class="co">## Lymphoid               6313  GRanges S4  </span>
-<span class="co">## Myeloid               26975  GRanges S4  </span>
-<span class="co">## Pericyte              12623  GRanges S4  </span>
-<span class="co">## shared.2or3.celltypes 27532  GRanges S4  </span>
-<span class="co">## shared.gt4.celltypes  36877  GRanges S4</span></code></pre>
+<pre><code><span class="co">##               Length Class   Mode</span>
+<span class="co">## Cardiomyocyte 55488  GRanges S4  </span>
+<span class="co">## Endothelial   17392  GRanges S4  </span>
+<span class="co">## Fibroblast    27193  GRanges S4  </span>
+<span class="co">## Lymphoid       6313  GRanges S4  </span>
+<span class="co">## Myeloid       26975  GRanges S4  </span>
+<span class="co">## Pericyte      12623  GRanges S4  </span>
+<span class="co">## Shared 2-3    27532  GRanges S4  </span>
+<span class="co">## Shared 4+     36877  GRanges S4</span></code></pre>
 <p>Sum of PIPs within cell-type specific OCRs.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sum_pip_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partition_pip_regions.html">partition_pip_regions</a></span><span class="op">(</span><span class="va">finemap.gr</span>, <span class="va">OCRs</span><span class="op">)</span>
@@ -157,28 +157,29 @@
 <pre><code><span class="co">## Sum of PIPs in cell-type specific OCRs</span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sum.pips</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte</span>
-<span class="co">## 7   0.7663084514 0.000000000 0.00000000        0       0        0</span>
-<span class="co">## 15  0.2173870865 0.004280965 0.08199708        0       0        0</span>
-<span class="co">## 25  0.0001417186 0.000000000 0.00000000        0       0        0</span>
-<span class="co">##    shared.2or3.celltypes shared.gt4.celltypes</span>
-<span class="co">## 7           0.0000000000         0.0000000000</span>
-<span class="co">## 15          0.0002198158         0.0248505012</span>
-<span class="co">## 25          0.0037536142         0.0003452405</span></code></pre>
+<pre><code><span class="co">##    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte   Shared 2-3</span>
+<span class="co">## 7   0.7663084514 0.000000000 0.00000000        0       0        0 0.0000000000</span>
+<span class="co">## 15  0.2173870865 0.004280965 0.08199708        0       0        0 0.0002198158</span>
+<span class="co">## 25  0.0001417186 0.000000000 0.00000000        0       0        0 0.0037536142</span>
+<span class="co">##       Shared 4+</span>
+<span class="co">## 7  0.0000000000</span>
+<span class="co">## 15 0.0248505012</span>
+<span class="co">## 25 0.0003452405</span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">'Number of SNPs included:\n'</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Number of SNPs included:</span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">n.snps</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte</span>
-<span class="co">## 7              7           0          0        0       0        0</span>
-<span class="co">## 15             6           3          6        0       0        0</span>
-<span class="co">## 25             7           0          0        0       0        0</span>
-<span class="co">##    shared.2or3.celltypes shared.gt4.celltypes</span>
-<span class="co">## 7                      0                    0</span>
-<span class="co">## 15                     1                    4</span>
-<span class="co">## 25                     2                    5</span></code></pre>
-<p>Focus on loci with total PIPs in OCR &gt; 0.25. Compute the proportion of PIPs partitioned in each cell type category and order by Cardiomyocyte proportion.</p>
+<pre><code><span class="co">##    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte Shared 2-3</span>
+<span class="co">## 7              7           0          0        0       0        0          0</span>
+<span class="co">## 15             6           3          6        0       0        0          1</span>
+<span class="co">## 25             7           0          0        0       0        0          2</span>
+<span class="co">##    Shared 4+</span>
+<span class="co">## 7          0</span>
+<span class="co">## 15         4</span>
+<span class="co">## 25         5</span></code></pre>
+<p>Filter loci with a cutoff of total PIPs in OCR &gt; 0.25.</p>
+<p>Compute the proportion of PIPs partitioned in each cell type category and order by Cardiomyocyte proportion.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sum.pips.filtered</span> <span class="op">&lt;-</span> <span class="va">sum.pips</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">sum.pips</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.25</span>,<span class="op">]</span>
 
@@ -187,10 +188,7 @@
 <span class="va">prop.pip.mat</span> <span class="op">&lt;-</span> <span class="va">prop.pip.mat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">Cardiomyocyte</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span></code></pre></div>
 <p>Make a structure plot of the proportion of PIPs in each cell type category.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prop.pip.mat</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prop.pip.mat</span><span class="op">)</span> <span class="op">==</span> <span class="st">"shared.2or3.celltypes"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"Shared 2-3"</span>
-<span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prop.pip.mat</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">prop.pip.mat</span><span class="op">)</span> <span class="op">==</span> <span class="st">"shared.gt4.celltypes"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"Shared 4+"</span>
-
-<span class="va">colors.palette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/color_palette.rds'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">colors.palette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/color_palette.rds'</span><span class="op">)</span>
 <span class="va">categories.order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cardiomyocyte"</span>, <span class="st">"Endothelial"</span>, <span class="st">"Fibroblast"</span>, <span class="st">"Lymphoid"</span>, <span class="st">"Myeloid"</span>, <span class="st">"Pericyte"</span>, <span class="st">"Shared 2-3"</span>, <span class="st">"Shared 4+"</span><span class="op">)</span>
 <span class="va">colors</span> <span class="op">&lt;-</span> <span class="va">colors.palette</span><span class="op">[</span><span class="va">categories.order</span><span class="op">]</span>
 <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compile_structure_plot_data.html">compile_structure_plot_data</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">categories.order</span><span class="op">)</span><span class="op">)</span>
