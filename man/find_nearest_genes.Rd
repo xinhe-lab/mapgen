@@ -2,7 +2,7 @@
 % Please edit documentation in R/gene_mapping.R
 \name{find_nearest_genes}
 \alias{find_nearest_genes}
-\title{Find nearest genes (by distance to TSS or gene body)}
+\title{Find the nearest genes for top SNPs in each locus.}
 \usage{
 find_nearest_genes(
   gwas.gr,
@@ -12,14 +12,17 @@ find_nearest_genes(
 )
 }
 \arguments{
-\item{gwas.gr}{GRanges object of the GWAS summary statistics}
+\item{gwas.gr}{a GRanges object of the GWAS summary statistics}
 
-\item{genes.gr}{GRanges object of gene information}
+\item{genes.gr}{a GRanges object of gene information}
 
 \item{dist.to}{Find nearest genes by distance to gene body or TSS.}
 
 \item{cols.to.keep}{columns to keep in the returned GRanges object}
 }
+\value{
+a data frame with SNP location and nearest gene.
+}
 \description{
-Find nearest genes (by distance to TSS or gene body)
+Find the nearest genes for top SNPs in each locus.
 }

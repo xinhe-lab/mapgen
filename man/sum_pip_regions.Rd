@@ -13,6 +13,9 @@ sum_pip_regions(finemap.locus.gr, regions.gr, type = c("inside", "outside"))
 
 \item{type}{Sum PIPs for SNPs inside or outside genomic regions.}
 }
+\value{
+a vector with the sum of PIPs and the number of SNPs included.
+}
 \description{
 Sum PIPs for genomic regions
 }

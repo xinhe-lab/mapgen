@@ -4,14 +4,15 @@
 \alias{partition_pip_regions}
 \title{Partition PIPs into functional annotation regions}
 \usage{
-partition_pip_regions(finemap.gr, annots, unassigned = "Intergenic")
+partition_pip_regions(finemap.gr, annots.list)
 }
 \arguments{
-\item{finemap.gr}{fine mapping result}
+\item{finemap.gr}{a GRanges object of fine mapping summary statistics}
 
-\item{annots}{functional annotation regions}
-
-\item{unassigned}{name of unassigned category, default: 'Intergenic'.}
+\item{annots.list}{a list of GRanges objects of functional annotations}
+}
+\value{
+a list with a data frame with the sum of PIPs and a data frame with the number of SNPs included for each annotation category.
 }
 \description{
 Partition PIPs into functional annotation regions

@@ -4,20 +4,18 @@
 \alias{gene_by_distance}
 \title{Find all genes (promoters) within 1MB genes and assign weights based on distance}
 \usage{
-gene_by_distance(
-  snps.gr,
-  promoters.gr,
-  c.dist = 1e+05,
-  dist.to = c("tss", "midpoint", "end")
-)
+gene_by_distance(snps.gr, promoters.gr, c.dist = 50000)
 }
 \arguments{
-\item{snps.gr}{Genomic Ranges with the SNP locations.}
+\item{snps.gr}{a GRanges object with the SNP locations.}
 
-\item{promoters.gr}{Genomic Ranges with the gene promoter locations.}
+\item{promoters.gr}{a GRanges object with the gene promoter locations.}
 
 \item{c.dist}{A scaling number used for computing weight based on SNP-gene distance.
-Weight = exp(-dist/c). Default = 1e5 (100kb).}
+Weight = exp(-dist/c). Default = 50000 (50kb).}
+}
+\value{
+a GRanges object with SNP to gene distance and weights calculated based on distance.
 }
 \description{
 Find all genes (promoters) within 1MB genes and assign weights based on distance

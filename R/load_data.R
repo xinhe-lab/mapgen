@@ -31,7 +31,7 @@ process_finemapping_sumstat <- function(finemap,
                                         filterCS = FALSE,
                                         maxCS = 10){
 
-  cat('Process fine mapping summary statistics ...\n')
+  cat('Process fine-mapping summary statistics ...\n')
   finemap <- finemap %>% dplyr::rename(snp = all_of(snp),
                                        chr = all_of(chr),
                                        pos = all_of(pos),

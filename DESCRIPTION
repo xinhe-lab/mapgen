@@ -18,10 +18,11 @@ Imports:
     tibble,
     data.table,
     GenomicRanges,
-    ggplot2,
-    ggrepel,
     vroom,
-    bigsnpr
+    bigsnpr,
+    ggplot2,
+    cowplot,
+    ggrepel
 Remotes:
     stephenslab/susieR,
     bioc::3.3/plyranges,

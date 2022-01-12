@@ -2,17 +2,28 @@
 % Please edit documentation in R/gene_mapping.R
 \name{gene_cs}
 \alias{gene_cs}
-\title{Get gene credible sets from SNP level gene mapping table}
+\title{Get credible gene sets from SNP level gene mapping table}
 \usage{
 gene_cs(snp.gene.pip.mat, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
 }
 \arguments{
 \item{snp.gene.pip.mat}{A data frame of SNP level gene mapping table}
 
-\item{by.locus}{Logical, if TRUE, get credible sets based on locus level gene PIP}
+\item{by.locus}{Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
+If FALSE, get credible gene sets based on gene PIP.}
 
-\item{gene.cs.percent.thresh}{percentage threshold for gene credible sets}
+\item{gene.cs.percent.thresh}{percentage threshold for credible gene sets}
+}
+\value{
+a data frame of credible gene set result. Columns:
+gene_cs: credible gene sets,
+gene_cs_locus_pip: credible gene sets and corresponding locus-level gene PIPs.
+gene_cs_pip: credible gene sets and corresponding gene PIPs.
+top_gene:  genes with highest gene PIP at each locus.
+top_locus_gene_pip: locus-level gene PIP for the top gene.
+Locus-level gene PIP only includes SNPs within a locus, so this value may be lower than the gene PIP.
+top_gene_pip:  gene PIP of the top gene.
 }
 \description{
-Get gene credible sets from SNP level gene mapping table
+Get credible gene sets from SNP level gene mapping table
 }

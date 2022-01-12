@@ -18,5 +18,6 @@ structure_plot(dat, colors, ticks = NULL, font.size = 9, highlight = NULL)
 \item{highlight}{Highlight a sample}
 }
 \description{
-structure plot
+this function is adapted from the 'fastTopics' package
+https://stephenslab.github.io/fastTopics/
 }

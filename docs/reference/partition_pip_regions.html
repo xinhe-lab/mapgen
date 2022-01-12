@@ -32,10 +32,13 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping tutorial</a>
+      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping</a>
     </li>
     <li>
-      <a href="../articles/gene_mapping_tutorial.html">Gene mapping tutorial</a>
+      <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
+    </li>
+    <li>
+      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
@@ -57,18 +60,20 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">partition_pip_regions</span><span class="op">(</span><span class="va">finemap.gr</span>, <span class="va">annots</span>, unassigned <span class="op">=</span> <span class="st">"Intergenic"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">partition_pip_regions</span><span class="op">(</span><span class="va">finemap.gr</span>, <span class="va">annots.list</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>finemap.gr</dt>
-<dd><p>fine mapping result</p></dd>
-<dt>annots</dt>
-<dd><p>functional annotation regions</p></dd>
-<dt>unassigned</dt>
-<dd><p>name of unassigned category, default: 'Intergenic'.</p></dd>
+<dd><p>a GRanges object of fine mapping summary statistics</p></dd>
+<dt>annots.list</dt>
+<dd><p>a list of GRanges objects of functional annotations</p></dd>
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>a list with a data frame with the sum of PIPs and a data frame with the number of SNPs included for each annotation category.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

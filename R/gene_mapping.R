@@ -1,12 +1,11 @@
 
 #' @title Compute gene PIPs based on fine-mapping result and functional annotations.
 #'
-#' @param finemap.gr Genomic Ranges of fine-mapping result.
-#' @param genomic.annots A list of genomic annotations.
+#' @param finemap.gr a GRanges object of fine-mapping result.
+#' @param genomic.annots A list of GRanges objects of genomic annotations.
 #' @param enhancer_loop_method Enhancer loop method
 #' @param intron.mode Logical. If TRUE, assign intronic SNPs to genes containing the introns.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 50000 (50kb).
-#' @param dist.to Option to compute SNP-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).
 #' @param cols.to.keep columns to keep in the SNP gene weights
 #' @import GenomicRanges
 #' @import tidyverse
@@ -17,12 +16,9 @@ compute_gene_pip <- function(finemap.gr,
                              enhancer_loop_method = 'ABC.pcHiC.nearby20kb',
                              intron.mode = FALSE,
                              c.dist = 50000,
-                             dist.to = c('tss', 'midpoint'),
-                             cols.to.keep = c('snp','chr','pos', 'pip', 'locus', 'gene_name', 'category', 'weight', 'frac_pip', 'gene_pip')) {
+                             cols.to.keep = c('snp','chr','pos', 'pip', 'locus', 'cs','gene_name', 'category', 'weight', 'frac_pip', 'gene_pip')) {
 
   cat('Map SNPs to genes and assign weights ...\n')
-
-  dist.to <- match.arg(dist.to)
 
   # Define annotation categories
 
@@ -59,15 +55,21 @@ compute_gene_pip <- function(finemap.gr,
 
   ## Introns and UTRs category
   if(intron.mode) {
-    cat('Assign intronic SNPs to genes containing the introns ...\n')
     intron_utrs <- list(introns=genomic.annots$introns, UTRs=genomic.annots$UTRs)
   }else{
     intron_utrs <- list(UTRs=genomic.annots$UTRs)
   }
 
-  # Assign SNPs to genes
-  cat('Assigning SNPs to genes...\n')
+  # Add TSS to promoters
+  if(is.null(genomic.annots$promoters$tss)){
+    plus_strand <- which(as.character(strand(genomic.annots$promoters)) == '+')
+    minus_strand <- which(as.character(strand(genomic.annots$promoters)) == '-')
+    genomic.annots$promoters$tss <- NA
+    genomic.annots$promoters$tss[plus_strand] <- end(genomic.annots$promoters)[plus_strand]
+    genomic.annots$promoters$tss[minus_strand] <- start(genomic.annots$promoters)[minus_strand]
+  }
 
+  # Assign SNPs to genes
   ## Hierarchy level 1: first assign SNPs in exons and active promoters.
   if(!is.null(exons_active_promoters)){
     cat('Assign SNPs in exons and active promoters ...\n')
@@ -94,16 +96,18 @@ compute_gene_pip <- function(finemap.gr,
     finemap_in_enhancer_regions <- IRanges::subsetByOverlaps(finemap.gr, genomic.annots$enhancer_regions)
     enhancer_snps_genes_by_distance <- list(enhancer.regions = gene_by_distance(snps.gr = finemap_in_enhancer_regions,
                                                                                 promoters.gr = genomic.annots$promoters,
-                                                                                c.dist = c.dist,
-                                                                                dist.to = dist.to))
+                                                                                c.dist = c.dist))
     finemap.gr <- finemap.gr[!(finemap.gr$snp %in% finemap_in_enhancer_regions$snp),]
   }else{
     enhancer_snps_genes_by_distance <- NULL
   }
 
   ## Hierarchy level 3: assign SNPs in introns/UTRs to genes containing the introns/UTRs.
-  if(!is.null(genomic.annots$enhancer_regions)){
-    cat('Assign SNPs in introns/UTRs... \n')
+  if(!is.null(intron_utrs)){
+    cat('Assign SNPs in UTRs... \n')
+    if(intron.mode){
+      cat('Assign intronic SNPs to genes containing the introns ...\n')
+    }
     intron_utr_overlap <- lapply(intron_utrs, function(x){plyranges::join_overlap_inner(x, finemap.gr)})
     snps.in <- unique(unlist(GenomicRanges::GRangesList(intron_utr_overlap))$snp)
     finemap.gr <- finemap.gr[!(finemap.gr$snp %in% snps.in),]
@@ -111,13 +115,12 @@ compute_gene_pip <- function(finemap.gr,
     intron_utr_overlap <- NULL
   }
 
-  ## Hierarchy level 4: assign the rest SNPs (intergenic) to genes by distance weighting.
+  ## Hierarchy level 4: assign the rest of SNPs (intergenic) to genes by distance weighting.
   if(length(finemap.gr) > 0){
     cat('Assign intergenic SNPs to genes by distance weighting ...\n')
     intergenic_snps_genes_by_distance <- list(intergenic = gene_by_distance(snps.gr = finemap.gr,
                                                                             promoters.gr = genomic.annots$promoters,
-                                                                            c.dist = c.dist,
-                                                                            dist.to = dist.to))
+                                                                            c.dist = c.dist))
   }else{
     intergenic_snps_genes_by_distance <- NULL
   }
@@ -129,7 +132,6 @@ compute_gene_pip <- function(finemap.gr,
                         intergenic_snps_genes_by_distance)
 
   # Assign weights to SNP-gene pairs
-  cat('Assign weights to SNP-gene pairs ... \n')
   mat.list <- lapply(names(snp.overlap.list), function(x){
     snp.overlap.list[[x]] %>% as_tibble() %>%
       dplyr::mutate(category = x) %>%
@@ -169,7 +171,7 @@ compute_gene_pip <- function(finemap.gr,
     dplyr::select(snp, gene_name, frac_pip, gene_pip) %>%
     dplyr::ungroup()
 
-  snp.gene.pip.mat <- normalized.weights.mat %>% dplyr::left_join(., gene.pip.mat)
+  snp.gene.pip.mat <- suppressMessages(normalized.weights.mat %>% dplyr::left_join(., gene.pip.mat))
   snp.gene.pip.mat <- snp.gene.pip.mat[!is.na(snp.gene.pip.mat$gene_name),]
 
   snp.gene.pip.mat <- snp.gene.pip.mat %>%
@@ -285,30 +287,29 @@ gene_cs <- function(snp.gene.pip.mat,
 
 #' @title Find all genes (promoters) within 1MB genes and assign weights based on distance
 #'
-#' @param snps.gr Genomic Ranges with the SNP locations.
-#' @param promoters.gr Genomic Ranges with the gene promoter locations.
+#' @param snps.gr a GRanges object with the SNP locations.
+#' @param promoters.gr a GRanges object with the gene promoter locations.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance.
 #' Weight = exp(-dist/c). Default = 50000 (50kb).
-#' @param dist.to Option to compute SNP-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).
 #' @return a GRanges object with SNP to gene distance and weights calculated based on distance.
+#' @export
 #'
-gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000,
-                             dist.to = c('tss', 'midpoint')){
+gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000){
 
-  dist.to <- match.arg(dist.to)
+  if(is.null(promoters.gr$tss)){
+    plus_strand <- which(as.character(strand(promoters.gr)) == '+')
+    minus_strand <- which(as.character(strand(promoters.gr)) == '-')
+    promoters.gr$tss <- NA
+    promoters.gr$tss[plus_strand] <- end(promoters.gr)[plus_strand]
+    promoters.gr$tss[minus_strand] <- start(promoters.gr)[minus_strand]
+  }
 
   # get all promoters within 1MB
   res <- plyranges::join_overlap_inner(x = promoters.gr,
                                        y = snps.gr,
                                        maxgap = 1e6)
 
-  if(dist.to == 'tss'){
-    res$gene_pos <- res$tss
-  }else if(dist.to == 'midpoint'){
-    res$gene_pos <- round((start(res) + end(res))/2)
-  }
-
-  res$distance <- abs(res$pos - res$gene_pos)
+  res$distance <- abs(res$pos - res$tss)
   res$weight <- exp(-res$distance / as.numeric(c.dist))
 
   return(res)
@@ -317,8 +318,8 @@ gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000,
 
 #' @title Find the nearest genes for top SNPs in each locus.
 #'
-#' @param gwas.gr GRanges object of the GWAS summary statistics
-#' @param genes.gr GRanges object of gene information
+#' @param gwas.gr a GRanges object of the GWAS summary statistics
+#' @param genes.gr a GRanges object of gene information
 #' @param dist.to Find nearest genes by distance to gene body or TSS.
 #' @param cols.to.keep columns to keep in the returned GRanges object
 #' @import tidyverse
@@ -375,5 +376,3 @@ find_nearest_genes <- function(gwas.gr,
   res <- as.data.frame(snps.gr)[, cols.to.keep]
   return(res)
 }
-
-

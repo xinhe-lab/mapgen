@@ -2,37 +2,34 @@
 % Please edit documentation in R/gene_mapping.R
 \name{compute_gene_pip}
 \alias{compute_gene_pip}
-\title{Map SNPs to genes and assign weights}
+\title{Compute gene PIPs based on fine-mapping result and functional annotations.}
 \usage{
 compute_gene_pip(
   finemap.gr,
   genomic.annots,
   enhancer_loop_method = "ABC.pcHiC.nearby20kb",
   intron.mode = FALSE,
-  c.dist = 1e+05,
-  dist.to = c("tss", "midpoint"),
-  cols.to.keep = c("snp", "chr", "pos", "pip", "locus", "gene_name", "category",
+  c.dist = 50000,
+  cols.to.keep = c("snp", "chr", "pos", "pip", "locus", "cs", "gene_name", "category",
     "weight", "frac_pip", "gene_pip")
 )
 }
 \arguments{
-\item{finemap.gr}{Genomic Ranges of fine mapping result.}
+\item{finemap.gr}{a GRanges object of fine-mapping result.}
 
-\item{genomic.annots}{A list of genomic annotations.}
+\item{genomic.annots}{A list of GRanges objects of genomic annotations.}
 
 \item{enhancer_loop_method}{Enhancer loop method}
 
 \item{intron.mode}{Logical. If TRUE, assign intronic SNPs to genes containing the introns.}
 
-\item{c.dist}{A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 1e5 (100kb).}
-
-\item{dist.to}{Option to compute snp-gene distance. Options: 'tss' (default), 'midpoint' (gene midpoint).}
+\item{c.dist}{A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 50000 (50kb).}
 
 \item{cols.to.keep}{columns to keep in the SNP gene weights}
 }
 \value{
-A matrix of SNP-to-gene mapping result with gene PIPs
+A data frame of SNP-level view of gene mapping result
 }
 \description{
-Map SNPs to genes and assign weights
+Compute gene PIPs based on fine-mapping result and functional annotations.
 }

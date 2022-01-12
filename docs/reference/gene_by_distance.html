@@ -32,10 +32,13 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping tutorial</a>
+      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping</a>
     </li>
     <li>
-      <a href="../articles/gene_mapping_tutorial.html">Gene mapping tutorial</a>
+      <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
+    </li>
+    <li>
+      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
@@ -57,24 +60,23 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gene_by_distance</span><span class="op">(</span>
-  <span class="va">snps.gr</span>,
-  <span class="va">promoters.gr</span>,
-  c.dist <span class="op">=</span> <span class="fl">1e+05</span>,
-  dist.to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tss"</span>, <span class="st">"midpoint"</span>, <span class="st">"end"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gene_by_distance</span><span class="op">(</span><span class="va">snps.gr</span>, <span class="va">promoters.gr</span>, c.dist <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>snps.gr</dt>
-<dd><p>Genomic Ranges with the SNP locations.</p></dd>
+<dd><p>a GRanges object with the SNP locations.</p></dd>
 <dt>promoters.gr</dt>
-<dd><p>Genomic Ranges with the gene promoter locations.</p></dd>
+<dd><p>a GRanges object with the gene promoter locations.</p></dd>
 <dt>c.dist</dt>
 <dd><p>A scaling number used for computing weight based on SNP-gene distance.
-Weight = exp(-dist/c). Default = 1e5 (100kb).</p></dd>
+Weight = exp(-dist/c). Default = 50000 (50kb).</p></dd>
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    <p>a GRanges object with SNP to gene distance and weights calculated based on distance.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

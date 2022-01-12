@@ -105,7 +105,8 @@ gene_manhattan_plot <- function(gene.pip.res,
 
 
 #' @title structure plot
-#'
+#' @description this function is adapted from the 'fastTopics' package
+#' https://stephenslab.github.io/fastTopics/
 #' @param dat a data frame obtained from @rdname compile_structure_plot_data
 #' @param colors Colors of the structure plot categories
 #' @param ticks Labels of x-axis
@@ -116,7 +117,8 @@ gene_manhattan_plot <- function(gene.pip.res,
 #'
 structure_plot <- function (dat, colors, ticks = NULL,
                             font.size = 9, highlight = NULL){
-  p <- ggplot(dat,aes_string(x = "sample",y = "prop",color = "category",
+  p <- ggplot(dat,aes_string(x = "sample",y = "prop",
+                             color = "category",
                              fill = "category")) +
     geom_col() +
     scale_x_continuous(limits = c(0,max(dat$sample) + 1),
@@ -125,18 +127,26 @@ structure_plot <- function (dat, colors, ticks = NULL,
     scale_color_manual(values = colors) +
     scale_fill_manual(values = colors) +
     labs(x = "",y = "Proportion") +
-    theme_cowplot(font.size) +
+    cowplot::theme_cowplot(font.size) +
     theme(axis.line   = element_blank(),
           axis.ticks  = element_blank(),
           axis.text.x = element_text(angle = 45,hjust = 1))
 
-  if(!is.na(highlight)){
+  if(!is.null(highlight)){
     p <- p + geom_text(aes(label=highlight), y = 1.005, angle = 0, size=3, color = "black")
   }
   return(p)
 }
 
-# compile input data for making structure plot
+#' @title Compile input data for making structure plot
+#' @description this function is adapted from the 'fastTopics' package
+#' https://stephenslab.github.io/fastTopics/
+#'
+#' @param mat matrix of input data
+#' @param categories annotation categories
+#' @return a data frame for making structure plot
+#' @export
+#'
 compile_structure_plot_data <- function (mat, categories) {
   mat <- na.omit(as.matrix(mat))
   n <- nrow(mat)
@@ -145,6 +155,6 @@ compile_structure_plot_data <- function (mat, categories) {
                     locus    = rep(rownames(mat),times = k),
                     category = rep(categories,each = n),
                     prop     = c(mat[,categories]))
-  dat$category <- factor(dat$category, categories)
+  dat$category <- factor(dat$category, levels = categories)
   return(dat)
 }

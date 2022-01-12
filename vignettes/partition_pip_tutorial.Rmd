@@ -1,0 +1,91 @@
+---
+title: "Partition fine-mapping PIPs by annotation categories"
+author: Kaixuan Luo
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Partitioning PIPs by cell types and annotation categories
+============================================================
+
+Here, we show an example using data from our heart single-cell study.
+We assigned the likely cell type(s) through 
+which the causal variants act in each locus using fine-mapped SNPs,
+and cell-type specific open chromatin regions (OCRs).
+
+**Required input data**:
+
+  * Genetic fine-mapping result
+  * Functional annotations (cell-type specific OCRs in this example). 
+
+Load R packages
+```{r load-packages, message=FALSE, warning=FALSE}
+suppressMessages(library(tidyverse))
+suppressMessages(library(GenomicRanges))
+library(Mapgen)
+```
+
+Load fine-mapping results.
+```{r load-finemapping-res}
+finemap <- readRDS("../inst/extdata/aFib_Finemapped.tble.rds")
+finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
+                                          pos = 'pos', pip = 'susie_pip', 
+                                          pval = 'pval', zscore = 'zscore', 
+                                          cs = 'CS', locus = 'locus',  
+                                          cols.to.keep = c('snp','chr','pos', 'pip', 'pval','locus'),
+                                          pip.thresh = 1e-5, filterCS = FALSE)
+head(finemap.gr)
+```
+
+Load genomic annotations (hg19). 
+```{r load-annotations}
+genomic.annots <- readRDS('../inst/extdata/genomic.annots.hg19.gr.rds')
+```
+
+Load annotations and cell type OCR peaks (disjoint regions).
+```{r load-OCRs}
+OCRs <- readRDS('../inst/extdata/disjoint_OCRs_hg19.grlist.rds')
+summary(OCRs)
+```
+
+Sum of PIPs within cell-type specific OCRs.
+```{r sum-pip-disjoint-OCRs}
+sum_pip_res <- partition_pip_regions(finemap.gr, OCRs)
+sum.pips <- sum_pip_res$sum.pips
+n.snps <- sum_pip_res$n.snps
+
+cat('Sum of PIPs in cell-type specific OCRs\n')
+head(sum.pips, 3)
+
+cat('Number of SNPs included:\n')
+head(n.snps, 3)
+
+```
+
+Focus on loci with total PIPs in OCR > 0.25.
+Compute the proportion of PIPs partitioned in each cell type category
+and order by Cardiomyocyte proportion.
+```{r filter-locus-proportion-pips}
+sum.pips.filtered <- sum.pips[rowSums(sum.pips) > 0.25,]
+
+prop.pip.mat <- sum.pips.filtered/rowSums(sum.pips.filtered)
+
+prop.pip.mat <- prop.pip.mat[with(prop.pip.mat, order(-Cardiomyocyte)), ]
+
+```
+
+Make a structure plot of the proportion of PIPs in each cell type category.
+```{r structure-plot, fig.width=10, fig.height=2.5}
+colnames(prop.pip.mat)[colnames(prop.pip.mat) == "shared.2or3.celltypes"] <- "Shared 2-3"
+colnames(prop.pip.mat)[colnames(prop.pip.mat) == "shared.gt4.celltypes"] <- "Shared 4+"
+
+colors.palette <- readRDS('../inst/extdata/color_palette.rds')
+categories.order <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid", "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
+colors <- colors.palette[categories.order]
+dat <- compile_structure_plot_data(prop.pip.mat, categories = rev(categories.order))
+
+structure_plot(dat, colors = rev(colors))
+```
