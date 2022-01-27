@@ -10,8 +10,8 @@ compute_gene_pip(
   enhancer.loop.method = "ABC.pcHiC.nearby20kb",
   intron.mode = FALSE,
   c.dist = 50000,
-  cols.to.keep = c("snp", "chr", "pos", "pip", "locus", "cs", "gene_name", "category",
-    "weight", "frac_pip", "gene_pip")
+  cols.to.keep = c(names(mcols(finemap.gr)), "gene_name", "category", "weight",
+    "frac_pip", "gene_pip")
 )
 }
 \arguments{

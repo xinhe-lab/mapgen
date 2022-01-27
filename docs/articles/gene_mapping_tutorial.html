@@ -221,20 +221,20 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## Compute gene PIP ...</span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.mapping.res</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##         snp chr       pos          pip locus cs gene_name       category weight</span>
-<span class="co">## 1 rs6658920   1  22257739 8.747860e-03    15  0     HSPG2 ABC,nearby20kb      1</span>
-<span class="co">## 2 rs6658920   1  22257739 8.747860e-03    15  0     USP48            ABC      1</span>
-<span class="co">## 3  rs213734   1  41575699 5.171119e-05    25  0     SCMH1            ABC      1</span>
-<span class="co">## 4 rs4845618   1 154400015 1.149990e-05    77  0      IL6R            ABC      1</span>
-<span class="co">## 5 rs6687726   1 154400320 1.392576e-05    77  0      IL6R            ABC      1</span>
-<span class="co">## 6 rs2793374   1 205647508 1.950893e-04   106  0   SLC45A3            ABC      1</span>
-<span class="co">##    frac_pip     gene_pip</span>
-<span class="co">## 1 0.3333333 4.697451e-01</span>
-<span class="co">## 2 0.3333333 2.130613e-02</span>
-<span class="co">## 3 1.0000000 7.609475e-02</span>
-<span class="co">## 4 1.0000000 3.297559e-05</span>
-<span class="co">## 5 0.5000000 3.297559e-05</span>
-<span class="co">## 6 1.0000000 4.722192e-02</span></code></pre>
+<pre><code><span class="co">##         snp chr       pos a0 a1          pip     pval    zscore cs locus</span>
+<span class="co">## 1 rs6658920   1  22257739  C  T 8.747860e-03  6.40472  5.057971  0    15</span>
+<span class="co">## 2 rs6658920   1  22257739  C  T 8.747860e-03  6.40472  5.057971  0    15</span>
+<span class="co">## 3  rs213734   1  41575699  C  T 5.171119e-05  3.56067 -3.611940  0    25</span>
+<span class="co">## 4 rs4845618   1 154400015  G  T 1.149990e-05 10.16240 -6.537313  0    77</span>
+<span class="co">## 5 rs6687726   1 154400320  A  G 1.392576e-05 10.29390 -6.567164  0    77</span>
+<span class="co">## 6 rs2793374   1 205647508  T  C 1.950893e-04  4.70421  4.268657  0   106</span>
+<span class="co">##   gene_name       category weight  frac_pip     gene_pip</span>
+<span class="co">## 1     HSPG2 ABC,nearby20kb      1 0.3333333 4.697451e-01</span>
+<span class="co">## 2     USP48            ABC      1 0.3333333 2.130613e-02</span>
+<span class="co">## 3     SCMH1            ABC      1 1.0000000 7.609475e-02</span>
+<span class="co">## 4      IL6R            ABC      1 1.0000000 3.297559e-05</span>
+<span class="co">## 5      IL6R            ABC      1 0.5000000 3.297559e-05</span>
+<span class="co">## 6   SLC45A3            ABC      1 1.0000000 4.722192e-02</span></code></pre>
 <p>Extract gene-level result table</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gene.pip.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_gene_level_result.html">extract_gene_level_result</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, <span class="va">gene.annots</span><span class="op">)</span></code></pre></div>
