@@ -120,33 +120,37 @@ process_pcHiC <- function(pcHiC){
 
 #' @title Process ABC scores and save as a GRanges object
 #'
-#' @param ABC.df a data frame of ABC scores
-#' @param ABC.thresh Significance threshold of ABC scores (default = 0.015).
-#' @param full.element Logical; if TRUE, use full length of ABC elements.
-#' Otherwise, use the narrow regions provided in the ABC data.
+#' @param ABC a data frame of ABC scores from Nasser et al. Nature 2021 paper
+#' @param ABC.thresh Significance threshold of ABC scores
+#' (default = 0.015, as in Nasser et al. Nature 2021 paper).
+#' @param full.element Logical; if TRUE, use full length of ABC elements
+#' extracted from the "name" column. Otherwise, use the original (narrow)
+#' regions provided in the ABC scores data.
 #' @param flank  Flanking regions around ABC elements (default = 0).
 #' @import tidyverse
+#' @return a GRanges object with processed ABC scores, with genomic coordinates
+#' of the interacting regions and gene names (promoters).
 #' @export
-process_ABC <- function(ABC.df, ABC.thresh = 0.015, full.element = TRUE, flank = 0){
+process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0){
 
   if(full.element){
-    ABC.df <- ABC.df %>%
+    ABC <- ABC %>%
       tidyr::separate(name, c(NA, 'element_region'), sep = '\\|', remove = FALSE) %>%
       tidyr::separate(element_region, c(NA, 'element_location'), sep = '\\:') %>%
       tidyr::separate(element_location, c('element_start', 'element_end'), sep = '\\-') %>%
       dplyr::mutate(start = as.numeric(element_start), end = as.numeric(element_end))
   }
 
-  ABC.df <- ABC.df %>%
+  ABC <- ABC %>%
     dplyr::rename(gene_name = TargetGene) %>%
     dplyr::filter(ABC.Score >= ABC.thresh)
 
   if(flank > 0){
-    ABC.df$start <- ABC.df$start - flank
-    ABC.df$end <- ABC.df$end + flank
+    ABC$start <- ABC$start - flank
+    ABC$end <- ABC$end + flank
   }
 
-  ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC.df, keep.extra.columns = TRUE)
+  ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
   GenomeInfoDb::seqlevelsStyle(ABC.gr) <- 'UCSC'
 
   return(ABC.gr)
