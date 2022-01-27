@@ -89,8 +89,13 @@ process_finemapping_sumstat <- function(finemap,
 
 #' @title Process pcHiC data and save as a GRanges object
 #'
-#' @param pcHiC a data frame of pcHiC data
+#' @param pcHiC a data frame of pcHiC data, with columns named "Promoter" and
+#' "Interacting_fragment". Interacting_fragment should contains
+#' chr, start and end positions of the fragments interacting with promoters
+#' e.g. "chr.start.end" or "chr:start-end".
 #' @import tidyverse
+#' @return a GRanges object with processed pcHiC links, with genomic coordinates
+#' of the interacting regions and gene names (promoters).
 #' @export
 process_pcHiC <- function(pcHiC){
 
@@ -99,7 +104,7 @@ process_pcHiC <- function(pcHiC){
   pcHiC <- pcHiC %>% tidyr::separate_rows(Promoter) %>% dplyr::rename(gene_name = Promoter)
 
   pcHiC <- pcHiC %>%
-    tidyr::separate(Interacting_fragment, c('otherEnd_chr', 'otherEnd_start', 'otherEnd_end'), '\\.') %>%
+    tidyr::separate(Interacting_fragment, c('otherEnd_chr', 'otherEnd_start', 'otherEnd_end')) %>%
     dplyr::mutate(otherEnd_start = as.numeric(otherEnd_start), otherEnd_end = as.numeric(otherEnd_end))
 
   pcHiC.gr <- GenomicRanges::makeGRangesFromDataFrame(pcHiC,
