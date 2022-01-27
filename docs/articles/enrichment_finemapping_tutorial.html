@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quick tutorial for fine mapping • Mapgen</title>
+<title>Quick tutorial for fine-mapping • Mapgen</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Quick tutorial for fine mapping">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Quick tutorial for fine-mapping">
 <meta property="og:description" content="Mapgen">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -74,7 +74,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Quick tutorial for fine mapping</h1>
+      <h1 data-toc-skip>Quick tutorial for fine-mapping</h1>
                         <h4 data-toc-skip class="author">Alan Selewa, Kaixuan Luo</h4>
             
       
@@ -85,11 +85,11 @@
 
     
     
-<p>Welcome to this tutorial where we perform finemapping on a small GWAS dataset that is included with this package. Try to reproduce this analysis to ensure everything is installed properly.</p>
+<p>Welcome to this tutorial where we perform fine-mapping on a small GWAS dataset that is included with this package. Try to reproduce this analysis to ensure everything is installed properly.</p>
 <p>We begin by attaching our <code>bigsnpr</code> object. This is our reference panel of genotypes which we use to compute LD between SNPs. If you are in the He lab, you can just use the following chunk. Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) and use <code>bigsnpr::readBed()</code> to create the <code>.rds</code> file below.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu">bigsnpr</span><span class="fu">::</span><span class="fu"><a href="https://privefl.github.io/bigsnpr/reference/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></code></pre></div>
-<p>Here we show a quick run-through of the enrichment and finemapping procedure using a test summary statistics.</p>
+<p>Here we show a quick run-through of the enrichment and fine-mapping procedure using a test summary statistics.</p>
 <p>First we run <code><a href="../reference/RunCleaner.html">RunCleaner()</a></code>, which takes our summary statistics in either tab or comma delimited. It also takes a character vector of the 8 column names needed. The columns needed have to be given in the following order:</p>
 <ul>
 <li>chromosome (just the number, no “chr”, hg19!)<br>
@@ -123,7 +123,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bed_annotations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"test_bed_dir/"</span>, package<span class="op">=</span><span class="st">"Mapgen"</span><span class="op">)</span>
 <span class="va">torus.files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/PrepareTorusFiles.html">PrepareTorusFiles</a></span><span class="op">(</span><span class="va">gwas</span>, bed_annotations <span class="op">=</span> <span class="va">bed_annotations</span><span class="op">)</span></code></pre></div>
-<p>Now that the appropriate files have been generated (they are in .temp/), lets run TORUS. <code><a href="../reference/RunTorus.html">RunTorus()</a></code> returns two things: enrichment level of each annotation in log2 units, and the SNP-level priors for finemapping.</p>
+<p>Now that the appropriate files have been generated (they are in .temp/), lets run TORUS. <code><a href="../reference/RunTorus.html">RunTorus()</a></code> returns two things: enrichment level of each annotation in log2 units, and the SNP-level priors for fine-mapping.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunTorus.html">RunTorus</a></span><span class="op">(</span>torus_annot_file <span class="op">=</span> <span class="va">torus.files</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, torus_zscore_file <span class="op">=</span> <span class="va">torus.files</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p>TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. We run <code><a href="../reference/RunTorusFDR.html">RunTorusFDR()</a></code> to get the probability of each chunk containing a causal variant. We can filter our chunks with low probability, thus saving us on computational time!</p>
@@ -135,7 +135,7 @@
 <p>We see we have a new column called <code>torus_pip</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">susie.df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_pip'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
-<p>With this data frame, we can perform finemapping. We use <code><a href="../reference/RunFinemapping.html">RunFinemapping()</a></code> to get out results. This will be quite slow if chunks contain many SNPs( O(n^2) where n is # of SNPs).</p>
+<p>With this data frame, we can perform fine-mapping. We use <code><a href="../reference/RunFinemapping.html">RunFinemapping()</a></code> to get out results. This will be quite slow if chunks contain many SNPs( O(n^2) where n is # of SNPs).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">susie_finemap_L1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RunFinemapping.html">RunFinemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">susie.df</span>, bigSNP <span class="op">=</span> <span class="va">bigSNP</span><span class="op">)</span></code></pre></div>
 <p><code>susie_finemap_L1</code> is a list of SuSiE results, one for each chunk/LD block. Usually we are just interested in the SuSiE PIP, which gives the probability of a SNP being causal. We can annotate our cleaned summary statistics with this information using <code><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats()</a></code></p>
@@ -161,7 +161,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

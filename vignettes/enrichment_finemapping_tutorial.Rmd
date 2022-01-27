@@ -1,5 +1,5 @@
 ---
-title: "Quick tutorial for fine mapping"
+title: "Quick tutorial for fine-mapping"
 author: Alan Selewa, Kaixuan Luo
 output: html_document
 ---
@@ -8,7 +8,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
-Welcome to this tutorial where we perform finemapping on a small GWAS dataset that is included with this package. Try to reproduce this analysis to ensure everything is installed properly.
+Welcome to this tutorial where we perform fine-mapping on a small GWAS dataset that is included with this package. Try to reproduce this analysis to ensure everything is installed properly.
 
 We begin by attaching our `bigsnpr` object. This is our reference panel of genotypes which we use to compute LD between SNPs. If you are in the He lab, you can just use the following chunk. Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) and use `bigsnpr::readBed()` to create the `.rds` file below.
 
@@ -17,7 +17,7 @@ bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variabl
 ```
 
 
-Here we show a quick run-through of the enrichment and finemapping procedure using a test summary statistics.
+Here we show a quick run-through of the enrichment and fine-mapping procedure using a test summary statistics.
 
 First we run `RunCleaner()`, which takes our summary statistics in either tab or comma delimited. 
 It also takes a character vector of the 8 column names needed. 
@@ -64,7 +64,7 @@ torus.files <- PrepareTorusFiles(gwas, bed_annotations = bed_annotations)
 
 Now that the appropriate files have been generated (they are in .temp/), lets run TORUS. 
 `RunTorus()` returns two things: enrichment level of each annotation in log2 units, 
-and the SNP-level priors for finemapping.
+and the SNP-level priors for fine-mapping.
 
 ```{r}
 torus.result <- RunTorus(torus_annot_file = torus.files[[1]], torus_zscore_file = torus.files[[2]])
@@ -93,7 +93,7 @@ We see we have a new column called `torus_pip`
 susie.df[,c('chr','pos','beta','se','snp','pval','zscore','torus_pip')]
 ```
 
-With this data frame, we can perform finemapping. We use `RunFinemapping()` to get out results. 
+With this data frame, we can perform fine-mapping. We use `RunFinemapping()` to get out results. 
 This will be quite slow if chunks contain many SNPs( O(n^2) where n is # of SNPs). 
 
 ```{r}

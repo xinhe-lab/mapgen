@@ -70,10 +70,10 @@
   zscore <span class="op">=</span> <span class="st">"zscore"</span>,
   cs <span class="op">=</span> <span class="st">"cs"</span>,
   locus <span class="op">=</span> <span class="st">"locus"</span>,
-  cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snp"</span>, <span class="st">"chr"</span>, <span class="st">"pos"</span>, <span class="st">"pip"</span>, <span class="st">"pval"</span>, <span class="st">"zscore"</span>, <span class="st">"cs"</span>, <span class="st">"locus"</span><span class="op">)</span>,
   pip.thresh <span class="op">=</span> <span class="fl">1e-05</span>,
   filterCS <span class="op">=</span> <span class="cn">FALSE</span>,
-  maxCS <span class="op">=</span> <span class="fl">10</span>
+  maxCS <span class="op">=</span> <span class="fl">10</span>,
+  cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snp"</span>, <span class="st">"chr"</span>, <span class="st">"pos"</span>, <span class="st">"pip"</span>, <span class="st">"pval"</span>, <span class="st">"zscore"</span>, <span class="st">"cs"</span>, <span class="st">"locus"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -97,14 +97,14 @@
 <dd><p>Name of the CS column in the summary statistics data frame</p></dd>
 <dt>locus</dt>
 <dd><p>Name of the locus column in the summary statistics data frame</p></dd>
-<dt>cols.to.keep</dt>
-<dd><p>columns to keep in the returned data frame</p></dd>
 <dt>pip.thresh</dt>
 <dd><p>PIP threshold (default = 1e-5).</p></dd>
 <dt>filterCS</dt>
 <dd><p>If TRUE, limiting to SNPs within credible sets.</p></dd>
 <dt>maxCS</dt>
 <dd><p>Maximum number of credible sets (default = 10).</p></dd>
+<dt>cols.to.keep</dt>
+<dd><p>columns to keep in the returned data frame</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -123,7 +123,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer></div>

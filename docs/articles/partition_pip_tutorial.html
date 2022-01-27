@@ -85,9 +85,9 @@
 
     
     
-<div class="section level1">
-<h1 id="partitioning-pips-by-cell-types-and-annotation-categories">Partitioning PIPs by cell types and annotation categories<a class="anchor" aria-label="anchor" href="#partitioning-pips-by-cell-types-and-annotation-categories"></a>
-</h1>
+<div class="section level2">
+<h2 id="partitioning-pips-by-cell-types-and-annotation-categories">Partitioning PIPs by cell types and annotation categories<a class="anchor" aria-label="anchor" href="#partitioning-pips-by-cell-types-and-annotation-categories"></a>
+</h2>
 <p>Here, we show an example using data from our heart single-cell study. We assigned the likely cell type(s) through which the causal variants act in each locus using fine-mapped SNPs, and cell-type specific open chromatin regions (OCRs).</p>
 <p><strong>Required input data</strong>:</p>
 <ul>
@@ -99,15 +99,15 @@
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/GenomicRanges" class="external-link">GenomicRanges</a></span><span class="op">)</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Mapgen</span><span class="op">)</span></code></pre></div>
-<p>Load fine-mapping results.</p>
+<p>Load fine-mapping summary statistics.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">finemap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"../inst/extdata/aFib_Finemapped.tble.rds"</span><span class="op">)</span>
 <span class="va">finemap.gr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_finemapping_sumstat.html">process_finemapping_sumstat</a></span><span class="op">(</span><span class="va">finemap</span>, snp <span class="op">=</span> <span class="st">'snp'</span>, chr <span class="op">=</span> <span class="st">'chr'</span>, 
                                           pos <span class="op">=</span> <span class="st">'pos'</span>, pip <span class="op">=</span> <span class="st">'susie_pip'</span>, 
                                           pval <span class="op">=</span> <span class="st">'pval'</span>, zscore <span class="op">=</span> <span class="st">'zscore'</span>, 
                                           cs <span class="op">=</span> <span class="st">'CS'</span>, locus <span class="op">=</span> <span class="st">'locus'</span>,  
-                                          cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'snp'</span>,<span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'pip'</span>, <span class="st">'pval'</span>,<span class="st">'locus'</span><span class="op">)</span>,
-                                          pip.thresh <span class="op">=</span> <span class="fl">1e-5</span>, filterCS <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+                                          pip.thresh <span class="op">=</span> <span class="fl">1e-5</span>,
+                                          cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'snp'</span>,<span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'pip'</span>, <span class="st">'pval'</span>,<span class="st">'locus'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Process fine-mapping summary statistics ...</span>
 <span class="co">## Filter SNPs with PIP threshold of 1e-05</span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -215,7 +215,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

@@ -14,10 +14,10 @@ process_finemapping_sumstat(
   zscore = "zscore",
   cs = "cs",
   locus = "locus",
-  cols.to.keep = c("snp", "chr", "pos", "pip", "pval", "zscore", "cs", "locus"),
   pip.thresh = 1e-05,
   filterCS = FALSE,
-  maxCS = 10
+  maxCS = 10,
+  cols.to.keep = c("snp", "chr", "pos", "pip", "pval", "zscore", "cs", "locus")
 )
 }
 \arguments{
@@ -39,13 +39,13 @@ process_finemapping_sumstat(
 
 \item{locus}{Name of the locus column in the summary statistics data frame}
 
-\item{cols.to.keep}{columns to keep in the returned data frame}
-
 \item{pip.thresh}{PIP threshold (default = 1e-5).}
 
 \item{filterCS}{If TRUE, limiting to SNPs within credible sets.}
 
 \item{maxCS}{Maximum number of credible sets (default = 10).}
+
+\item{cols.to.keep}{columns to keep in the returned data frame}
 }
 \value{
 A GRanges object with cleaned and filtered fine-mapping summary statistics

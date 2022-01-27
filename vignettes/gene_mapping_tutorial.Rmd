@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 About our gene mapping procedure
 =================================
 
-Despite our fine mapping efforts, there remains considerable uncertainty of 
+Despite our fine-mapping efforts, there remains considerable uncertainty of 
 causal variants in most loci. Even if the causal variants are known, 
 assigning target genes can be difficult due to complex, 
 often long-range, regulatory relationships between enhancers and genes.
@@ -31,7 +31,7 @@ from a SNP can be viewed as the support the SNP provides to that gene.
 all candidate SNPs in the region. The resulting “gene PIP” approximates the 
 probability of a gene being causal (Methods). 
 
-4. Similar to variant-level fine mapping, 
+4. Similar to variant-level fine-mapping, 
 we also define a “credible gene set”, the set of genes that 
 capture the causal signal at a locus with high probability (80% in our study)
 
@@ -42,15 +42,15 @@ knitr::include_graphics("gene.mapping.diagram.png")
 Gene mapping tutorial
 =====================
 
-Our gene mapping procedure takes variant-level PIPs from genetic fine mapping 
+Our gene mapping procedure takes variant-level PIPs from genetic fine-mapping 
 (probability for a SNP being causal), together 
 with functional annotation data, and computes gene-level PIPs 
 (probability for a gene being causal).
 
 **Required input data**:
 
-* Genetic fine mapping result
-* Gene annotations (exons, introns, UTRs, etc.)
+* Genetic fine-mapping summary statistics.
+* Gene annotations (exons, introns, UTRs, etc.).
 * Functional annotation data, including: pcHiC links, ABC scores, 
 open chromatin regions (OCRs), enhancer regions (histone ChIP-seq peaks), etc. 
 
@@ -62,26 +62,22 @@ suppressMessages(library(GenomicRanges))
 library(Mapgen)
 ```
 
-Load fine-mapping results:
+Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.
 ```{r load-finemapping-res}
 finemap <- readRDS("../inst/extdata/aFib_Finemapped.tble.rds")
 finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
                                           pos = 'pos', pip = 'susie_pip', 
                                           pval = 'pval', zscore = 'zscore', 
                                           cs = 'CS', locus = 'locus',  
-                                          cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'),
-                                          pip.thresh = 1e-5, filterCS = FALSE)
+                                          pip.thresh = 1e-5, 
+                                          cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'))
 head(finemap.gr)
 ```
 
-Load genomic annotations (hg19). 
-
+Load genomic annotations (hg19) and gene information.
 ```{r load-annotations}
 genomic.annots <- readRDS('../inst/extdata/genomic.annots.hg19.gr.rds')
-```
 
-Gene information:
-```{r gene-annots}
 gene.annots <- genomic.annots$genes
 ```
 
@@ -92,7 +88,7 @@ or skip this if you do not have relevant PCHi-C data.
 genomic.annots$pcHiC <- readRDS('../inst/extdata/pcHiC.CM.gr.rds')
 ```
 
-Add ABC scores from heart ventricle (downloaded from Nasser *et al.* *Nature* 2021 paper). 
+Add ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
 You may skip this if you do not have relevant ABC scores.
 ```{r process_ABC}
 ABC <- data.table::fread('../inst/extdata/heart_ventricle-ENCODE_ABC.tsv.gz')
@@ -114,7 +110,6 @@ We define "enhancer loops" from Activity-By-Contact (ABC) scores and
 promoter-capture HiC data. 
 Considering the fact that enhancers close to promoters may actually 
 be missed by PCHi-C and similar assays, 
-because of the difficulty of calling such interactions due to high background level, 
 we also include OCRs that are within 20 kb of active promoter. 
 ```{r enhancer.nearby.promoter.20kb}
 genomic.annots$enhancer_nearby_promoter_20kb <- readRDS('../inst/extdata/enhancer.nearby.promoter.20kb.gr.rds')
@@ -136,9 +131,9 @@ Run gene mapping
 
 Run gene mapping using the following settings: 
 
-* enhancer_loop_method = "ABC.pcHiC.nearby20kb" (as explained above)
-* intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns)
-* distance weight = 50000 (50kb)
+* enhancer_loop_method = "ABC.pcHiC.nearby20kb" (as explained above).
+* intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).
+* distance weight = 50000 (50kb).
 
 SNP view table
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
@@ -150,7 +145,7 @@ snp.gene.pip.mat <- compute_gene_pip(finemap.gr,
 head(snp.gene.pip.mat)
 ```
 
-Gene view table
+Extract gene-level result table
 ```{r extract_gene_level_result}
 gene.pip.res <- extract_gene_level_result(snp.gene.pip.mat, gene.annots)
 

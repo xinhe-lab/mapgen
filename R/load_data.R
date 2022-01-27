@@ -26,10 +26,10 @@ process_finemapping_sumstat <- function(finemap,
                                         zscore = 'zscore',
                                         cs = 'cs',
                                         locus = 'locus',
-                                        cols.to.keep = c('snp','chr','pos', 'pip', 'pval', 'zscore','cs', 'locus'),
                                         pip.thresh = 1e-5,
                                         filterCS = FALSE,
-                                        maxCS = 10){
+                                        maxCS = 10,
+                                        cols.to.keep = c('snp','chr','pos', 'pip', 'pval', 'zscore','cs', 'locus')){
 
   cat('Process fine-mapping summary statistics ...\n')
   finemap <- finemap %>% dplyr::rename(snp = all_of(snp),
@@ -171,16 +171,3 @@ process_narrowpeaks <- function(peak.file){
   return(peaks.gr)
 }
 
-#' @title Filtering coaccessibility data
-#'
-#' @param coaccess data frame of coaccessibility
-#' @param cor.thresh Threshold for coaccessibility correlations (default: 0.7)
-#' @param dist.thresh Threshold for distance (default: 1e6)
-#' @return a data frame of filtered coaccessibility
-#' @export
-#'
-filter_coaccess <- function(coaccess, cor.thresh = 0.7, dist.thresh = 1e6){
-  coaccess$dist <- abs(round((start(coaccess)+end(coaccess))/2) - round((coaccess$promoter_start + coaccess$promoter_end)/2))
-  coaccess <- coaccess[coaccess$correlation > cor.thresh & coaccess$dist < dist.thresh,]
-  return(coaccess)
-}

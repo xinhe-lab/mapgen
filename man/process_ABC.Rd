@@ -4,17 +4,23 @@
 \alias{process_ABC}
 \title{Process ABC scores and save as a GRanges object}
 \usage{
-process_ABC(ABC.df, ABC.thresh = 0.015, full.element = TRUE, flank = 0)
+process_ABC(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0)
 }
 \arguments{
-\item{ABC.df}{a data frame of ABC scores}
+\item{ABC}{a data frame of ABC scores from Nasser et al. Nature 2021 paper}
 
-\item{ABC.thresh}{Significance threshold of ABC scores (default = 0.015).}
+\item{ABC.thresh}{Significance threshold of ABC scores
+(default = 0.015, as in Nasser et al. Nature 2021 paper).}
 
-\item{full.element}{Logical; if TRUE, use full length of ABC elements.
-Otherwise, use the narrow regions provided in the ABC data.}
+\item{full.element}{Logical; if TRUE, use full length of ABC elements
+extracted from the "name" column. Otherwise, use the original (narrow)
+regions provided in the ABC scores data.}
 
 \item{flank}{Flanking regions around ABC elements (default = 0).}
+}
+\value{
+a GRanges object with processed ABC scores, with genomic coordinates
+of the interacting regions and gene names (promoters).
 }
 \description{
 Process ABC scores and save as a GRanges object

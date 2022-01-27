@@ -7,7 +7,14 @@
 process_pcHiC(pcHiC)
 }
 \arguments{
-\item{pcHiC}{a data frame of pcHiC data}
+\item{pcHiC}{a data frame of pcHiC data, with columns named "Promoter" and
+"Interacting_fragment". Interacting_fragment should contains
+chr, start and end positions of the fragments interacting with promoters
+e.g. "chr.start.end" or "chr:start-end".}
+}
+\value{
+a GRanges object with processed pcHiC links, with genomic coordinates
+of the interacting regions and gene names (promoters).
 }
 \description{
 Process pcHiC data and save as a GRanges object

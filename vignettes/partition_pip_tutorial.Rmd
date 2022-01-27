@@ -28,15 +28,15 @@ suppressMessages(library(GenomicRanges))
 library(Mapgen)
 ```
 
-Load fine-mapping results.
+Load fine-mapping summary statistics.
 ```{r load-finemapping-res}
 finemap <- readRDS("../inst/extdata/aFib_Finemapped.tble.rds")
 finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
                                           pos = 'pos', pip = 'susie_pip', 
                                           pval = 'pval', zscore = 'zscore', 
                                           cs = 'CS', locus = 'locus',  
-                                          cols.to.keep = c('snp','chr','pos', 'pip', 'pval','locus'),
-                                          pip.thresh = 1e-5, filterCS = FALSE)
+                                          pip.thresh = 1e-5,
+                                          cols.to.keep = c('snp','chr','pos', 'pip', 'pval','locus'))
 head(finemap.gr)
 ```
 
