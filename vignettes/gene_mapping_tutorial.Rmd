@@ -133,28 +133,27 @@ Run gene mapping using the following settings:
 
 * enhancer.loop.method = "ABC.pcHiC.nearby20kb" (as explained above).
 * intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).
-* distance weight = 50000 (50kb).
+* c.dist = 50000 (distance weight parameter: 50kb).
 
-SNP view table
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
-snp.gene.pip.mat <- compute_gene_pip(finemap.gr, 
+gene.mapping.res <- compute_gene_pip(finemap.gr, 
                                      genomic.annots,
                                      enhancer.loop.method = "ABC.pcHiC.nearby20kb",
                                      intron.mode = FALSE,
                                      c.dist = 50000)
-head(snp.gene.pip.mat)
+head(gene.mapping.res)
 ```
 
 Extract gene-level result table
 ```{r extract_gene_level_result}
-gene.pip.res <- extract_gene_level_result(snp.gene.pip.mat, gene.annots)
+gene.pip.res <- extract_gene_level_result(gene.mapping.res, gene.annots)
 
 head(gene.pip.res)
 ```
 
-Obtain 80% credible gene set
+Obtain 80% credible gene sets
 ```{r gene-cs}
-gene.cs.df <- gene_cs(snp.gene.pip.mat, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
+gene.cs.df <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
 
 head(gene.cs.df)
 ```

@@ -199,15 +199,14 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 </h2>
 <p>Run gene mapping using the following settings:</p>
 <ul>
-<li>enhancer_loop_method = “ABC.pcHiC.nearby20kb” (as explained above).</li>
+<li>enhancer.loop.method = “ABC.pcHiC.nearby20kb” (as explained above).</li>
 <li>intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).</li>
-<li>distance weight = 50000 (50kb).</li>
+<li>c.dist = 50000 (distance weight parameter: 50kb).</li>
 </ul>
-<p>SNP view table</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">snp.gene.pip.mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_gene_pip.html">compute_gene_pip</a></span><span class="op">(</span><span class="va">finemap.gr</span>, 
+<code class="sourceCode R"><span class="va">gene.mapping.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_gene_pip.html">compute_gene_pip</a></span><span class="op">(</span><span class="va">finemap.gr</span>, 
                                      <span class="va">genomic.annots</span>,
-                                     enhancer_loop_method <span class="op">=</span> <span class="st">"ABC.pcHiC.nearby20kb"</span>,
+                                     enhancer.loop.method <span class="op">=</span> <span class="st">"ABC.pcHiC.nearby20kb"</span>,
                                      intron.mode <span class="op">=</span> <span class="cn">FALSE</span>,
                                      c.dist <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Map SNPs to genes and assign weights ...</span>
@@ -221,7 +220,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## Assign intergenic SNPs to genes by distance weighting ...</span>
 <span class="co">## Compute gene PIP ...</span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">snp.gene.pip.mat</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.mapping.res</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##         snp chr       pos          pip locus cs gene_name       category weight</span>
 <span class="co">## 1 rs6658920   1  22257739 8.747860e-03    15  0     HSPG2 ABC,nearby20kb      1</span>
 <span class="co">## 2 rs6658920   1  22257739 8.747860e-03    15  0     USP48            ABC      1</span>
@@ -238,7 +237,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## 6 1.0000000 4.722192e-02</span></code></pre>
 <p>Extract gene-level result table</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">gene.pip.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_gene_level_result.html">extract_gene_level_result</a></span><span class="op">(</span><span class="va">snp.gene.pip.mat</span>, <span class="va">gene.annots</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">gene.pip.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_gene_level_result.html">extract_gene_level_result</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, <span class="va">gene.annots</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## Extract gene level result ...</span></code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.pip.res</span><span class="op">)</span></code></pre></div>
@@ -249,9 +248,9 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## 4 chr1 154377669      IL6R 3.297559e-05</span>
 <span class="co">## 5 chr1 205649587   SLC45A3 4.722192e-02</span>
 <span class="co">## 6 chr1 205719404    NUCKS1 6.782052e-01</span></code></pre>
-<p>Obtain 80% credible gene set</p>
+<p>Obtain 80% credible gene sets</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">gene.cs.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gene_cs.html">gene_cs</a></span><span class="op">(</span><span class="va">snp.gene.pip.mat</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">gene.cs.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gene_cs.html">gene_cs</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.cs.df</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span>

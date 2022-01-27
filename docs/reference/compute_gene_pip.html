@@ -63,7 +63,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">compute_gene_pip</span><span class="op">(</span>
   <span class="va">finemap.gr</span>,
   <span class="va">genomic.annots</span>,
-  enhancer_loop_method <span class="op">=</span> <span class="st">"ABC.pcHiC.nearby20kb"</span>,
+  enhancer.loop.method <span class="op">=</span> <span class="st">"ABC.pcHiC.nearby20kb"</span>,
   intron.mode <span class="op">=</span> <span class="cn">FALSE</span>,
   c.dist <span class="op">=</span> <span class="fl">50000</span>,
   cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snp"</span>, <span class="st">"chr"</span>, <span class="st">"pos"</span>, <span class="st">"pip"</span>, <span class="st">"locus"</span>, <span class="st">"cs"</span>, <span class="st">"gene_name"</span>, <span class="st">"category"</span>,
@@ -77,7 +77,7 @@
 <dd><p>a GRanges object of fine-mapping result.</p></dd>
 <dt>genomic.annots</dt>
 <dd><p>A list of GRanges objects of genomic annotations.</p></dd>
-<dt>enhancer_loop_method</dt>
+<dt>enhancer.loop.method</dt>
 <dd><p>Enhancer loop method</p></dd>
 <dt>intron.mode</dt>
 <dd><p>Logical. If TRUE, assign intronic SNPs to genes containing the introns.</p></dd>
