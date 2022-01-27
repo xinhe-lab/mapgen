@@ -159,10 +159,11 @@ process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0
 #' @title Load ENCODE narrow peak data and convert to a GRanges object
 #'
 #' @param peak.file ENCODE narrow peak file
+#' @return a GRanges object for the peaks
 #' @export
 #'
-load_narrowpeaks <- function(peak.file){
-  if( !file.exists(ABC.file) ){stop('ABC file is not availble!')}
+process_narrowpeaks <- function(peak.file){
+  if( !file.exists(peak.file) ){stop('narrowpeak file is not availble!')}
   peaks <- data.table::fread(peak.file)
   colnames(peaks) <- c('chr', 'start', 'end', 'name', 'score', 'strand', 'signalValue', 'pValue', 'qValue', 'peak')
   peaks.gr <- GenomicRanges::makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
