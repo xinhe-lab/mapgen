@@ -7,7 +7,7 @@
 compute_gene_pip(
   finemap.gr,
   genomic.annots,
-  enhancer_loop_method = "ABC.pcHiC.nearby20kb",
+  enhancer.loop.method = "ABC.pcHiC.nearby20kb",
   intron.mode = FALSE,
   c.dist = 50000,
   cols.to.keep = c("snp", "chr", "pos", "pip", "locus", "cs", "gene_name", "category",
@@ -19,7 +19,7 @@ compute_gene_pip(
 
 \item{genomic.annots}{A list of GRanges objects of genomic annotations.}
 
-\item{enhancer_loop_method}{Enhancer loop method}
+\item{enhancer.loop.method}{Enhancer loop method}
 
 \item{intron.mode}{Logical. If TRUE, assign intronic SNPs to genes containing the introns.}
 

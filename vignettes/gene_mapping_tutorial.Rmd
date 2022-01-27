@@ -131,7 +131,7 @@ Run gene mapping
 
 Run gene mapping using the following settings: 
 
-* enhancer_loop_method = "ABC.pcHiC.nearby20kb" (as explained above).
+* enhancer.loop.method = "ABC.pcHiC.nearby20kb" (as explained above).
 * intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).
 * distance weight = 50000 (50kb).
 
@@ -139,7 +139,7 @@ SNP view table
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
 snp.gene.pip.mat <- compute_gene_pip(finemap.gr, 
                                      genomic.annots,
-                                     enhancer_loop_method = "ABC.pcHiC.nearby20kb",
+                                     enhancer.loop.method = "ABC.pcHiC.nearby20kb",
                                      intron.mode = FALSE,
                                      c.dist = 50000)
 head(snp.gene.pip.mat)

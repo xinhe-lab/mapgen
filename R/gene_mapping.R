@@ -3,7 +3,7 @@
 #'
 #' @param finemap.gr a GRanges object of fine-mapping result.
 #' @param genomic.annots A list of GRanges objects of genomic annotations.
-#' @param enhancer_loop_method Enhancer loop method
+#' @param enhancer.loop.method Enhancer loop method
 #' @param intron.mode Logical. If TRUE, assign intronic SNPs to genes containing the introns.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 50000 (50kb).
 #' @param cols.to.keep columns to keep in the SNP gene weights
@@ -13,7 +13,7 @@
 #' @export
 compute_gene_pip <- function(finemap.gr,
                              genomic.annots,
-                             enhancer_loop_method = 'ABC.pcHiC.nearby20kb',
+                             enhancer.loop.method = 'ABC.pcHiC.nearby20kb',
                              intron.mode = FALSE,
                              c.dist = 50000,
                              cols.to.keep = c('snp','chr','pos', 'pip', 'locus', 'cs','gene_name', 'category', 'weight', 'frac_pip', 'gene_pip')) {
@@ -31,23 +31,23 @@ compute_gene_pip <- function(finemap.gr,
 
   ## Enhancer loops category
   enhancer_loops <- list()
-  if(grepl('ABC', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$ABC)){
+  if(grepl('ABC', enhancer.loop.method, ignore.case = T) && !is.null(genomic.annots$ABC)){
     cat('Include ABC scores in enhancer loops ... \n')
     enhancer_loops$ABC <- genomic.annots$ABC[, c('gene_name')]
   }
-  if(grepl('pcHiC', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$pcHiC)){
+  if(grepl('pcHiC', enhancer.loop.method, ignore.case = T) && !is.null(genomic.annots$pcHiC)){
     cat('Include pcHiC in enhancer loops ... \n')
     enhancer_loops$pcHiC <- genomic.annots$pcHiC[, c('gene_name')]
   }
-  if(grepl('coacc', enhancer_loop_method, ignore.case = T) && !is.null(genomic.annots$coacc)){
+  if(grepl('coacc', enhancer.loop.method, ignore.case = T) && !is.null(genomic.annots$coacc)){
     cat('Include coacc in enhancer loops ... \n')
     enhancer_loops$coacc <- genomic.annots$coacc[, c('gene_name')]
   }
-  if(grepl('nearby', enhancer_loop_method, ignore.case = T)){
-    if(grepl('nearby20kb', enhancer_loop_method, ignore.case = T)){
+  if(grepl('nearby', enhancer.loop.method, ignore.case = T)){
+    if(grepl('nearby20kb', enhancer.loop.method, ignore.case = T)){
       cat('Include enhancers with nearby promoters (20kb) in enhancer loops ... \n')
       enhancer_loops$nearby20kb <- genomic.annots$enhancer_nearby_promoter_20kb[, c('gene_name')]
-    }else if(grepl('nearby10kb', enhancer_loop_method, ignore.case = T)){
+    }else if(grepl('nearby10kb', enhancer.loop.method, ignore.case = T)){
       cat('Include enhancers with nearby promoters (10kb) in enhancer loops ... \n')
       enhancer_loops$nearby10kb <- genomic.annots$enhancer_nearby_promoter_10kb[, c('gene_name')]
     }
