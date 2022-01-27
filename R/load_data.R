@@ -174,9 +174,9 @@ process_narrowpeaks <- function(peak.file){
 #' @title Filtering coaccessibility data
 #'
 #' @param coaccess data frame of coaccessibility
-#' @param cor.thresh Threshold for coaccessibility
-#' @param dist.thresh Threshold for distance
-#'
+#' @param cor.thresh Threshold for coaccessibility correlations (default: 0.7)
+#' @param dist.thresh Threshold for distance (default: 1e6)
+#' @return a data frame of filtered coaccessibility
 #' @export
 #'
 filter_coaccess <- function(coaccess, cor.thresh = 0.7, dist.thresh = 1e6){
