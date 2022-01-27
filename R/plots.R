@@ -96,7 +96,7 @@ gene_manhattan_plot <- function(gene.pip.res,
       panel.grid.minor.x = element_blank()
     ) +
     xlab("Chromosome") +
-    ylab("PIP")
+    ylab("Gene PIP")
 
   return(p)
 
