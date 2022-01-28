@@ -106,11 +106,13 @@ genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$prom
 
 Define enhancer loops: 
 
-We define "enhancer loops" from Activity-By-Contact (ABC) scores and 
-promoter-capture HiC data. 
-Considering the fact that enhancers close to promoters may actually 
-be missed by PCHi-C and similar assays, 
-we also include OCRs that are within 20 kb of active promoter. 
+We used "enhancer loops" from Activity-By-Contact (ABC) scores and 
+promoter-capture HiC data (PC-HiC). 
+
+Considering the fact that Hi-C and PC-HiC may miss contacts between close regions
+due to technical reasons, 
+we also consider the OCRs within 20 kb of active promoters as “enhancer loops”. 
+
 ```{r enhancer.nearby.promoter.20kb}
 genomic.annots$enhancer_nearby_promoter_20kb <- readRDS('../inst/extdata/enhancer.nearby.promoter.20kb.gr.rds')
 ```

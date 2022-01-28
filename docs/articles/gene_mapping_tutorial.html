@@ -170,7 +170,8 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 
 <span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span> <span class="op">&lt;-</span> <span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/findOverlaps-methods.html" class="external-link">subsetByOverlaps</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">promoters</span>, <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span>, minoverlap <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
 <p>Define enhancer loops:</p>
-<p>We define “enhancer loops” from Activity-By-Contact (ABC) scores and promoter-capture HiC data. Considering the fact that enhancers close to promoters may actually be missed by PCHi-C and similar assays, we also include OCRs that are within 20 kb of active promoter.</p>
+<p>We used “enhancer loops” from Activity-By-Contact (ABC) scores and promoter-capture HiC data (PC-HiC).</p>
+<p>Considering the fact that Hi-C and PC-HiC may miss contacts between close regions due to technical reasons, we also consider the OCRs within 20 kb of active promoters as “enhancer loops”.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_nearby_promoter_20kb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/enhancer.nearby.promoter.20kb.gr.rds'</span><span class="op">)</span></code></pre></div>
 <p>Define enhancer regions by OCRs (you may skip this if you do not have relevant enhancer data)</p>
@@ -216,7 +217,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## Assign SNPs in exons and active promoters ...</span>
 <span class="co">## Assign SNPs in enhancers to linked genes through enhancer loops ...</span>
 <span class="co">## Assign SNPs in enhancer regions to genes by distance weighting ...</span>
-<span class="co">## Assign SNPs in UTRs... </span>
+<span class="co">## Assign SNPs in UTRs (but not enhancer regions) to the UTR genes ... </span>
 <span class="co">## Assign intergenic SNPs to genes by distance weighting ...</span>
 <span class="co">## Compute gene PIP ...</span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">

@@ -104,9 +104,9 @@ compute_gene_pip <- function(finemap.gr,
 
   ## Hierarchy level 3: assign SNPs in introns/UTRs (excluding enhancer regions) to genes containing the introns/UTRs.
   if(!is.null(intron_utrs)){
-    cat('Assign SNPs in UTRs (excluding enhancer regions) to the UTR genes ... \n')
+    cat('Assign SNPs in UTRs (but not enhancer regions) to the UTR genes ... \n')
     if(intron.mode){
-      cat('Assign SNPs in introns (excluding enhancer regions) to genes containing the introns ...\n')
+      cat('Assign SNPs in introns (but not in enhancer regions) to genes containing the introns ...\n')
     }
     intron_utr_overlap <- lapply(intron_utrs, function(x){plyranges::join_overlap_inner(x, finemap.gr)})
     snps.in <- unique(unlist(GenomicRanges::GRangesList(intron_utr_overlap))$snp)
