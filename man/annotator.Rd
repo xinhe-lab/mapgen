@@ -2,13 +2,15 @@
 % Please edit documentation in R/utils.R
 \name{annotator}
 \alias{annotator}
-\title{Each annotation gets assigned SNPs based on overlap}
+\title{Assign SNPs with annotations based on overlap}
 \usage{
 annotator(gwas, annotations)
 }
 \arguments{
-\item{annotations}{}
+\item{gwas}{a data frame or tibble of GWAS summary statistics}
+
+\item{annotations}{annotation BED files}
 }
 \description{
-Each annotation gets assigned SNPs based on overlap
+Assign SNPs with annotations based on overlap
 }

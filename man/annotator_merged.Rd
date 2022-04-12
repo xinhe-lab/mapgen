@@ -7,7 +7,9 @@
 annotator_merged(gwas, annotations)
 }
 \arguments{
-\item{annotations}{}
+\item{gwas}{a data frame or tibble of GWAS summary statistics}
+
+\item{annotations}{annotation BED files}
 }
 \description{
 Annotations for causal SNPs (apply these after fine-mapping!)
