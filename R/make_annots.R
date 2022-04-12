@@ -4,6 +4,8 @@
 #' @param gtf.file GTF file name
 #' @param save If TRUE, save genomic annotations as a RDS file
 #' @param outname Output file name
+#' @importFrom magrittr %>%
+#' @importFrom tibble as_tibble
 #' @export
 #'
 make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
@@ -55,7 +57,9 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
   )
 
   if(save){
-    dir.create(dirname(outname), showWarnings = F, recursive = T)
+    if(!dir.exists(dirname(outname)))
+      dir.create(dirname(outname), showWarnings = FALSE, recursive = TRUE)
+
     saveRDS(annots, outname)
   }
 

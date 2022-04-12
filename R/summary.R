@@ -3,8 +3,7 @@
 #'
 #' @param genemapping_res data frame of gene mapping result
 #' @param gene.pip.thresh Filter genes with gene PIP cutoff (default: 0.1)
-#' @import tidyverse
-#'
+#' @importFrom magrittr %>%
 #' @export
 #'
 gene_view_summary <- function(genemapping_res, gene.pip.thresh = 0.1){
@@ -24,8 +23,8 @@ gene_view_summary <- function(genemapping_res, gene.pip.thresh = 0.1){
 #' @param gene.annots data frame of gene annotations
 #' @param finemap.gr GRange object of fine mapping result
 #' @param fractional.PIP.thresh Filter SNPs with fractional PIP cutoff (default: 0.02)
-#' @import tidyverse
-#'
+#' @importFrom magrittr %>%
+#' @importFrom tibble as_tibble
 #' @export
 #'
 snp_view_summary <- function(genemapping_res, gene.annots, finemap.gr, fractional.PIP.thresh = 0.02){
@@ -69,8 +68,8 @@ snp_view_summary <- function(genemapping_res, gene.annots, finemap.gr, fractiona
 #'
 #' @param genemapping_res data frame of gene mapping result
 #' @param finemap.gr GRange object of fine mapping result
-#' @import tidyverse
-#'
+#' @importFrom magrittr %>%
+#' @importFrom tibble as_tibble
 #' @export
 #'
 LDblock_view_summary <- function(genemapping_res, finemap.gr){

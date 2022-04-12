@@ -14,7 +14,7 @@
 #' @param pip.thresh PIP threshold (default = 1e-5).
 #' @param filterCS If TRUE, limiting to SNPs within credible sets.
 #' @param maxCS Maximum number of credible sets (default = 10).
-#' @import tidyverse
+#' @importFrom magrittr %>%
 #' @return A GRanges object with cleaned and filtered fine-mapping summary statistics
 #' @export
 process_finemapping_sumstat <- function(finemap,
@@ -93,7 +93,7 @@ process_finemapping_sumstat <- function(finemap,
 #' "Interacting_fragment". Interacting_fragment should contains
 #' chr, start and end positions of the fragments interacting with promoters
 #' e.g. "chr.start.end" or "chr:start-end".
-#' @import tidyverse
+#' @importFrom magrittr %>%
 #' @return a GRanges object with processed pcHiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
@@ -127,7 +127,7 @@ process_pcHiC <- function(pcHiC){
 #' extracted from the "name" column. Otherwise, use the original (narrow)
 #' regions provided in the ABC scores data.
 #' @param flank  Flanking regions around ABC elements (default = 0).
-#' @import tidyverse
+#' @importFrom magrittr %>%
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export

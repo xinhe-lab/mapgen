@@ -8,7 +8,8 @@ make_ranges <- function(seqname, start, end){
 #' @title Assigns each SNP to one ld-block
 #' @param cleaned.sumstats
 #' @param ld
-#'
+#' @importFrom magrittr %>%
+#' @importFrom tibble as_tibble
 #' @export
 assign.locus.snp <- function(cleaned.sumstats, ld){
 
@@ -30,9 +31,9 @@ assign.locus.snp <- function(cleaned.sumstats, ld){
 }
 
 
-#' @title Each annotation gets assigned SNPs based on overlap
-#' @param gwas
-#' @param annotations
+#' @title Assign SNPs with annotations based on overlap
+#' @param gwas a data frame or tibble of GWAS summary statistics
+#' @param annotations annotation BED files
 #'
 #' @export
 annotator <- function(gwas, annotations){
@@ -53,9 +54,9 @@ annotator <- function(gwas, annotations){
 }
 
 #' @title Annotations for causal SNPs (apply these after fine-mapping!)
-#' @param gwas
-#' @param annotations
-#'
+#' @param gwas a data frame or tibble of GWAS summary statistics
+#' @param annotations annotation BED files
+#' @importFrom magrittr %>%
 #' @export
 annotator_merged <- function(gwas, annotations){
 
@@ -80,9 +81,12 @@ annotator_merged <- function(gwas, annotations){
   return(gwas)
 }
 
-#' @param gwas  gwas summary statistics
+#' @title merge.bigsnp.gwas
+#' @param gwas  GWAS summary statistics
 #' @param bigSNP  bigSNP object
-#'
+#' @importFrom magrittr %>%
+#' @importFrom tibble as_tibble
+#' @importFrom bigsnpr snp_match
 #' @export
 merge.bigsnp.gwas <- function(gwas, bigSNP){
 

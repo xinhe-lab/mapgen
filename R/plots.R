@@ -16,7 +16,7 @@
 #' @param max.overlaps Exclude text labels that overlap too many things (default: 10).
 #' @import ggplot2
 #' @import ggrepel
-#' @import tidyverse
+#' @importFrom magrittr %>%
 #' @export
 #'
 gene_manhattan_plot <- function(gene.pip.res,

@@ -43,11 +43,11 @@ partition_pip_regions <- function(finemap.gr, annots.list){
     sum.pip.mat[i,] <- as.numeric(sum.pip.categories)
   }
 
-  sum.pips <- as.data.frame(sum.pip.mat[, grep("Sum.PIPs", colnames(sum.pip.mat), value = TRUE)])
-  names(sum.pips) <- gsub(" Sum.PIPs","", names(sum.pips))
+  sum.pips <- as.data.frame(sum.pip.mat[, grep('Sum.PIPs', colnames(sum.pip.mat), value = TRUE)])
+  names(sum.pips) <- gsub(' Sum.PIPs','', names(sum.pips))
 
-  n.snps <- as.data.frame(sum.pip.mat[, grep("N.SNPs", colnames(sum.pip.mat), value = TRUE)])
-  names(n.snps) <- gsub(" N.SNPs","", names(n.snps))
+  n.snps <- as.data.frame(sum.pip.mat[, grep('N.SNPs', colnames(sum.pip.mat), value = TRUE)])
+  names(n.snps) <- gsub(' N.SNPs','', names(n.snps))
 
   return(list(sum.pips = sum.pips, n.snps = n.snps))
 }

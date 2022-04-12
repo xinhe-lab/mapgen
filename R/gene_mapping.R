@@ -7,8 +7,8 @@
 #' @param intron.mode Logical. If TRUE, assign intronic SNPs to genes containing the introns.
 #' @param c.dist A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 50000 (50kb).
 #' @param cols.to.keep columns to keep in the SNP gene weights
-#' @import GenomicRanges
-#' @import tidyverse
+#' @importFrom magrittr %>%
+#' @importFrom tibble as_tibble
 #' @return A data frame of SNP-level view of gene mapping result
 #' @export
 compute_gene_pip <- function(finemap.gr,
