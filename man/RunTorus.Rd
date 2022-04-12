@@ -2,17 +2,39 @@
 % Please edit documentation in R/torus.R
 \name{RunTorus}
 \alias{RunTorus}
-\title{RunTorus}
+\title{Run enrichment analysis and compute SNP-level priors using Torus}
 \usage{
 RunTorus(
   torus_annot_file,
   torus_zscore_file,
-  TORUS = system.file("torus", package = "finemappeR")
+  TORUS = "torus",
+  dump_prior = TRUE
 )
 }
+\arguments{
+\item{torus_annot_file}{SNP annotation file.
+The SNP annotation file contains SNP-level genomic annotations used by
+TORUS analysis. The annotation file uses a header to specify the number
+and the nature (categorical or continuous) of the annotations.
+The first column with the header "SNP" represents the SNP name.
+The following columns represent specific annotations.
+For categorical/discrete annotations, the header should have a suffix "_d";
+whereas for continuous annotations, the header should ends with "_c".}
+
+\item{torus_zscore_file}{Summary statistics from single SNP association
+analysis. Should be compressed in gzip format.}
+
+\item{TORUS}{Path to Torus executable.}
+
+\item{dump_prior}{Logical. If TURE, compute SNP-level priors using
+the estimated enrichment estimates for each locus.}
+}
 \value{
-list of enrichment results and PIP of each SNP (both tibbles)
+a list of enrichment results and SNP-level prior probabilities.
+Enrichment result contains the point estimate (MLE) of the log odds ratio,
+as well as 95\% confidence interval for the corresponding point estimate.
 }
 \description{
-executes Torus
+Perform enrichment analysis using Torus and then
+compute SNP-level priors using the enrichment estimates.
 }

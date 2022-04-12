@@ -2,17 +2,29 @@
 % Please edit documentation in R/torus.R
 \name{RunTorusFDR}
 \alias{RunTorusFDR}
-\title{RunTorusFDR}
+\title{Perform Bayesian FDR control using Torus}
 \usage{
-RunTorusFDR(
-  torus_annot_file,
-  torus_zscore_file,
-  TORUS = system.file("torus", package = "finemappeR")
-)
+RunTorusFDR(torus_annot_file, torus_zscore_file, TORUS = "torus")
+}
+\arguments{
+\item{torus_annot_file}{SNP annotation file.
+The SNP annotation file contains SNP-level genomic annotations used by
+TORUS analysis. The annotation file uses a header to specify the number
+and the nature (categorical or continuous) of the annotations.
+The first column with the header "SNP" represents the SNP name.
+The following columns represent specific annotations.
+For categorical/discrete annotations, the header should have a suffix "_d";
+whereas for continuous annotations, the header should ends with "_c".}
+
+\item{torus_zscore_file}{Summary statistics from single SNP association
+analysis. Should be compressed in gzip format.}
+
+\item{TORUS}{Path to Torus executable.}
 }
 \value{
-tibble containing fdr of each LD block/chunk
+a tibble containing FDR of each LD block/chunk
 }
 \description{
-Runs Torus in FDR mode to estimate the FDR of each chunk containing a causal variant
+Runs Torus in FDR mode to estimate the FDR of
+each chunk containing a causal variant.
 }

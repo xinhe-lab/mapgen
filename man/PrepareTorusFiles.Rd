@@ -2,19 +2,33 @@
 % Please edit documentation in R/torus.R
 \name{PrepareTorusFiles}
 \alias{PrepareTorusFiles}
-\title{PrepareTorusFiles}
+\title{Prepare Torus input files}
 \usage{
-PrepareTorusFiles(cleaned_sumstats, bed_annotations)
+PrepareTorusFiles(
+  cleaned_sumstats,
+  bed_annotations,
+  torus_annot_file = "torus_annotations.txt.gz",
+  torus_zscore_file = "torus_zscore.txt.gz"
+)
 }
 \arguments{
 \item{cleaned_sumstats}{cleaned summary statistics from RunCleaner or other}
 
-\item{bed_annotation}{a directory containing annotations in bed format. The bed file must have three columns: chr, start, end. Chromosomes should be numeric (no "chr")
-and should be in hg19/b37 format. You will get wrong results if you use hg38 or other (reference panel is hg19).}
+\item{torus_annot_file}{Annotation file name.}
+
+\item{torus_zscore_file}{z-score file name.}
+
+\item{bed_annotation}{a directory containing annotations in bed format.
+The bed file must have three columns: chr, start, end.
+Chromosomes should be numeric (no "chr")
+and should be in hg19/b37 format.
+You will get wrong results if you use hg38 or other
+(The reference panel we used is in hg19).}
 }
 \value{
-location to two files: torus zscore file and annotation file
+a list containing paths to the z-score file and annotation file.
 }
 \description{
-Prepares two files necessary for running torus: z-score file and annotations file
+Prepares two files necessary for running Torus:
+z-score file and annotation file.
 }
