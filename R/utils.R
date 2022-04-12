@@ -6,8 +6,8 @@ make_ranges <- function(seqname, start, end){
 
 
 #' @title Assigns each SNP to one ld-block
-#' @param cleaned.sumstats
-#' @param ld
+#' @param cleaned.sumstats Cleaned summary statistics
+#' @param ld LD blocks
 #' @importFrom magrittr %>%
 #' @importFrom tibble as_tibble
 #' @export

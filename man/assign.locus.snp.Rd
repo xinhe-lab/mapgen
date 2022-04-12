@@ -6,6 +6,11 @@
 \usage{
 assign.locus.snp(cleaned.sumstats, ld)
 }
+\arguments{
+\item{cleaned.sumstats}{Cleaned summary statistics}
+
+\item{ld}{LD blocks}
+}
 \description{
 Assigns each SNP to one ld-block
 }
