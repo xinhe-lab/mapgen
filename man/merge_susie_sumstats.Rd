@@ -2,7 +2,7 @@
 % Please edit documentation in R/susie.R
 \name{merge_susie_sumstats}
 \alias{merge_susie_sumstats}
-\title{merges susie results with original summary statistics data frame}
+\title{merges SuSiE results with original summary statistics data frame}
 \usage{
 merge_susie_sumstats(susie_results, sumstats)
 }
@@ -12,6 +12,6 @@ merge_susie_sumstats(susie_results, sumstats)
 \item{sumstats}{data frame containing summary statistics}
 }
 \description{
-merges susie results with original summary statistics data frame
-Note. ASSUMES L = 1! ONLY ONE CREDIBLE SET PER LOCUS!
+merges SuSiE results with original summary statistics data frame
+This function assumes L = 1. ONLY ONE CREDIBLE SET PER LOCUS!
 }

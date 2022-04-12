@@ -22,7 +22,8 @@ Imports:
     bigsnpr,
     ggplot2,
     cowplot,
-    ggrepel
+    ggrepel,
+    processx
 Remotes:
     stephenslab/susieR,
     bioc::3.3/plyranges,

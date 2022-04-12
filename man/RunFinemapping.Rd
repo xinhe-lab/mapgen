@@ -4,14 +4,14 @@
 \alias{RunFinemapping}
 \title{RunFinemapping}
 \usage{
-RunFinemapping(sumstats, bigSNP, priortype = "torus")
+RunFinemapping(sumstats, bigSNP, priortype = c("torus", "uniform"))
 }
 \arguments{
 \item{sumstats}{a tibble or data frame containing raw summary statistics; must have header!}
 
 \item{bigSNP}{a bigsnpr object attached via bigsnpr::snp_attach()}
 
-\item{priortype}{string; one of "torus" or "uniform"}
+\item{priortype}{prior type: "torus" or "uniform".}
 }
 \value{
 list of finemapping results; one per LD block

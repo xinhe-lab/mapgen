@@ -15,7 +15,8 @@ run.susie(sumstats, bigSNP, ldchunk, L, prior)
 
 \item{L}{Number of causal signals}
 
-\item{prior}{Logical, if TRUE, use torus_pip in sumstats as prior}
+\item{prior}{Logical, if TRUE, use the \code{torus_pip} column
+in \code{sumstats} as prior}
 }
 \description{
 run SUSIE
