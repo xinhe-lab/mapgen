@@ -186,7 +186,7 @@ compute_gene_pip <- function(finemap.gr,
 #'
 #' @param snp.gene.pip.mat A data frame of SNP-level gene mapping result
 #' @param gene.annots a GRanges object of gene annotations
-#' @import tidyverse
+#' @importFrom magrittr %>%
 #' @return a data frame of gene-level view of gene mapping result
 #' @export
 extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
@@ -216,7 +216,7 @@ extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
 #' @param by.locus Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
 #' If FALSE, get credible gene sets based on gene PIP.
 #' @param gene.cs.percent.thresh percentage threshold for credible gene sets
-#' @import tidyverse
+#' @importFrom magrittr %>%
 #' @return a data frame of credible gene set result. Columns:
 #' gene_cs: credible gene sets,
 #' gene_cs_locus_pip: credible gene sets and corresponding locus-level gene PIPs.
@@ -322,7 +322,7 @@ gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000){
 #' @param genes.gr a GRanges object of gene information
 #' @param dist.to Find nearest genes by distance to gene body or TSS.
 #' @param cols.to.keep columns to keep in the returned GRanges object
-#' @import tidyverse
+#' @importFrom magrittr %>%
 #' @export
 #' @return a data frame with SNP location and nearest gene.
 #'
