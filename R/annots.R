@@ -75,11 +75,7 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
   return(annots)
 }
 
-#' @title Substract all exon coordinates from all gene coordinates to get all intron coordinates
-#'
-#' @param genes.gr GRange of gene coorindates
-#' @param exons.gr GRange of exon coorindates
-#'
+# Subtracts all exon coordinates from all gene coordinates to get all intron coordinates
 substract_exons <- function( genes.gr, exons.gr ) {
   # adapted from bosberg on Biostars. (https://www.biostars.org/p/489350/)
   # Subtract GRange object gr2 from gr1, but unlike setdiff, preserve individual ranges in gr1
