@@ -28,7 +28,8 @@ sum_pip_regions <- function(finemap.locus.gr, regions.gr, type = c('inside', 'ou
 #'
 #' @param finemap.gr a GRanges object of fine mapping summary statistics
 #' @param annots.list a list of GRanges objects of functional annotations
-#' @return a list with a data frame with the sum of PIPs and a data frame with the number of SNPs included for each annotation category.
+#' @return a list with a data frame with the sum of PIPs and
+#' a data frame with the number of SNPs included for each annotation category.
 #' @export
 #'
 partition_pip_regions <- function(finemap.gr, annots.list){
