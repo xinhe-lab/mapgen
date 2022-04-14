@@ -17,19 +17,19 @@ Imports:
     tidyr,
     tibble,
     data.table,
-    GenomicRanges,
     vroom,
     bigsnpr,
     ggplot2,
     ggrepel,
     ggrastr,
     cowplot,
-    processx,
-    bedtoolsr
+    processx
 Remotes:
     stephenslab/susieR,
+    bioc::3.3/GenomicRanges,
     bioc::3.3/plyranges,
-    bioc::3.3/rtracklayer
+    bioc::3.3/rtracklayer,
+    PhanstielLab/bedtoolsr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 
