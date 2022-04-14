@@ -15,9 +15,14 @@ You can install the development version of Mapgen from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("kevinlkx/Mapgen")
 ```
+
+Please install the following dependent R packages: `tidyverse`,
+`data.table`, `bigsnpr`, `ggplot2`, `ggrepel`, `ggrastr`, `processx`
+from CRAN, as well as `GenomicRanges`, `plyranges`, `rtracklayer` from
+Bioconductor.
 
 After installing, check that it loads properly:
 
