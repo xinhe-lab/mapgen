@@ -23,7 +23,7 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
   cat('Annotating SNPs...\n')
   sumstats.annots <- annotator(sumstats, annotations = annotation_bed_files)
 
-  cat('Writing Torus input files...\n')
+  cat('Generating Torus input files ...\n')
   readr::write_tsv(sumstats.annots[,-c(1:6,8:12)], file=torus_annot_file, col_names = T)
   readr::write_tsv(sumstats[,c('snp','locus','zscore')], file=torus_zscore_file, col_names = T)
 
@@ -46,13 +46,13 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' analysis, prepared by
 #' the \code{prepare_torus_input_files} function.
 #' Should be compressed in gzip format.
-#' @param torus_option Torus options:
+#' @param option Torus options:
 #' \dQuote{est}, obtain estimates of enrichment parameters and their confidence intervals;
 #' \dQuote{est_prior}, perform enrichment analysis and
 #' compute SNP-level priors using
 #' the estimated enrichment estimates for each locus;
 #' or \dQuote{fdr}, perform Bayesian FDR control, and output the result.
-#' @param torus_path Path to Torus executable.
+#' @param torus_path Path to \code{torus} executable.
 #' @importFrom tibble as_tibble
 #' @return a list of enrichment results and SNP-level prior probabilities.
 #' Enrichment result contains the point estimate (MLE) of the log odds ratio,
@@ -62,20 +62,20 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' # Get enrichment estimates and confidence intervals
 #' torus.result <- run_torus("torus_annotations.txt.gz",
 #'                           "torus_zscore.txt.gz",
-#'                           torus_option = "est")
+#'                           option = "est")
 #'
 #' # Get enrichment estimates and compute SNP-level priors
 #' torus.result <- run_torus("torus_annotations.txt.gz",
 #'                           "torus_zscore.txt.gz",
-#'                           torus_option = "dump_prior")
+#'                           option = "dump_prior")
 #' # Bayesian FDR control
 #' torus.result <- run_torus("torus_annotations.txt.gz",
 #'                           "torus_zscore.txt.gz",
-#'                           torus_option = "fdr")
+#'                           option = "fdr")
 #'
 run_torus <- function(torus_annot_file,
                       torus_zscore_file,
-                      torus_option=c('est', 'est_prior', 'fdr'),
+                      option=c('est', 'est_prior', 'fdr'),
                       torus_path='torus'){
 
   if(!file.exists(torus_annot_file)){
@@ -85,11 +85,11 @@ run_torus <- function(torus_annot_file,
     stop('Cannot find Torus z-score file.')
   }
 
-  torus_option <- match.arg(torus_option)
+  option <- match.arg(option)
   cat('Run Torus...\n')
 
   torus.result <- list()
-  if(torus_option == 'est'){
+  if(option == 'est'){
     torus_args <- c('-d', torus_zscore_file,
                     '-annot', torus_annot_file,
                     '--load_zval',
@@ -100,7 +100,7 @@ run_torus <- function(torus_annot_file,
     colnames(enrich) <- c("term", "estimate", "low", "high")
     return(enrich)
 
-  }else if(torus_option == 'est_prior'){
+  }else if(option == 'est_prior'){
     torus_args <- c('-d', torus_zscore_file,
                     '-annot', torus_annot_file,
                     '--load_zval',
