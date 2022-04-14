@@ -1,7 +1,7 @@
 #' @title Prepare Torus input files
 #' @description Prepares two files necessary for running Torus:
 #' z-score file and annotation file.
-#' @param sumstats cleaned summary statistics from RunCleaner or other
+#' @param sumstats cleaned summary statistics
 #' @param annotation_bed_files annotation files in BED format.
 #' The bed file must have three columns: chr, start, end.
 #' Chromosomes should be numeric (no "chr")
@@ -12,6 +12,8 @@
 #' @param torus_zscore_file z-score file name.
 #' @return a list containing paths to the z-score file and annotation file.
 #' @export
+#' @examples
+#' torus.files <- prepare_torus_input_files(sumstats, annotation_bed_files)
 prepare_torus_input_files <- function(sumstats, annotation_bed_files,
                                       torus_annot_file='torus_annotations.txt.gz',
                                       torus_zscore_file='torus_zscore.txt.gz'){
@@ -45,19 +47,35 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' the \code{prepare_torus_input_files} function.
 #' Should be compressed in gzip format.
 #' @param torus_option Torus options:
-#' \dQuote{est}, output the estimates of enrichment parameters and their confidence intervals;
-#' \dQuote{dump_prior}, compute SNP-level priors using
+#' \dQuote{est}, obtain estimates of enrichment parameters and their confidence intervals;
+#' \dQuote{est_prior}, perform enrichment analysis and
+#' compute SNP-level priors using
 #' the estimated enrichment estimates for each locus;
-#' or \dQuote{qtl}, perform Bayesian FDR control, and output the result.
+#' or \dQuote{fdr}, perform Bayesian FDR control, and output the result.
 #' @param torus_path Path to Torus executable.
 #' @importFrom tibble as_tibble
 #' @return a list of enrichment results and SNP-level prior probabilities.
 #' Enrichment result contains the point estimate (MLE) of the log odds ratio,
 #' as well as 95% confidence interval for the corresponding point estimate.
 #' @export
+#' @examples
+#' # Get enrichment estimates and confidence intervals
+#' torus.result <- run_torus("torus_annotations.txt.gz",
+#'                           "torus_zscore.txt.gz",
+#'                           torus_option = "est")
+#'
+#' # Get enrichment estimates and compute SNP-level priors
+#' torus.result <- run_torus("torus_annotations.txt.gz",
+#'                           "torus_zscore.txt.gz",
+#'                           torus_option = "dump_prior")
+#' # Bayesian FDR control
+#' torus.result <- run_torus("torus_annotations.txt.gz",
+#'                           "torus_zscore.txt.gz",
+#'                           torus_option = "fdr")
+#'
 run_torus <- function(torus_annot_file,
                       torus_zscore_file,
-                      torus_option=c('est', 'dump_prior', 'qtl'),
+                      torus_option=c('est', 'est_prior', 'fdr'),
                       torus_path='torus'){
 
   if(!file.exists(torus_annot_file)){
@@ -70,6 +88,7 @@ run_torus <- function(torus_annot_file,
   torus_option <- match.arg(torus_option)
   cat('Run Torus...\n')
 
+  torus.result <- list()
   if(torus_option == 'est'){
     torus_args <- c('-d', torus_zscore_file,
                     '-annot', torus_annot_file,
@@ -79,28 +98,28 @@ run_torus <- function(torus_annot_file,
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd = TRUE, echo = TRUE)
     enrich <- as_tibble(read.table(file = textConnection(res$stdout),skip=1,header=F,stringsAsFactors = F))
     colnames(enrich) <- c("term", "estimate", "low", "high")
-    result <- list(enrich=enrich)
+    return(enrich)
 
-  }else if(torus_option == 'dump_prior'){
+  }else if(torus_option == 'est_prior'){
     torus_args <- c('-d', torus_zscore_file,
                     '-annot', torus_annot_file,
                     '--load_zval',
+                    '-est',
                     '-dump_prior', 'prior')
     cat('Estimating enrichments and computing SNP-level priors...\n')
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd = TRUE, echo = TRUE)
     enrich <- as_tibble(read.table(file = textConnection(res$stdout),skip=1,header=F,stringsAsFactors = F))
     colnames(enrich) <- c("term", "estimate", "low", "high")
 
-    cat('Extracting prior probabilities...\n')
     files <- list.files(path = 'prior/', pattern = '*.prior', full.names = T)
     files.str <- paste0(files, collapse = " ")
     system(paste('cat', files.str, '> prior/allchunks.txt'))
     snp_pip <- suppressMessages(vroom::vroom('prior/allchunks.txt', col_names = F, delim = "  "))
     colnames(snp_pip) <- c("snp","torus_pip")
     system('rm -rf prior/')
-    result <- list(enrich=enrich, snp_pip=snp_pip)
+    return(list(enrich = enrich, snp_pip = snp_pip))
 
-  }else if(torus_option == 'qtl'){
+  }else if(option == 'fdr'){
     torus_args <- c('-d', torus_zscore_file,
                     '-annot', torus_annot_file,
                     '--load_zval',
@@ -109,9 +128,7 @@ run_torus <- function(torus_annot_file,
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd = TRUE, echo = TRUE)
     torus_fdr <- as_tibble(read.table(file = textConnection(res$stdout),header=F,stringsAsFactors = F))
     colnames(torus_fdr) <- c("rej","region_id","fdr","decision")
-    result <- list(torus_fdr=torus_fdr)
+    return(torus_fdr)
   }
-
-  return(result)
 }
 

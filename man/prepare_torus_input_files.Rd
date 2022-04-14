@@ -12,7 +12,7 @@ prepare_torus_input_files(
 )
 }
 \arguments{
-\item{sumstats}{cleaned summary statistics from RunCleaner or other}
+\item{sumstats}{cleaned summary statistics}
 
 \item{annotation_bed_files}{annotation files in BED format.
 The bed file must have three columns: chr, start, end.
@@ -31,4 +31,7 @@ a list containing paths to the z-score file and annotation file.
 \description{
 Prepares two files necessary for running Torus:
 z-score file and annotation file.
+}
+\examples{
+torus.files <- prepare_torus_input_files(sumstats, annotation_bed_files)
 }

@@ -1,5 +1,5 @@
 
-#' @title Make genomic annotations from GTF file
+#' @title Make genomic annotations from a GTF file
 #'
 #' @param gtf.file GTF file name
 #' @param save If TRUE, save genomic annotations as a RDS file
@@ -27,7 +27,8 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
 
   canoncial.transcripts.str <- canonical.transcripts %>% .$transcript_id
 
-  my.gtf.protein.canonical <- my.gtf.protein[my.gtf.protein$transcript_id %in% canoncial.transcripts.str,] # keep only canonical transcripts
+  # keep only canonical transcripts
+  my.gtf.protein.canonical <- my.gtf.protein[my.gtf.protein$transcript_id %in% canoncial.transcripts.str,]
   my.exons <- my.gtf.protein.canonical[my.gtf.protein.canonical$type=='exon',]
   my.UTR <- my.gtf.protein.canonical[my.gtf.protein.canonical$type=='UTR',]
 
@@ -37,15 +38,23 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
   # get promoter coordinates
   my.genes.plus <- my.genes[strand(my.genes)=='+',]
   my.genes.neg <- my.genes[strand(my.genes)=='-',]
-  my.promoters.plus <- GRanges(seqnames(my.genes.plus), ranges = IRanges(start = start(my.genes.plus) - 2000, end = start(my.genes.plus)), strand = strand(my.genes.plus))
-  my.promoters.neg <- GRanges(seqnames(my.genes.neg), ranges = IRanges(start = end(my.genes.neg), end = end(my.genes.neg) + 2000), strand = strand(my.genes.neg))
+  my.promoters.plus <- GRanges(seqnames(my.genes.plus),
+                               ranges = IRanges(start = start(my.genes.plus) - 2000,
+                                                end = start(my.genes.plus)),
+                               strand = strand(my.genes.plus))
+  my.promoters.neg <- GRanges(seqnames(my.genes.neg),
+                              ranges = IRanges(start = end(my.genes.neg),
+                                               end = end(my.genes.neg) + 2000),
+                              strand = strand(my.genes.neg))
   my.promoters <- append(my.promoters.plus, my.promoters.neg)
   my.promoters$gene_name <- c(my.genes.plus$gene_name, my.genes.neg$gene_name)
 
   exon.chr <- c(as.character(seqnames(my.exons)), as.character(seqnames(my.exons)))
   exon.pos <- c(start(my.exons), end(my.exons))
   exon.gene.name <- c(my.exons$gene_name, my.exons$gene_name)
-  my.splice.junc <- GRanges(seqnames = exon.chr, ranges = IRanges(start = exon.pos-100, end = exon.pos+100), gene_name = exon.gene.name)
+  my.splice.junc <- GRanges(seqnames = exon.chr,
+                            ranges = IRanges(start = exon.pos-100, end = exon.pos+100),
+                            gene_name = exon.gene.name)
 
   annots <- list(
     genes = my.genes,
@@ -74,9 +83,14 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
 substract_exons <- function( genes.gr, exons.gr ) {
   # adapted from bosberg on Biostars. (https://www.biostars.org/p/489350/)
   # Subtract GRange object gr2 from gr1, but unlike setdiff, preserve individual ranges in gr1
-  genes.df <- data.frame( seqnames=seqnames(genes.gr), start=start(genes.gr)-1, end=end(genes.gr), strand=strand(genes.gr), gene_name = genes.gr$gene_name )
-  exons.df <- data.frame( seqnames=seqnames(exons.gr), start=start(exons.gr)-1, end=end(exons.gr), strand=strand(exons.gr) )
-  #                                                                         ^ -1 --> convert to base-0 start for bedtools
+  genes.df <- data.frame( seqnames=seqnames(genes.gr),
+                          start=start(genes.gr)-1, end=end(genes.gr), # convert to 0-based start for bedtools
+                          strand=strand(genes.gr),
+                          gene_name = genes.gr$gene_name )
+  exons.df <- data.frame( seqnames=seqnames(exons.gr),
+                          start=start(exons.gr)-1,
+                          end=end(exons.gr),
+                          strand=strand(exons.gr) )
   result <- bedtoolsr::bt.subtract(genes.df, exons.df)
 
   if ( length(result)==0 ){
@@ -84,8 +98,7 @@ substract_exons <- function( genes.gr, exons.gr ) {
     return( GRanges() )
   } else {
     colnames(result) <- colnames(genes.df)
-    result$start <- result$start+1
-    #                           ^ reset to base-1 notation consistent with GRanges
+    result$start <- result$start+1 # reset to 1-based notation consistent with GRanges
     return( GRanges(result) )
   }
 }
