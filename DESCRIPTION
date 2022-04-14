@@ -21,8 +21,9 @@ Imports:
     vroom,
     bigsnpr,
     ggplot2,
-    cowplot,
     ggrepel,
+    ggrastr,
+    cowplot,
     processx
 Remotes:
     stephenslab/susieR,
