@@ -13,7 +13,7 @@ Coordinates should be hg39/b37; the pipeline does not support hg38.}
 \item{cols.to.keep}{character vector of the following columns:
 chr, position, allele1, allele2, beta, se, unique id, pvalue}
 
-\item{bigSNP}{bigSNP object.}
+\item{bigSNP}{bigSNP object from \code{bigsnpr}.}
 
 \item{LD_Blocks}{Reference LD blocks}
 }
