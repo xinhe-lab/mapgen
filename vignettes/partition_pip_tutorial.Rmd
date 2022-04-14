@@ -30,7 +30,7 @@ library(Mapgen)
 
 Load fine-mapping summary statistics.
 ```{r load-finemapping-res}
-finemap <- readRDS("../inst/extdata/aFib_Finemapped.tble.rds")
+finemap <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "Mapgen"))
 finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
                                           pos = 'pos', pip = 'susie_pip', 
                                           pval = 'pval', zscore = 'zscore', 
@@ -42,12 +42,12 @@ head(finemap.gr)
 
 Load genomic annotations (hg19). 
 ```{r load-annotations}
-genomic.annots <- readRDS('../inst/extdata/genomic.annots.hg19.gr.rds')
+genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "Mapgen"))
 ```
 
 Load annotations and cell type OCR peaks (disjoint regions). This is a list of GRanges objects.
 ```{r load-disjoint-OCRs}
-OCRs <- readRDS('../inst/extdata/disjoint_OCRs_hg19.grlist.rds')
+OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "Mapgen"))
 summary(OCRs)
 ```
 
@@ -80,10 +80,10 @@ prop.pip.mat <- prop.pip.mat[with(prop.pip.mat, order(-Cardiomyocyte)), ]
 
 Make a structure plot of the proportion of PIPs in each cell type category.
 ```{r structure-plot, fig.width=10, fig.height=2.5}
-colors.palette <- readRDS('../inst/extdata/color_palette.rds')
-categories.order <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid", "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
-colors <- colors.palette[categories.order]
-dat <- compile_structure_plot_data(prop.pip.mat, categories = rev(categories.order))
+categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid", "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
+colors <- c("Cardiomyocyte" = "#b22222", "Endothelial" = "#8DD3C7", "Fibroblast" = "#BEBADA", "Lymphoid" = "#FB8072", "Myeloid" = "#80B1D3",
+            "Pericyte" = "#B3DE69", "Shared 2-3" = "royalblue", "Shared 4+" = "#003C86")
+dat <- compile_structure_plot_data(prop.pip.mat, categories = rev(categories))
 
 structure_plot(dat, colors = rev(colors))
 ```
