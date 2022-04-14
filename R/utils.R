@@ -6,6 +6,7 @@
 #' chr, start and end positions of the fragments interacting with promoters
 #' e.g. "chr.start.end" or "chr:start-end".
 #' @importFrom magrittr %>%
+#' @importFrom GenomicRanges makeGRangesFromDataFrame seqlevelsStyle
 #' @return a GRanges object with processed pcHiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
@@ -19,12 +20,12 @@ process_pcHiC <- function(pcHiC){
     tidyr::separate(Interacting_fragment, c('otherEnd_chr', 'otherEnd_start', 'otherEnd_end')) %>%
     dplyr::mutate(otherEnd_start = as.numeric(otherEnd_start), otherEnd_end = as.numeric(otherEnd_end))
 
-  pcHiC.gr <- GenomicRanges::makeGRangesFromDataFrame(pcHiC,
-                                                      seqnames.field = 'otherEnd_chr',
-                                                      start.field = 'otherEnd_start',
-                                                      end.field = 'otherEnd_end',
-                                                      keep.extra.columns = TRUE)
-  GenomeInfoDb::seqlevelsStyle(pcHiC.gr) <- 'UCSC'
+  pcHiC.gr <- makeGRangesFromDataFrame(pcHiC,
+                                       seqnames.field = 'otherEnd_chr',
+                                       start.field = 'otherEnd_start',
+                                       end.field = 'otherEnd_end',
+                                       keep.extra.columns = TRUE)
+  seqlevelsStyle(pcHiC.gr) <- 'UCSC'
 
   return(pcHiC.gr)
 }
@@ -40,6 +41,7 @@ process_pcHiC <- function(pcHiC){
 #' regions provided in the ABC scores data.
 #' @param flank  Flanking regions around ABC elements (default = 0).
 #' @importFrom magrittr %>%
+#' @importFrom GenomicRanges makeGRangesFromDataFrame seqlevelsStyle
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
@@ -62,8 +64,8 @@ process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0
     ABC$end <- ABC$end + flank
   }
 
-  ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
-  GenomeInfoDb::seqlevelsStyle(ABC.gr) <- 'UCSC'
+  ABC.gr <- makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
+  seqlevelsStyle(ABC.gr) <- 'UCSC'
 
   return(ABC.gr)
 }
@@ -71,6 +73,7 @@ process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0
 #' @title Load ENCODE narrow peak data and convert to a GRanges object
 #'
 #' @param peak.file ENCODE narrow peak file
+#' @importFrom GenomicRanges makeGRangesFromDataFrame seqlevelsStyle
 #' @return a GRanges object for the peaks
 #' @export
 #'
@@ -78,8 +81,8 @@ process_narrowpeaks <- function(peak.file){
   if( !file.exists(peak.file) ){stop('narrowpeak file is not availble!')}
   peaks <- data.table::fread(peak.file)
   colnames(peaks) <- c('chr', 'start', 'end', 'name', 'score', 'strand', 'signalValue', 'pValue', 'qValue', 'peak')
-  peaks.gr <- GenomicRanges::makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
-  GenomeInfoDb::seqlevelsStyle(peaks.gr) <- 'UCSC'
+  peaks.gr <- makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
+  seqlevelsStyle(peaks.gr) <- 'UCSC'
   return(peaks.gr)
 }
 

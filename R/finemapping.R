@@ -129,6 +129,7 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 #' @param filterCS If TRUE, limiting to SNPs within credible sets.
 #' @param maxCS Maximum number of credible sets (default = 10).
 #' @importFrom magrittr %>%
+#' @import GenomicRanges
 #' @return A GRanges object with cleaned and filtered fine-mapping summary statistics
 #' @export
 process_finemapping_sumstat <- function(finemap,
@@ -181,11 +182,11 @@ process_finemapping_sumstat <- function(finemap,
     finemap <- finemap %>% dplyr::arrange(desc(pip)) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
   }
 
-  finemap.gr <- GenomicRanges::makeGRangesFromDataFrame(finemap, start.field = 'pos', end.field = 'pos', keep.extra.columns = TRUE)
+  finemap.gr <- makeGRangesFromDataFrame(finemap, start.field = 'pos', end.field = 'pos', keep.extra.columns = TRUE)
   finemap.gr$chr <- finemap$chr
   finemap.gr$pos <- finemap$pos
   mcols(finemap.gr) <- mcols(finemap.gr)[,cols.to.keep]
-  GenomeInfoDb::seqlevelsStyle(finemap.gr) <- 'UCSC'
+  seqlevelsStyle(finemap.gr) <- 'UCSC'
 
   if( pip.thresh > 0 ) {
     cat('Filter SNPs with PIP threshold of', pip.thresh, '\n')

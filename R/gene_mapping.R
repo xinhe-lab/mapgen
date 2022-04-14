@@ -9,6 +9,7 @@
 #' @param cols.to.keep columns to keep in the SNP gene weights
 #' @importFrom magrittr %>%
 #' @importFrom tibble as_tibble
+#' @import GenomicRanges
 #' @return A data frame of SNP-level view of gene mapping result
 #' @export
 compute_gene_pip <- function(finemap.gr,

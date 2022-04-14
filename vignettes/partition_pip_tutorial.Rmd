@@ -65,10 +65,8 @@ head(n.snps, 3)
 
 ```
 
-Filter loci with a cutoff of total PIPs in OCR > 0.25. 
-
-Compute the proportion of PIPs partitioned in each cell type category
-and order by Cardiomyocyte proportion.
+Filter loci with a cutoff of total PIPs in OCR > 0.25, 
+compute the proportion of PIPs partitioned in each cell type category.
 ```{r filter-locus-proportion-pips}
 sum.pips.filtered <- sum.pips[rowSums(sum.pips) > 0.25,]
 
@@ -78,11 +76,14 @@ prop.pip.mat <- prop.pip.mat[with(prop.pip.mat, order(-Cardiomyocyte)), ]
 
 ```
 
-Make a structure plot of the proportion of PIPs in each cell type category.
+We can make a structure plot to show the proportion of PIPs in each cell type category.
 ```{r structure-plot, fig.width=10, fig.height=2.5}
-categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid", "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
-colors <- c("Cardiomyocyte" = "#b22222", "Endothelial" = "#8DD3C7", "Fibroblast" = "#BEBADA", "Lymphoid" = "#FB8072", "Myeloid" = "#80B1D3",
-            "Pericyte" = "#B3DE69", "Shared 2-3" = "royalblue", "Shared 4+" = "#003C86")
+categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid", 
+                "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
+colors <- c("Cardiomyocyte" = "#b22222", "Endothelial" = "#8DD3C7",
+            "Fibroblast" = "#BEBADA", "Lymphoid" = "#FB8072", 
+            "Myeloid" = "#80B1D3", "Pericyte" = "#B3DE69", 
+            "Shared 2-3" = "royalblue", "Shared 4+" = "#003C86")
 dat <- compile_structure_plot_data(prop.pip.mat, categories = rev(categories))
 
 structure_plot(dat, colors = rev(colors))
