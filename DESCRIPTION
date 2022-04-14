@@ -24,7 +24,8 @@ Imports:
     ggrepel,
     ggrastr,
     cowplot,
-    processx
+    processx,
+    bedtoolsr
 Remotes:
     stephenslab/susieR,
     bioc::3.3/plyranges,
