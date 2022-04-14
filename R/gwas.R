@@ -4,7 +4,7 @@
 #' Coordinates should be hg39/b37; the pipeline does not support hg38.
 #' @param cols.to.keep character vector of the following columns:
 #' chr, position, allele1, allele2, beta, se, unique id, pvalue
-#' @param bigSNP bigSNP object.
+#' @param bigSNP bigSNP object from \code{bigsnpr}.
 #' @param LD_Blocks Reference LD blocks
 #' @return Cleaned summary statistics + LD block of every SNP,
 #' as well as its index in the reference panel of genotypes
@@ -13,10 +13,10 @@ run_gwas_cleaner <- function(sumstats_file, cols.to.keep, bigSNP, LD_Blocks){
 
   cat('Loading summary statistics...\n')
   if(is.character(sumstats_file) & length(sumstats_file) == 1){
-   sumstats <- vroom::vroom(sumstats_file, col_names = TRUE)
+    sumstats <- vroom::vroom(sumstats_file, col_names = TRUE, show_col_types = FALSE)
   }
 
-  cat('Cleaning summary statistics..\n')
+  cat('Cleaning summary statistics...\n')
   cleaned_sumstats <- clean_sumstats(sumstats, cols.to.keep)
 
   cat('Matching to reference panel...\n')
@@ -99,7 +99,6 @@ clean_sumstats <- function(sumstats, cols.to.keep){
 #' @param cleaned.sumstats Cleaned summary statistics
 #' @param ld LD blocks
 #' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
 #' @export
 assign_locus_snp <- function(cleaned.sumstats, ld){
 
@@ -113,7 +112,7 @@ assign_locus_snp <- function(cleaned.sumstats, ld){
   snpRanges <- plyranges::mutate(snpRanges, snp=cleaned.sumstats$snp)
 
   snp.ld.overlap <- plyranges::join_overlap_inner(snpRanges, ldRanges)
-  snp.ld.block <- as_tibble(snp.ld.overlap@elementMetadata)
+  snp.ld.block <- tibble::as_tibble(snp.ld.overlap@elementMetadata)
   snp.ld.block <- snp.ld.block[!duplicated(snp.ld.block$snp), ] # some SNPs are in multiple ld-blocks due to edge of ld blocks
   cleaned.annot.sumstats <- dplyr::inner_join(cleaned.sumstats, snp.ld.block, 'snp')
 
@@ -175,8 +174,6 @@ annotator_merged <- function(gwas, annotations){
 #' @param gwas  GWAS summary statistics
 #' @param bigSNP  bigSNP object
 #' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
-#' @importFrom bigsnpr snp_match
 #' @export
 merge_bigsnp_gwas <- function(gwas, bigSNP){
 
@@ -184,10 +181,10 @@ merge_bigsnp_gwas <- function(gwas, bigSNP){
   snp_info <- map[,c('chromosome','physical.pos','allele1','allele2')]
   colnames(snp_info) <- c('chr','pos','a0','a1')
 
-  matched.gwas <- as_tibble(bigsnpr::snp_match(gwas,
-                                               snp_info,
-                                               strand_flip = T,
-                                               match.min.prop = 0.1))
+  matched.gwas <- tibble::as_tibble(bigsnpr::snp_match(gwas,
+                                                       snp_info,
+                                                       strand_flip = TRUE,
+                                                       match.min.prop = 0.1))
 
   matched.gwas <- matched.gwas %>%
     dplyr::rename(og_index = `_NUM_ID_.ss`) %>%
