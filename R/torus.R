@@ -48,7 +48,7 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' Should be compressed in gzip format.
 #' @param option Torus options:
 #' \dQuote{est}, obtain estimates of enrichment parameters and their confidence intervals;
-#' \dQuote{est_prior}, perform enrichment analysis and
+#' \dQuote{est-prior}, perform enrichment analysis and
 #' compute SNP-level priors using
 #' the estimated enrichment estimates for each locus;
 #' or \dQuote{fdr}, perform Bayesian FDR control, and output the result.
@@ -67,7 +67,7 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' # Get enrichment estimates and compute SNP-level priors
 #' torus.result <- run_torus("torus_annotations.txt.gz",
 #'                           "torus_zscore.txt.gz",
-#'                           option = "dump_prior")
+#'                           option = "est-prior")
 #' # Bayesian FDR control
 #' torus.result <- run_torus("torus_annotations.txt.gz",
 #'                           "torus_zscore.txt.gz",
@@ -75,7 +75,7 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #'
 run_torus <- function(torus_annot_file,
                       torus_zscore_file,
-                      option=c('est', 'est_prior', 'fdr'),
+                      option=c('est', 'est-prior', 'fdr'),
                       torus_path='torus'){
 
   if(!file.exists(torus_annot_file)){
@@ -100,7 +100,7 @@ run_torus <- function(torus_annot_file,
     colnames(enrich) <- c("term", "estimate", "low", "high")
     return(enrich)
 
-  }else if(option == 'est_prior'){
+  }else if(option == 'est-prior'){
     torus_args <- c('-d', torus_zscore_file,
                     '-annot', torus_annot_file,
                     '--load_zval',

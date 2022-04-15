@@ -7,7 +7,7 @@
 run_torus(
   torus_annot_file,
   torus_zscore_file,
-  option = c("est", "est_prior", "fdr"),
+  option = c("est", "est-prior", "fdr"),
   torus_path = "torus"
 )
 }
@@ -29,7 +29,7 @@ Should be compressed in gzip format.}
 
 \item{option}{Torus options:
 \dQuote{est}, obtain estimates of enrichment parameters and their confidence intervals;
-\dQuote{est_prior}, perform enrichment analysis and
+\dQuote{est-prior}, perform enrichment analysis and
 compute SNP-level priors using
 the estimated enrichment estimates for each locus;
 or \dQuote{fdr}, perform Bayesian FDR control, and output the result.}
@@ -54,7 +54,7 @@ torus.result <- run_torus("torus_annotations.txt.gz",
 # Get enrichment estimates and compute SNP-level priors
 torus.result <- run_torus("torus_annotations.txt.gz",
                           "torus_zscore.txt.gz",
-                          option = "dump_prior")
+                          option = "est-prior")
 # Bayesian FDR control
 torus.result <- run_torus("torus_annotations.txt.gz",
                           "torus_zscore.txt.gz",

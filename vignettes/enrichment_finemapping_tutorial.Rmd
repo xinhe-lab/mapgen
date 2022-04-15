@@ -8,25 +8,25 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
-Welcome to this tutorial where we perform enrichment analysis and fine-mapping on a small GWAS dataset. 
+In this tutorial, we perform enrichment analysis and fine-mapping on a small GWAS dataset.
 
-In this example, we use a genotype reference panel from European population (1KG). 
+We use a reference genotype panel from European population (1KG). If you are in the He lab, 
+you can load the `EUR_variable_1kg.rds` file from RCC. 
 
-If you are in the He lab, you can load the `.rds` file from RCC. 
-Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) 
-and use `bigsnpr::readBed()` to create the `.rds` file below.
 ```{r, message=FALSE}
 bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
 
-Here we show a quick run-through of the enrichment and fine-mapping procedure using a test summary statistics.
+Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) 
+and use `bigsnpr::readBed()` to create the `.rds` file below.
 
 Load the package
-```{r}
+```{r load-package}
 library(mapgen)
 ```
 
 First we run `process_gwas_sumstats()` to load and process the summary statistics.
+The summary statistics file could be in either tab or comma delimited.
 We need the following columns in the summary statistics:  
 
 * chromosome
@@ -38,15 +38,13 @@ We need the following columns in the summary statistics:
 * SNP ID (rsID, or chr:position:a1:a2)  
 * p-value
 
-We also need reference LD blocks. Here we loaded the reference LD blocks from European 1KG. 
-```{r}
-# load LD blocks
+Load the reference LD blocks from European 1KG. 
+```{r load-LD-blocks}
 data('Euro_LD_Chunks', package='mapgen')
 ```
 
 Cleans GWAS summary statistics, adds metadata.
-The summary statistics file could be in either tab or comma delimited.
-```{r}
+```{r process-gwas}
 gwas_file <- system.file("extdata", "test_sumstats.txt.gz", package="mapgen")
 gwas <- process_gwas_sumstats(gwas_file, 
                               chr='chr', pos='position_b37', 
@@ -58,7 +56,7 @@ gwas <- process_gwas_sumstats(gwas_file,
 ```
 
 Check that the output is cleaned and has appropriate columns:
-```{r}
+```{r print-gwas}
 gwas[,c('chr','pos','beta','se','snp','pval','zscore')]
 ```
 
@@ -72,7 +70,7 @@ chromosomes should be just the number (no "chr").
 
 *Currently only hg19/b37 coordinates are accepted. You will get wrong results if you use hg38/other.*
 
-```{r}
+```{r prepare-torus-files}
 bed_annotations_dir <- system.file("extdata", "test_bed_dir/", package="mapgen")
 annotation_bed_files <- list.files(path = bed_annotations_dir, pattern = "*.bed", full.names = TRUE)
 torus.files <- prepare_torus_input_files(gwas, annotation_bed_files)
@@ -80,20 +78,20 @@ torus.files <- prepare_torus_input_files(gwas, annotation_bed_files)
 
 Now that the appropriate files have been generated, lets run TORUS. 
 
-`run_torus()` with `option = "est_prior"` returns a list with: 
+`run_torus()` with `option = "est-prior"` returns a list with: 
 enrichment estimates (log odds ratio) and 95% confidence intervals of each annotation, 
 and SNP-level priors using the enrichment estimates.
-```{r}
+```{r run-torus-est-prior}
 torus.result <- run_torus(torus.files$torus_annot_file, 
                           torus.files$torus_zscore_file,
-                          option = "est_prior",
+                          option = "est-prior",
                           torus_path = "torus") # you may need to set the installed path to 'torus' executable.
 ```
 
 TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. 
 We run `run_torus()` with `option = "fdr"` to get the probability of each chunk containing a causal variant. 
 We can filter our chunks with low probability, thus saving us on computational time!
-```{r}
+```{r run-torus-fdr}
 torus.fdr <- run_torus(torus.files$torus_annot_file, 
                        torus.files$torus_zscore_file,
                        option = "fdr",
@@ -115,11 +113,14 @@ We see we have a new column called `torus_pip`
 susie.df[,c('chr','pos','beta','se','snp','pval','zscore','torus_pip')]
 ```
 
-With this data frame, we can perform fine-mapping. We use `RunFinemapping()` to get out results. 
-This will be quite slow if chunks contain many SNPs( O(n^2) where n is # of SNPs). 
+With this data frame, we can perform fine-mapping. 
+We use `run_finemapping()` with SNP-level priors computed from TORUS based on enrichment estimates.
+Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP. 
+This step could take a while if chunks contain many SNPs ($O(n^2)$ where n is # of SNPs). 
 
 ```{r run-susie}
-susie_finemap_L1 <- run_finemapping(sumstats = susie.df, bigSNP = bigSNP)
+susie_finemap_L1 <- run_finemapping(sumstats = susie.df, bigSNP = bigSNP, 
+                                    priortype = 'torus', L = 1)
 ```
 
 `susie_finemap_L1` is a list of SuSiE results, one for each chunk/LD block. 
@@ -133,7 +134,6 @@ gwas_finemapped <- merge_susie_sumstats(susie_results = susie_finemap_L1, sumsta
 
 Lets look at the final cleaned, and finemapped summary statistics. 
 We see we have a new column called `susie_pip` which is the probability of being causal. 
-Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP. 
 
 ```{r}
 gwas_finemapped[,c('chr','pos','beta','se','snp','pval','zscore','torus_pip','susie_pip')]
