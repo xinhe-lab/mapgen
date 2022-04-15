@@ -13,7 +13,7 @@ In this tutorial, we perform enrichment analysis and fine-mapping on a small GWA
 We use a reference genotype panel from European population (1KG). If you are in the He lab, 
 you can load the `EUR_variable_1kg.rds` file from RCC. 
 
-```{r, message=FALSE}
+```{r, eval=FALSE, message=FALSE}
 bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
 
@@ -76,11 +76,13 @@ annotation_bed_files <- list.files(path = bed_annotations_dir, pattern = "*.bed"
 torus.files <- prepare_torus_input_files(gwas, annotation_bed_files)
 ```
 
-Now that the appropriate files have been generated, lets run TORUS. 
+Now that the appropriate files have been generated, let's run TORUS. 
 
 `run_torus()` with `option = "est-prior"` returns a list with: 
 enrichment estimates (log odds ratio) and 95% confidence intervals of each annotation, 
 and SNP-level priors using the enrichment estimates.
+If you only want to enrichment estimates without computing SNP-level priors, 
+you can set `option = "est"`.
 ```{r run-torus-est-prior}
 torus.result <- run_torus(torus.files$torus_annot_file, 
                           torus.files$torus_zscore_file,
