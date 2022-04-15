@@ -82,7 +82,7 @@ clean_sumstats <- function(sumstats,
   }else{
     # Extract relevant columns
     cat('Rename and extract columns in summary statistics ...\n')
-    cleaned.sumstats <- sumstats[, c(chr, pos, beta, se, a0, a1, rs, pval)]
+    cleaned.sumstats <- sumstats[, cols.to.keep]
     colnames(cleaned.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
   }
 
