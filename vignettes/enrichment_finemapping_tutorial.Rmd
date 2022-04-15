@@ -26,18 +26,17 @@ Load the package
 library(mapgen)
 ```
 
-First we run `run_gwas_cleaner()`, which takes our summary statistics in either tab or comma delimited. 
-It also takes a character vector of the 8 column names needed. 
-The columns needed have to be given in the following order:  
-  
-* chromosome (just the number, no "chr", hg19!)  
-* position (base pair position, hg19!)  
+First we run `process_gwas_sumstats()` to load and process the summary statistics.
+We need the following columns in the summary statistics:  
+
+* chromosome
+* position (base pair position, *we current only support hg19!*)  
 * beta (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))  
 * standard error (SE)  
-* reference allele (A,C,T,G)  
-* association/effect allele (A,C,T,G)  
-* some kind of SNP ID (rsID, or chr:position:a1:a2)  
-* p-value  
+* reference allele
+* association/effect allele
+* SNP ID (rsID, or chr:position:a1:a2)  
+* p-value
 
 We also need reference LD blocks. Here we loaded the reference LD blocks from European 1KG. 
 ```{r}
@@ -45,13 +44,17 @@ We also need reference LD blocks. Here we loaded the reference LD blocks from Eu
 data('Euro_LD_Chunks', package='mapgen')
 ```
 
-Cleans GWAS summary statistics, adds metadata
+Cleans GWAS summary statistics, adds metadata.
+The summary statistics file could be in either tab or comma delimited.
 ```{r}
-sumstats_file <- system.file("extdata", "test_sumstats.txt.gz", package="mapgen")
-gwas <- run_gwas_cleaner(sumstats_file, 
-                         cols.to.keep = c('chr','position_b37','bcac_onco2_beta','bcac_onco2_se','a0','a1','phase3_1kg_id','bcac_onco2_P1df_Wald'),
-                         bigSNP = bigSNP,
-                         LD_Blocks = LD_Blocks)
+gwas_file <- system.file("extdata", "test_sumstats.txt.gz", package="mapgen")
+gwas <- process_gwas_sumstats(gwas_file, 
+                              chr='chr', pos='position_b37', 
+                              beta='bcac_onco2_beta', se='bcac_onco2_se',
+                              a0='a0', a1='a1', 
+                              snp='phase3_1kg_id', pval='bcac_onco2_P1df_Wald',
+                              bigSNP=bigSNP,
+                              LD_Blocks=LD_Blocks)
 ```
 
 Check that the output is cleaned and has appropriate columns:
