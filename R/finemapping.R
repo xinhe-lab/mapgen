@@ -186,7 +186,7 @@ process_finemapping_sumstat <- function(finemap,
   finemap.gr$chr <- finemap$chr
   finemap.gr$pos <- finemap$pos
   mcols(finemap.gr) <- mcols(finemap.gr)[,cols.to.keep]
-  seqlevelsStyle(finemap.gr) <- 'UCSC'
+  GenomeInfoDb::seqlevelsStyle(finemap.gr) <- 'UCSC'
 
   if( pip.thresh > 0 ) {
     cat('Filter SNPs with PIP threshold of', pip.thresh, '\n')
