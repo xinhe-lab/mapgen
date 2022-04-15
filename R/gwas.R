@@ -164,7 +164,7 @@ assign_locus_snp <- function(cleaned.sumstats, ld){
 #' @export
 annotate_snps_binary <- function(gwas, annotations, keep.annot.only=TRUE){
 
-  snpRanges <- mapgen:::make_ranges(gwas$chr, gwas$pos, gwas$pos)
+  snpRanges <- make_ranges(gwas$chr, gwas$pos, gwas$pos)
   snpRanges <- plyranges::mutate(snpRanges, snp=gwas$snp)
 
   for(f in annotations){
