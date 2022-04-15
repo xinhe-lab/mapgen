@@ -107,93 +107,66 @@
                                                 pos <span class="op">=</span> <span class="st">'pos'</span>, pip <span class="op">=</span> <span class="st">'susie_pip'</span>, 
                                                 pval <span class="op">=</span> <span class="st">'pval'</span>, zscore <span class="op">=</span> <span class="st">'zscore'</span>, 
                                                 cs <span class="op">=</span> <span class="st">'CS'</span>, locus <span class="op">=</span> <span class="st">'locus'</span>,  
-                                                pip.thresh <span class="op">=</span> <span class="fl">1e-5</span>, 
-                                                cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'snp'</span>,<span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'a0'</span>, <span class="st">'a1'</span>, <span class="st">'pip'</span>, <span class="st">'pval'</span>, <span class="st">'zscore'</span>, <span class="st">'cs'</span>, <span class="st">'locus'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Processing fine-mapping summary statistics ...</span>
-<span class="co">## Filter SNPs with PIP threshold of 1e-05</span></code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">finemapstats.gr</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## GRanges object with 6 ranges and 10 metadata columns:</span>
-<span class="co">##       seqnames    ranges strand |         snp       chr       pos          a0</span>
-<span class="co">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;character&gt; &lt;integer&gt; &lt;integer&gt; &lt;character&gt;</span>
-<span class="co">##   [1]     chr9 139082621      * |   rs4842129         9 139082621           A</span>
-<span class="co">##   [2]     chr9 139085865      * |  rs11103373         9 139085865           C</span>
-<span class="co">##   [3]     chr9 139089679      * |   rs7860634         9 139089679           G</span>
-<span class="co">##   [4]     chr9 139089717      * |   rs7850466         9 139089717           T</span>
-<span class="co">##   [5]     chr9 139089718      * |   rs7847312         9 139089718           A</span>
-<span class="co">##   [6]     chr9 139091460      * |   rs2274114         9 139091460           A</span>
-<span class="co">##                a1         pip      pval    zscore        cs     locus</span>
-<span class="co">##       &lt;character&gt;   &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;</span>
-<span class="co">##   [1]           G 3.00183e-05   5.14929   4.46914         0      1009</span>
-<span class="co">##   [2]           T 1.59627e-05   4.78489   4.32857         0      1009</span>
-<span class="co">##   [3]           A 1.94283e-03   6.99568   5.33333         0      1009</span>
-<span class="co">##   [4]           G 1.42424e-03   6.94808   5.27143         0      1009</span>
-<span class="co">##   [5]           C 1.32523e-03   6.91045   5.25714         0      1009</span>
-<span class="co">##   [6]           G 6.54232e-05   5.46750  -4.65909         0      1009</span>
-<span class="co">##   -------</span>
-<span class="co">##   seqinfo: 20 sequences from an unspecified genome; no seqlengths</span></code></pre>
+                                                pip.thresh <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co"># Processing fine-mapping summary statistics ...</span>
+<span class="co"># Filter SNPs with PIP threshold of 1e-05</span></code></pre>
 <p>Load genomic annotations (hg19).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"genomic.annots.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Load annotations and cell type OCR peaks (disjoint regions). This is a list of GRanges objects.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">OCRs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"disjoint_OCRs_hg19.grlist.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Sum PIPs within cell-type specific OCRs.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sum_pip_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partition_pip_regions.html">partition_pip_regions</a></span><span class="op">(</span><span class="va">finemapstats.gr</span>, <span class="va">OCRs</span><span class="op">)</span></code></pre></div>
+<p>Sum of PIPs:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">OCRs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"disjoint_OCRs_hg19.grlist.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">OCRs</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##               Length Class   Mode</span>
-<span class="co">## Cardiomyocyte 55488  GRanges S4  </span>
-<span class="co">## Endothelial   17392  GRanges S4  </span>
-<span class="co">## Fibroblast    27193  GRanges S4  </span>
-<span class="co">## Lymphoid       6313  GRanges S4  </span>
-<span class="co">## Myeloid       26975  GRanges S4  </span>
-<span class="co">## Pericyte      12623  GRanges S4  </span>
-<span class="co">## Shared 2-3    27532  GRanges S4  </span>
-<span class="co">## Shared 4+     36877  GRanges S4</span></code></pre>
-<p>Sum of PIPs within cell-type specific OCRs.</p>
+<code class="sourceCode R"><span class="va">sum.pips</span> <span class="op">&lt;-</span> <span class="va">sum_pip_res</span><span class="op">$</span><span class="va">sum.pips</span>
+<span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sum.pips</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">#    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte   Shared 2-3</span>
+<span class="co"># 7   7.663085e-01 0.000000000 0.00000000        0       0        0 0.0000000000</span>
+<span class="co"># 15  2.173871e-01 0.004280965 0.08199708        0       0        0 0.0002198158</span>
+<span class="co"># 25  1.417186e-04 0.000000000 0.00000000        0       0        0 0.0037536142</span>
+<span class="co"># 31  1.404386e-05 0.000000000 0.00000000        0       0        0 0.0000000000</span>
+<span class="co"># 32  5.367133e-01 0.000000000 0.00000000        0       0        0 0.0000000000</span>
+<span class="co"># 33  7.847140e-02 0.000000000 0.00000000        0       0        0 0.0015118886</span>
+<span class="co">#       Shared 4+</span>
+<span class="co"># 7  0.000000e+00</span>
+<span class="co"># 15 2.485050e-02</span>
+<span class="co"># 25 3.452405e-04</span>
+<span class="co"># 31 0.000000e+00</span>
+<span class="co"># 32 3.762834e-04</span>
+<span class="co"># 33 8.633893e-05</span></code></pre>
+<p>Number of SNPs included:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sum_pip_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partition_pip_regions.html">partition_pip_regions</a></span><span class="op">(</span><span class="va">finemapstats.gr</span>, <span class="va">OCRs</span><span class="op">)</span>
-<span class="va">sum.pips</span> <span class="op">&lt;-</span> <span class="va">sum_pip_res</span><span class="op">$</span><span class="va">sum.pips</span>
-<span class="va">n.snps</span> <span class="op">&lt;-</span> <span class="va">sum_pip_res</span><span class="op">$</span><span class="va">n.snps</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">'Sum of PIPs in cell-type specific OCRs\n'</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Sum of PIPs in cell-type specific OCRs</span></code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sum.pips</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte   Shared 2-3</span>
-<span class="co">## 7   0.7663084514 0.000000000 0.00000000        0       0        0 0.0000000000</span>
-<span class="co">## 15  0.2173870865 0.004280965 0.08199708        0       0        0 0.0002198158</span>
-<span class="co">## 25  0.0001417186 0.000000000 0.00000000        0       0        0 0.0037536142</span>
-<span class="co">##       Shared 4+</span>
-<span class="co">## 7  0.0000000000</span>
-<span class="co">## 15 0.0248505012</span>
-<span class="co">## 25 0.0003452405</span></code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">'Number of SNPs included:\n'</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Number of SNPs included:</span></code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">n.snps</span>, <span class="fl">3</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte Shared 2-3</span>
-<span class="co">## 7              7           0          0        0       0        0          0</span>
-<span class="co">## 15             6           3          6        0       0        0          1</span>
-<span class="co">## 25             7           0          0        0       0        0          2</span>
-<span class="co">##    Shared 4+</span>
-<span class="co">## 7          0</span>
-<span class="co">## 15         4</span>
-<span class="co">## 25         5</span></code></pre>
+<code class="sourceCode R"><span class="va">n.snps</span> <span class="op">&lt;-</span> <span class="va">sum_pip_res</span><span class="op">$</span><span class="va">n.snps</span>
+<span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">n.snps</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">#    Cardiomyocyte Endothelial Fibroblast Lymphoid Myeloid Pericyte Shared 2-3</span>
+<span class="co"># 7              7           0          0        0       0        0          0</span>
+<span class="co"># 15             6           3          6        0       0        0          1</span>
+<span class="co"># 25             7           0          0        0       0        0          2</span>
+<span class="co"># 31             1           0          0        0       0        0          0</span>
+<span class="co"># 32             1           0          0        0       0        0          0</span>
+<span class="co"># 33             2           0          0        0       0        0          1</span>
+<span class="co">#    Shared 4+</span>
+<span class="co"># 7          0</span>
+<span class="co"># 15         4</span>
+<span class="co"># 25         5</span>
+<span class="co"># 31         0</span>
+<span class="co"># 32         1</span>
+<span class="co"># 33         1</span></code></pre>
 <p>Filter loci with a cutoff of total PIPs in OCR &gt; 0.25, compute the proportion of PIPs partitioned in each cell type category.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sum.pips.filtered</span> <span class="op">&lt;-</span> <span class="va">sum.pips</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">sum.pips</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.25</span>,<span class="op">]</span>
-
 <span class="va">prop.pip.mat</span> <span class="op">&lt;-</span> <span class="va">sum.pips.filtered</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">sum.pips.filtered</span><span class="op">)</span>
-
 <span class="va">prop.pip.mat</span> <span class="op">&lt;-</span> <span class="va">prop.pip.mat</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">Cardiomyocyte</span><span class="op">)</span><span class="op">)</span>, <span class="op">]</span></code></pre></div>
 <p>We can make a structure plot to show the proportion of PIPs in each cell type category.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">categories</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cardiomyocyte"</span>, <span class="st">"Endothelial"</span>, <span class="st">"Fibroblast"</span>, <span class="st">"Lymphoid"</span>, 
                 <span class="st">"Myeloid"</span>, <span class="st">"Pericyte"</span>, <span class="st">"Shared 2-3"</span>, <span class="st">"Shared 4+"</span><span class="op">)</span>
 <span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#b22222"</span>, <span class="st">"#8DD3C7"</span>, <span class="st">"#BEBADA"</span>, <span class="st">"#FB8072"</span>, 
             <span class="st">"#80B1D3"</span>, <span class="st">"#B3DE69"</span>, <span class="st">"royalblue"</span>, <span class="st">"#003C86"</span><span class="op">)</span>
 <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compile_structure_plot_data.html">compile_structure_plot_data</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">categories</span><span class="op">)</span><span class="op">)</span>
-
 <span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">dat</span>, colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">colors</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p><img src="partition_pip_tutorial_files/figure-html/structure-plot-1.png" width="960"></p>
 </div>
