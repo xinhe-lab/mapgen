@@ -1,12 +1,12 @@
-Package: Mapgen
+Package: mapgen
 Title: Performs gene mapping based on functionally-informed genetic fine mapping
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
     person("Alan", "Selewa", email = "selewa@uchicago.edu", role = c("aut")),
     person("Sebastian", "Pott", email = "spott@uchicago.edu", role = c("aut")),
     person("Xin", "He", role = c("aut", "cph"), email = "xinhe@uchicago.edu"))
-Description: Mapgen is an R package that performs gene mapping based on functionally-informed genetic fine mapping.
+Description: mapgen is an R package that performs gene mapping based on functionally-informed genetic fine mapping.
 Depends: R (>= 3.5.1)
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -30,6 +30,6 @@ Remotes:
     bioc::3.3/plyranges,
     bioc::3.3/rtracklayer
 Suggests: 
-    PhanstielLab/bedtoolsr
+    bedtoolsr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
