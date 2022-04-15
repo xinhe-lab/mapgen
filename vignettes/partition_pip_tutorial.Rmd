@@ -30,14 +30,15 @@ library(mapgen)
 
 Load fine-mapping summary statistics.
 ```{r load-finemapping-res}
-finemap <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "mapgen"))
-finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
-                                          pos = 'pos', pip = 'susie_pip', 
-                                          pval = 'pval', zscore = 'zscore', 
-                                          cs = 'CS', locus = 'locus',  
-                                          pip.thresh = 1e-5,
-                                          cols.to.keep = c('snp','chr','pos', 'pip', 'pval','locus'))
-head(finemap.gr)
+finemapstats <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "mapgen"))
+finemapstats.gr <- process_finemapping_sumstat(finemapstats, 
+                                               snp = 'snp', chr = 'chr', 
+                                               pos = 'pos', pip = 'susie_pip', 
+                                               pval = 'pval', zscore = 'zscore', 
+                                               cs = 'CS', locus = 'locus',  
+                                               pip.thresh = 1e-5, 
+                                               cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'))
+head(finemapstats.gr)
 ```
 
 Load genomic annotations (hg19). 
@@ -53,7 +54,7 @@ summary(OCRs)
 
 Sum of PIPs within cell-type specific OCRs.
 ```{r sum-pip-disjoint-OCRs}
-sum_pip_res <- partition_pip_regions(finemap.gr, OCRs)
+sum_pip_res <- partition_pip_regions(finemapstats.gr, OCRs)
 sum.pips <- sum_pip_res$sum.pips
 n.snps <- sum_pip_res$n.snps
 
