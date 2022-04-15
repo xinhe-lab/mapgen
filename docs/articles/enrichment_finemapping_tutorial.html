@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping</a>
+      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine-mapping</a>
     </li>
     <li>
       <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
@@ -94,21 +94,18 @@
 <p>Load the package</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mapgen</span><span class="op">)</span></code></pre></div>
-<p>First we run <code><a href="../reference/run_gwas_cleaner.html">run_gwas_cleaner()</a></code>, which takes our summary statistics in either tab or comma delimited. It also takes a character vector of the 8 column names needed. The columns needed have to be given in the following order:</p>
+<p>First we run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to load and process the summary statistics. We need the following columns in the summary statistics:</p>
 <ul>
-<li>chromosome (just the number, no “chr”, hg19!)<br>
-</li>
-<li>position (base pair position, hg19!)<br>
+<li>chromosome</li>
+<li>position (base pair position, <em>we current only support hg19!</em>)<br>
 </li>
 <li>beta (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))<br>
 </li>
 <li>standard error (SE)<br>
 </li>
-<li>reference allele (A,C,T,G)<br>
-</li>
-<li>association/effect allele (A,C,T,G)<br>
-</li>
-<li>some kind of SNP ID (rsID, or chr:position:a1:a2)<br>
+<li>reference allele</li>
+<li>association/effect allele</li>
+<li>SNP ID (rsID, or chr:position:a1:a2)<br>
 </li>
 <li>p-value</li>
 </ul>
@@ -116,13 +113,16 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># load LD blocks</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'Euro_LD_Chunks'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span></code></pre></div>
-<p>Cleans GWAS summary statistics, adds metadata</p>
+<p>Cleans GWAS summary statistics, adds metadata. The summary statistics file could be in either tab or comma delimited.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sumstats_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"test_sumstats.txt.gz"</span>, package<span class="op">=</span><span class="st">"mapgen"</span><span class="op">)</span>
-<span class="va">gwas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_gwas_cleaner.html">run_gwas_cleaner</a></span><span class="op">(</span><span class="va">sumstats_file</span>, 
-                         cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'position_b37'</span>,<span class="st">'bcac_onco2_beta'</span>,<span class="st">'bcac_onco2_se'</span>,<span class="st">'a0'</span>,<span class="st">'a1'</span>,<span class="st">'phase3_1kg_id'</span>,<span class="st">'bcac_onco2_P1df_Wald'</span><span class="op">)</span>,
-                         bigSNP <span class="op">=</span> <span class="va">bigSNP</span>,
-                         LD_Blocks <span class="op">=</span> <span class="va">LD_Blocks</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">gwas_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"test_sumstats.txt.gz"</span>, package<span class="op">=</span><span class="st">"mapgen"</span><span class="op">)</span>
+<span class="va">gwas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats</a></span><span class="op">(</span><span class="va">gwas_file</span>, 
+                              chr<span class="op">=</span><span class="st">'chr'</span>, pos<span class="op">=</span><span class="st">'position_b37'</span>, 
+                              beta<span class="op">=</span><span class="st">'bcac_onco2_beta'</span>, se<span class="op">=</span><span class="st">'bcac_onco2_se'</span>,
+                              a0<span class="op">=</span><span class="st">'a0'</span>, a1<span class="op">=</span><span class="st">'a1'</span>, 
+                              snp<span class="op">=</span><span class="st">'phase3_1kg_id'</span>, pval<span class="op">=</span><span class="st">'bcac_onco2_P1df_Wald'</span>,
+                              bigSNP<span class="op">=</span><span class="va">bigSNP</span>,
+                              LD_Blocks<span class="op">=</span><span class="va">LD_Blocks</span><span class="op">)</span></code></pre></div>
 <p>Check that the output is cleaned and has appropriate columns:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gwas</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span><span class="op">)</span><span class="op">]</span></code></pre></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping</a>
+      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine-mapping</a>
     </li>
     <li>
       <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
@@ -58,13 +58,9 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="LDblock_view_summary.html">LDblock_view_summary()</a></code> </p>
-        </td>
-        <td><p>LD block view summary table</p></td>
-      </tr><tr><td>
           <p><code><a href="annotator.html">annotator()</a></code> </p>
         </td>
-        <td><p>Assign SNPs with annotations based on overlap</p></td>
+        <td><p>Assigns SNPs with annotations based on overlap</p></td>
       </tr><tr><td>
           <p><code><a href="annotator_merged.html">annotator_merged()</a></code> </p>
         </td>
@@ -74,9 +70,13 @@
         </td>
         <td><p>Assigns each SNP to one ld-block</p></td>
       </tr><tr><td>
+          <p><code><a href="block_view_summary.html">block_view_summary()</a></code> </p>
+        </td>
+        <td><p>LD block view summary table</p></td>
+      </tr><tr><td>
           <p><code><a href="clean_sumstats.html">clean_sumstats()</a></code> </p>
         </td>
-        <td><p>Clean summary statistics</p></td>
+        <td><p>Cleans summary statistics</p></td>
       </tr><tr><td>
           <p><code><a href="compile_structure_plot_data.html">compile_structure_plot_data()</a></code> </p>
         </td>
@@ -138,9 +138,13 @@
         </td>
         <td><p>Process ABC scores and save as a GRanges object</p></td>
       </tr><tr><td>
-          <p><code><a href="process_finemapping_sumstat.html">process_finemapping_sumstat()</a></code> </p>
+          <p><code><a href="process_finemapping_sumstats.html">process_finemapping_sumstats()</a></code> </p>
         </td>
-        <td><p>Process fine mapping summary statistics data</p></td>
+        <td><p>Process fine-mapping summary statistics data</p></td>
+      </tr><tr><td>
+          <p><code><a href="process_gwas_sumstats.html">process_gwas_sumstats()</a></code> </p>
+        </td>
+        <td><p>Cleans GWAS summary statistics and adds metadata</p></td>
       </tr><tr><td>
           <p><code><a href="process_narrowpeaks.html">process_narrowpeaks()</a></code> </p>
         </td>
@@ -152,15 +156,11 @@
       </tr><tr><td>
           <p><code><a href="run_finemapping.html">run_finemapping()</a></code> </p>
         </td>
-        <td><p>Run finemapping</p></td>
-      </tr><tr><td>
-          <p><code><a href="run_gwas_cleaner.html">run_gwas_cleaner()</a></code> </p>
-        </td>
-        <td><p>Clean GWAS summary statistics and adds metadata</p></td>
+        <td><p>Run fine-mapping</p></td>
       </tr><tr><td>
           <p><code><a href="run_susie.html">run_susie()</a></code> </p>
         </td>
-        <td><p>run SUSIE</p></td>
+        <td><p>Run fine-mapping with SUSIE for one LD block</p></td>
       </tr><tr><td>
           <p><code><a href="run_torus.html">run_torus()</a></code> </p>
         </td>

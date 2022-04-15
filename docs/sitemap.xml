@@ -64,6 +64,9 @@
     <loc>https://kevinlkx.github.io/mapgen/reference/assign_locus_snp.html</loc>
   </url>
   <url>
+    <loc>https://kevinlkx.github.io/mapgen/reference/block_view_summary.html</loc>
+  </url>
+  <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/clean_sumstats.html</loc>
   </url>
   <url>
@@ -143,6 +146,12 @@
   </url>
   <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/process_finemapping_sumstat.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/mapgen/reference/process_finemapping_sumstats.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/mapgen/reference/process_gwas_sumstats.html</loc>
   </url>
   <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/process_narrowpeaks.html</loc>

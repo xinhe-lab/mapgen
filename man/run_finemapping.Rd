@@ -2,7 +2,7 @@
 % Please edit documentation in R/finemapping.R
 \name{run_finemapping}
 \alias{run_finemapping}
-\title{Run finemapping}
+\title{Run fine-mapping}
 \usage{
 run_finemapping(sumstats, bigSNP, priortype = c("torus", "uniform"), L = 1)
 }

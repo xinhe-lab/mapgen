@@ -13,7 +13,7 @@ navbar:
     articles:
       text: Tutorials
       menu:
-      - text: Functional enrichment and fine mapping
+      - text: Functional enrichment and fine-mapping
         href: articles/enrichment_finemapping_tutorial.html
       - text: Partition fine-mapping PIPs by annotation categories
         href: articles/partition_pip_tutorial.html

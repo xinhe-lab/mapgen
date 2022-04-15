@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping</a>
+      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine-mapping</a>
     </li>
     <li>
       <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
@@ -121,17 +121,18 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mapgen</span><span class="op">)</span></code></pre></div>
 <p>Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">finemap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"aFib_Finemapped.tble.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">finemap.gr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_finemapping_sumstat.html">process_finemapping_sumstat</a></span><span class="op">(</span><span class="va">finemap</span>, snp <span class="op">=</span> <span class="st">'snp'</span>, chr <span class="op">=</span> <span class="st">'chr'</span>, 
-                                          pos <span class="op">=</span> <span class="st">'pos'</span>, pip <span class="op">=</span> <span class="st">'susie_pip'</span>, 
-                                          pval <span class="op">=</span> <span class="st">'pval'</span>, zscore <span class="op">=</span> <span class="st">'zscore'</span>, 
-                                          cs <span class="op">=</span> <span class="st">'CS'</span>, locus <span class="op">=</span> <span class="st">'locus'</span>,  
-                                          pip.thresh <span class="op">=</span> <span class="fl">1e-5</span>, 
-                                          cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'snp'</span>,<span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'a0'</span>, <span class="st">'a1'</span>, <span class="st">'pip'</span>, <span class="st">'pval'</span>, <span class="st">'zscore'</span>, <span class="st">'cs'</span>, <span class="st">'locus'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Process fine-mapping summary statistics ...</span>
+<code class="sourceCode R"><span class="va">finemapstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"aFib_Finemapped.tble.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">finemapstats.gr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_finemapping_sumstats.html">process_finemapping_sumstats</a></span><span class="op">(</span><span class="va">finemapstats</span>, 
+                                                snp <span class="op">=</span> <span class="st">'snp'</span>, chr <span class="op">=</span> <span class="st">'chr'</span>, 
+                                                pos <span class="op">=</span> <span class="st">'pos'</span>, pip <span class="op">=</span> <span class="st">'susie_pip'</span>, 
+                                                pval <span class="op">=</span> <span class="st">'pval'</span>, zscore <span class="op">=</span> <span class="st">'zscore'</span>, 
+                                                cs <span class="op">=</span> <span class="st">'CS'</span>, locus <span class="op">=</span> <span class="st">'locus'</span>,  
+                                                pip.thresh <span class="op">=</span> <span class="fl">1e-5</span>, 
+                                                cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'snp'</span>,<span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'a0'</span>, <span class="st">'a1'</span>, <span class="st">'pip'</span>, <span class="st">'pval'</span>, <span class="st">'zscore'</span>, <span class="st">'cs'</span>, <span class="st">'locus'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Processing fine-mapping summary statistics ...</span>
 <span class="co">## Filter SNPs with PIP threshold of 1e-05</span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">finemap.gr</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">finemapstats.gr</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## GRanges object with 6 ranges and 10 metadata columns:</span>
 <span class="co">##       seqnames    ranges strand |         snp       chr       pos          a0</span>
 <span class="co">##          &lt;Rle&gt; &lt;IRanges&gt;  &lt;Rle&gt; | &lt;character&gt; &lt;integer&gt; &lt;integer&gt; &lt;character&gt;</span>
@@ -204,7 +205,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <li>c.dist = 50000 (distance weight parameter: 50kb).</li>
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">gene.mapping.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_gene_pip.html">compute_gene_pip</a></span><span class="op">(</span><span class="va">finemap.gr</span>, 
+<code class="sourceCode R"><span class="va">gene.mapping.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_gene_pip.html">compute_gene_pip</a></span><span class="op">(</span><span class="va">finemapstats.gr</span>, 
                                      <span class="va">genomic.annots</span>,
                                      enhancer.loop.method <span class="op">=</span> <span class="st">"ABC.pcHiC.nearby20kb"</span>,
                                      intron.mode <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -263,7 +264,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## <span style="color: #BCBCBC;">6</span>    33 TTC39A,EPS15     TTC39A(0.409),E… TTC39A              0.409        0.411</span></code></pre>
 <p>Find the nearest gene for the top SNP in each locus</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">nearest_genes.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_nearest_genes.html">find_nearest_genes</a></span><span class="op">(</span><span class="va">finemap.gr</span>, <span class="va">gene.annots</span>, dist.to <span class="op">=</span> <span class="st">"genebody"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">nearest_genes.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_nearest_genes.html">find_nearest_genes</a></span><span class="op">(</span><span class="va">finemapstats.gr</span>, <span class="va">gene.annots</span>, dist.to <span class="op">=</span> <span class="st">"genebody"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nearest_genes.df</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##          snp chr       pos nearest_gene</span>
 <span class="co">## 1  rs2200732   4 111710042        PITX2</span>

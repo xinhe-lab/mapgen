@@ -2,7 +2,7 @@
 % Please edit documentation in R/finemapping.R
 \name{run_susie}
 \alias{run_susie}
-\title{Run finemapping with SUSIE for one LD block}
+\title{Run fine-mapping with SUSIE for one LD block}
 \usage{
 run_susie(sumstats, bigSNP, locus, L = 1, useprior)
 }
@@ -22,5 +22,5 @@ in \code{sumstats} as prior.}
 finemapping results for one LD block
 }
 \description{
-Run finemapping with SUSIE for one LD block
+Run fine-mapping with SUSIE for one LD block
 }

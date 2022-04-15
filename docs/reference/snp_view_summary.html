@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
       </span>
     </div>
 
@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine mapping</a>
+      <a href="../articles/enrichment_finemapping_tutorial.html">Functional enrichment and fine-mapping</a>
     </li>
     <li>
       <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
@@ -63,7 +63,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">snp_view_summary</span><span class="op">(</span>
   <span class="va">genemapping_res</span>,
   <span class="va">gene.annots</span>,
-  <span class="va">finemap.gr</span>,
+  <span class="va">finemapstats.gr</span>,
   fractional.PIP.thresh <span class="op">=</span> <span class="fl">0.02</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -74,7 +74,7 @@
 <dd><p>data frame of gene mapping result</p></dd>
 <dt>gene.annots</dt>
 <dd><p>data frame of gene annotations</p></dd>
-<dt>finemap.gr</dt>
+<dt>finemapstats.gr</dt>
 <dd><p>GRange object of fine mapping result</p></dd>
 <dt>fractional.PIP.thresh</dt>
 <dd><p>Filter SNPs with fractional PIP cutoff (default: 0.02)</p></dd>
