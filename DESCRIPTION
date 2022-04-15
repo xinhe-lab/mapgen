@@ -1,6 +1,6 @@
 Package: Mapgen
 Title: Performs gene mapping based on functionally-informed genetic fine mapping
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
     person("Alan", "Selewa", email = "selewa@uchicago.edu", role = c("aut")),
@@ -28,10 +28,8 @@ Remotes:
     stephenslab/susieR,
     bioc::3.3/GenomicRanges,
     bioc::3.3/plyranges,
-    bioc::3.3/rtracklayer,
+    bioc::3.3/rtracklayer
+Suggests: 
     PhanstielLab/bedtoolsr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
-
-
-
