@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## mapgen
+## Mapgen
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -12,10 +12,10 @@ functionally-informed genetic fine mapping.
 ## Installation
 
 You can install the development version of `mapgen` from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/xinhe-lab/mapgen) with:
 
 ``` r
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("kevinlkx/mapgen")
 ```
 

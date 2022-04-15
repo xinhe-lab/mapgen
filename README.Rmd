@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## mapgen
+## Mapgen
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -22,10 +22,10 @@ knitr::opts_chunk$set(
 
 ## Installation
 
-You can install the development version of `mapgen` from [GitHub](https://github.com/) with:
+You can install the development version of `mapgen` from [GitHub](https://github.com/xinhe-lab/mapgen) with:
 
 ```{r install-mapgen-package, eval=FALSE}
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("kevinlkx/mapgen")
 ```
 
