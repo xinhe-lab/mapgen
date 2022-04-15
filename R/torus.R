@@ -20,13 +20,20 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 
   stopifnot(all(file.exists(annotation_bed_files)))
 
+  required.cols <- c('snp','chr', 'pos', 'locus', 'zscore')
+  if(!all( required.cols %in% colnames(sumstats))){
+    stop(sprintf('Column: %s cannot be found in the summary statistics!',
+                 required.cols[which(!required.cols %in% colnames(sumstats))]))
+  }
+
   cat('Annotating SNPs...\n')
-  sumstats.annots <- annotator(sumstats, annotations = annotation_bed_files)
+  snps.annots <- annotate_snps_binary(sumstats, annotations = annotation_bed_files, keep.annot.only=T)
 
   cat('Generating Torus input files ...\n')
-  readr::write_tsv(sumstats.annots[,-c(1:6,8:12)], file=torus_annot_file, col_names = T)
+  readr::write_tsv(snps.annots, file=torus_annot_file, col_names = T)
+  cat('Wrote Torus annotation files to', torus_annot_file, '\n')
   readr::write_tsv(sumstats[,c('snp','locus','zscore')], file=torus_zscore_file, col_names = T)
-
+  cat('Wrote Torus z-score files to', torus_zscore_file, '\n')
   return(list(torus_annot_file=torus_annot_file, torus_zscore_file=torus_zscore_file))
 }
 

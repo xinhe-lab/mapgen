@@ -156,22 +156,30 @@ assign_locus_snp <- function(cleaned.sumstats, ld){
 #' @title Assigns SNPs with annotations based on overlap
 #' @param gwas a data frame or tibble of GWAS summary statistics
 #' @param annotations annotation BED files
-#'
+#' @param keep.annot.only Logical. If TRUE, only returns the
+#' snp and annotation columns
+#' @return if \code{keep.annot.only=TRUE}, returns
+#' a data frame or tibble of snp and annotations. Otherwise, returns
+#' a data frame or tibble of GWAS summary statistics and annotations.
 #' @export
-annotator <- function(gwas, annotations){
+annotate_snps_binary <- function(gwas, annotations, keep.annot.only=TRUE){
 
-  snpRanges <- make_ranges(gwas$chr, gwas$pos, gwas$pos)
+  snpRanges <- mapgen:::make_ranges(gwas$chr, gwas$pos, gwas$pos)
   snpRanges <- plyranges::mutate(snpRanges, snp=gwas$snp)
 
   for(f in annotations){
-
     name <- paste0(basename(f),'_d')
-    curr <- rtracklayer::import(f, format='bed')
-    subdf <- IRanges::subsetByOverlaps(snpRanges, curr)
-    snpsIn <- unique(subdf$snp)
-
+    cat(sprintf('Annotating SNPs with %s ...\n', basename(f)))
+    annot.gr <- rtracklayer::import(f, format='bed')
+    snpRangesIn <- IRanges::subsetByOverlaps(snpRanges, annot.gr)
+    snpsIn <- unique(snpRangesIn$snp)
     gwas <- dplyr::mutate(gwas, !!name := ifelse(snp %in% snpsIn,1,0))
   }
+
+  if(keep.annot.only){
+    gwas <- gwas[,c('snp', paste0(basename(annotations), '_d'))]
+  }
+
   return(gwas)
 }
 
@@ -189,8 +197,8 @@ annotator_merged <- function(gwas, annotations){
   for(f in annotations){
 
     curr <- rtracklayer::import(f, format='bed')
-    subdf <- IRanges::subsetByOverlaps(snpRanges, curr)
-    snpsIn <- unique(subdf$snp)
+    snpRangesIn <- IRanges::subsetByOverlaps(snpRanges, annot.gr)
+    snpsIn <- unique(snpRangesIn$snp)
 
     if(length(snpsIn)>0){
       curr <- gwas %>% pull(annots)
