@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.1</span>
       </span>
     </div>
 
@@ -85,16 +85,15 @@
 
     
     
-<p>Welcome to this tutorial where we perform enrichment analysis and fine-mapping on a small GWAS dataset.</p>
-<p>In this example, we use a genotype reference panel from European population (1KG).</p>
-<p>If you are in the He lab, you can load the <code>.rds</code> file from RCC. Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) and use <code>bigsnpr::readBed()</code> to create the <code>.rds</code> file below.</p>
+<p>In this tutorial, we perform enrichment analysis and fine-mapping on a small GWAS dataset.</p>
+<p>We use a reference genotype panel from European population (1KG). If you are in the He lab, you can load the <code>EUR_variable_1kg.rds</code> file from RCC.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu">bigsnpr</span><span class="fu">::</span><span class="fu"><a href="https://privefl.github.io/bigsnpr/reference/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></code></pre></div>
-<p>Here we show a quick run-through of the enrichment and fine-mapping procedure using a test summary statistics.</p>
+<p>Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) and use <code>bigsnpr::readBed()</code> to create the <code>.rds</code> file below.</p>
 <p>Load the package</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mapgen</span><span class="op">)</span></code></pre></div>
-<p>First we run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to load and process the summary statistics. We need the following columns in the summary statistics:</p>
+<p>First we run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to load and process the summary statistics. The summary statistics file could be in either tab or comma delimited. We need the following columns in the summary statistics:</p>
 <ul>
 <li>chromosome</li>
 <li>position (base pair position, <em>we current only support hg19!</em>)<br>
@@ -109,11 +108,10 @@
 </li>
 <li>p-value</li>
 </ul>
-<p>We also need reference LD blocks. Here we loaded the reference LD blocks from European 1KG.</p>
+<p>Load the reference LD blocks from European 1KG.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># load LD blocks</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'Euro_LD_Chunks'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span></code></pre></div>
-<p>Cleans GWAS summary statistics, adds metadata. The summary statistics file could be in either tab or comma delimited.</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'Euro_LD_Chunks'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span></code></pre></div>
+<p>Cleans GWAS summary statistics, adds metadata.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gwas_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"test_sumstats.txt.gz"</span>, package<span class="op">=</span><span class="st">"mapgen"</span><span class="op">)</span>
 <span class="va">gwas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats</a></span><span class="op">(</span><span class="va">gwas_file</span>, 
@@ -133,11 +131,11 @@
 <span class="va">annotation_bed_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">bed_annotations_dir</span>, pattern <span class="op">=</span> <span class="st">"*.bed"</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">torus.files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_torus_input_files.html">prepare_torus_input_files</a></span><span class="op">(</span><span class="va">gwas</span>, <span class="va">annotation_bed_files</span><span class="op">)</span></code></pre></div>
 <p>Now that the appropriate files have been generated, lets run TORUS.</p>
-<p><code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "est_prior"</code> returns a list with: enrichment estimates (log odds ratio) and 95% confidence intervals of each annotation, and SNP-level priors using the enrichment estimates.</p>
+<p><code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "est-prior"</code> returns a list with: enrichment estimates (log odds ratio) and 95% confidence intervals of each annotation, and SNP-level priors using the enrichment estimates.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_torus.html">run_torus</a></span><span class="op">(</span><span class="va">torus.files</span><span class="op">$</span><span class="va">torus_annot_file</span>, 
                           <span class="va">torus.files</span><span class="op">$</span><span class="va">torus_zscore_file</span>,
-                          option <span class="op">=</span> <span class="st">"est_prior"</span>,
+                          option <span class="op">=</span> <span class="st">"est-prior"</span>,
                           torus_path <span class="op">=</span> <span class="st">"torus"</span><span class="op">)</span> <span class="co"># you may need to set the installed path to 'torus' executable.</span></code></pre></div>
 <p>TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. We run <code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "fdr"</code> to get the probability of each chunk containing a causal variant. We can filter our chunks with low probability, thus saving us on computational time!</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -151,13 +149,14 @@
 <p>We see we have a new column called <code>torus_pip</code></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">susie.df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_pip'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
-<p>With this data frame, we can perform fine-mapping. We use <code>RunFinemapping()</code> to get out results. This will be quite slow if chunks contain many SNPs( O(n^2) where n is # of SNPs).</p>
+<p>With this data frame, we can perform fine-mapping. We use <code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> with SNP-level priors computed from TORUS based on enrichment estimates. Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP. This step could take a while if chunks contain many SNPs (<span class="math inline">\(O(n^2)\)</span> where n is # of SNPs).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">susie_finemap_L1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">susie.df</span>, bigSNP <span class="op">=</span> <span class="va">bigSNP</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">susie_finemap_L1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">susie.df</span>, bigSNP <span class="op">=</span> <span class="va">bigSNP</span>, 
+                                    priortype <span class="op">=</span> <span class="st">'torus'</span>, L <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p><code>susie_finemap_L1</code> is a list of SuSiE results, one for each chunk/LD block. Usually we are just interested in the SuSiE PIP, which gives the probability of a SNP being causal. We can annotate our cleaned summary statistics with this information using <code><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats()</a></code></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gwas_finemapped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span>susie_results <span class="op">=</span> <span class="va">susie_finemap_L1</span>, sumstats <span class="op">=</span> <span class="va">susie.df</span><span class="op">)</span></code></pre></div>
-<p>Lets look at the final cleaned, and finemapped summary statistics. We see we have a new column called <code>susie_pip</code> which is the probability of being causal. Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP.</p>
+<p>Lets look at the final cleaned, and finemapped summary statistics. We see we have a new column called <code>susie_pip</code> which is the probability of being causal.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gwas_finemapped</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_pip'</span>,<span class="st">'susie_pip'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
   </div>
