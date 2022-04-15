@@ -5,7 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, comment = "#")
 ```
 
 Partitioning PIPs by cell types and annotation categories
@@ -36,9 +36,7 @@ finemapstats.gr <- process_finemapping_sumstats(finemapstats,
                                                 pos = 'pos', pip = 'susie_pip', 
                                                 pval = 'pval', zscore = 'zscore', 
                                                 cs = 'CS', locus = 'locus',  
-                                                pip.thresh = 1e-5, 
-                                                cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'))
-head(finemapstats.gr)
+                                                pip.thresh = 1e-5)
 ```
 
 Load genomic annotations (hg19). 
@@ -49,32 +47,31 @@ genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", p
 Load annotations and cell type OCR peaks (disjoint regions). This is a list of GRanges objects.
 ```{r load-disjoint-OCRs}
 OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "mapgen"))
-summary(OCRs)
 ```
 
-Sum of PIPs within cell-type specific OCRs.
+Sum PIPs within cell-type specific OCRs.
 ```{r sum-pip-disjoint-OCRs}
 sum_pip_res <- partition_pip_regions(finemapstats.gr, OCRs)
+```
+
+Sum of PIPs:
+```{r}
 sum.pips <- sum_pip_res$sum.pips
+head(sum.pips)
+```
+
+Number of SNPs included:
+```{r}
 n.snps <- sum_pip_res$n.snps
-
-cat('Sum of PIPs in cell-type specific OCRs\n')
-head(sum.pips, 3)
-
-cat('Number of SNPs included:\n')
-head(n.snps, 3)
-
+head(n.snps)
 ```
 
 Filter loci with a cutoff of total PIPs in OCR > 0.25, 
 compute the proportion of PIPs partitioned in each cell type category.
 ```{r filter-locus-proportion-pips}
 sum.pips.filtered <- sum.pips[rowSums(sum.pips) > 0.25,]
-
 prop.pip.mat <- sum.pips.filtered/rowSums(sum.pips.filtered)
-
 prop.pip.mat <- prop.pip.mat[with(prop.pip.mat, order(-Cardiomyocyte)), ]
-
 ```
 
 We can make a structure plot to show the proportion of PIPs in each cell type category.
@@ -84,6 +81,5 @@ categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid",
 colors <- c("#b22222", "#8DD3C7", "#BEBADA", "#FB8072", 
             "#80B1D3", "#B3DE69", "royalblue", "#003C86")
 dat <- compile_structure_plot_data(prop.pip.mat, categories = rev(categories))
-
 structure_plot(dat, colors = rev(colors))
 ```

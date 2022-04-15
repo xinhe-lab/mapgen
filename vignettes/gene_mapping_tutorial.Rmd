@@ -71,8 +71,7 @@ finemapstats.gr <- process_finemapping_sumstats(finemapstats,
                                                 pos = 'pos', pip = 'susie_pip', 
                                                 pval = 'pval', zscore = 'zscore', 
                                                 cs = 'CS', locus = 'locus',  
-                                                pip.thresh = 1e-5, 
-                                                cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'))
+                                                pip.thresh = 1e-5)
 head(finemapstats.gr)
 ```
 
