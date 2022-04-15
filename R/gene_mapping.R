@@ -452,7 +452,7 @@ snp_view_summary <- function(genemapping_res, gene.annots, finemapstats.gr, frac
 #' @importFrom tibble as_tibble
 #' @export
 #'
-LDblock_view_summary <- function(genemapping_res, finemapstats.gr){
+block_view_summary <- function(genemapping_res, finemapstats.gr){
 
   # Gene CS based on locus level gene PIP
   gene.cs.l <- gene_cs(genemapping_res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
