@@ -30,8 +30,15 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
   snps.annots <- annotate_snps_binary(sumstats, annotations = annotation_bed_files, keep.annot.only=T)
 
   cat('Generating Torus input files ...\n')
+  if(missing(torus_annot_file)){
+    torus_annot_file <- tempfile(pattern = "torus_annotations", fileext = "txt.gz")
+  }
   readr::write_tsv(snps.annots, file=torus_annot_file, col_names = T)
   cat('Wrote Torus annotation files to', torus_annot_file, '\n')
+
+  if(missing(torus_zscore_file)){
+    torus_zscore_file <- tempfile(pattern = "torus_zscore", fileext = "txt.gz")
+  }
   readr::write_tsv(sumstats[,c('snp','locus','zscore')], file=torus_zscore_file, col_names = T)
   cat('Wrote Torus z-score files to', torus_zscore_file, '\n')
   return(list(torus_annot_file=torus_annot_file, torus_zscore_file=torus_zscore_file))
