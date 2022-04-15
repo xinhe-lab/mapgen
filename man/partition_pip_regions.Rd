@@ -4,10 +4,10 @@
 \alias{partition_pip_regions}
 \title{Partition PIPs into functional annotation regions}
 \usage{
-partition_pip_regions(finemap.gr, annots.list)
+partition_pip_regions(finemapstats.gr, annots.list)
 }
 \arguments{
-\item{finemap.gr}{a GRanges object of fine mapping summary statistics}
+\item{finemapstats.gr}{a GRanges object of fine mapping summary statistics}
 
 \item{annots.list}{a list of GRanges objects of functional annotations}
 }

@@ -2,22 +2,25 @@
 % Please edit documentation in R/finemapping.R
 \name{run_susie}
 \alias{run_susie}
-\title{run SUSIE}
+\title{Run finemapping with SUSIE for one LD block}
 \usage{
-run_susie(sumstats, bigSNP, ldchunk, L, prior)
+run_susie(sumstats, bigSNP, locus, L = 1, useprior)
 }
 \arguments{
 \item{sumstats}{summary statistics}
 
 \item{bigSNP}{bigSNP object}
 
-\item{ldchunk}{LD chunk}
+\item{locus}{LD block index}
 
 \item{L}{Number of causal signals}
 
-\item{prior}{Logical, if TRUE, use the \code{torus_pip} column
-in \code{sumstats} as prior}
+\item{useprior}{Logical, if TRUE, use the \code{torus_pip} column
+in \code{sumstats} as prior.}
+}
+\value{
+finemapping results for one LD block
 }
 \description{
-run SUSIE
+Run finemapping with SUSIE for one LD block
 }

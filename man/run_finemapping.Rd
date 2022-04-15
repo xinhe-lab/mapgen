@@ -4,7 +4,7 @@
 \alias{run_finemapping}
 \title{Run finemapping}
 \usage{
-run_finemapping(sumstats, bigSNP, priortype = c("torus", "uniform"))
+run_finemapping(sumstats, bigSNP, priortype = c("torus", "uniform"), L = 1)
 }
 \arguments{
 \item{sumstats}{a tibble or data frame containing raw summary statistics; must have header!}
@@ -12,10 +12,12 @@ run_finemapping(sumstats, bigSNP, priortype = c("torus", "uniform"))
 \item{bigSNP}{a bigsnpr object attached via bigsnpr::snp_attach()}
 
 \item{priortype}{prior type: "torus" or "uniform".}
+
+\item{L}{Number of causal signals}
 }
 \value{
 list of finemapping results; one per LD block
 }
 \description{
-Runs SuSiE with L = 1
+Run finemapping with SuSiE for all LD blocks
 }

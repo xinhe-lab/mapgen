@@ -5,17 +5,17 @@
 \title{Compute gene PIPs based on fine-mapping result and functional annotations.}
 \usage{
 compute_gene_pip(
-  finemap.gr,
+  finemapstats.gr,
   genomic.annots,
   enhancer.loop.method = "ABC.pcHiC.nearby20kb",
   intron.mode = FALSE,
   c.dist = 50000,
-  cols.to.keep = c(names(mcols(finemap.gr)), "gene_name", "category", "weight",
+  cols.to.keep = c(names(mcols(finemapstats.gr)), "gene_name", "category", "weight",
     "frac_pip", "gene_pip")
 )
 }
 \arguments{
-\item{finemap.gr}{a GRanges object of fine-mapping result.}
+\item{finemapstats.gr}{a GRanges object of fine-mapping result.}
 
 \item{genomic.annots}{A list of GRanges objects of genomic annotations.}
 

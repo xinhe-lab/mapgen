@@ -4,12 +4,12 @@
 \alias{LDblock_view_summary}
 \title{LD block view summary table}
 \usage{
-LDblock_view_summary(genemapping_res, finemap.gr)
+LDblock_view_summary(genemapping_res, finemapstats.gr)
 }
 \arguments{
 \item{genemapping_res}{data frame of gene mapping result}
 
-\item{finemap.gr}{GRange object of fine mapping result}
+\item{finemapstats.gr}{GRange object of fine mapping result}
 }
 \description{
 LD block view summary table

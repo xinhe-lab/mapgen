@@ -17,5 +17,5 @@ prepare_susie_data(sumstats, torus_pip, torus_fdr, fdr_thresh = 0.1)
 tibble of summary statistics updated with torus output
 }
 \description{
-Adds torus results to cleaned summary statistics
+Adds Torus results to the summary statistics
 }

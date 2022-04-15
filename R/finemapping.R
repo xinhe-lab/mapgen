@@ -116,7 +116,7 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 
 #' @title Process fine mapping summary statistics data
 #'
-#' @param finemap A data frame of fine-mapping summary statistics
+#' @param finemapstats A data frame of fine-mapping summary statistics
 #' @param snp Name of the SNP ID (rsID) column in the summary statistics data
 #' @param chr Name of the chr column in the summary statistics data frame
 #' @param pos Name of the position column in the summary statistics data frame
@@ -128,77 +128,77 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 #' @param cols.to.keep columns to keep in the returned data frame
 #' @param pip.thresh PIP threshold (default = 1e-5).
 #' @param filterCS If TRUE, limiting to SNPs within credible sets.
-#' @param maxCS Maximum number of credible sets (default = 10).
+#' @param maxL Maximum number of credible sets (default = 10).
 #' @importFrom magrittr %>%
 #' @import GenomicRanges
 #' @return A GRanges object with cleaned and filtered fine-mapping summary statistics
 #' @export
-process_finemapping_sumstat <- function(finemap,
-                                        snp = 'snp',
-                                        chr = 'chr',
-                                        pos = 'pos',
-                                        pip = 'pip',
-                                        pval = 'pval',
-                                        zscore = 'zscore',
-                                        cs = 'cs',
-                                        locus = 'locus',
-                                        pip.thresh = 1e-5,
-                                        filterCS = FALSE,
-                                        maxCS = 10,
-                                        cols.to.keep = c('snp','chr','pos', 'pip', 'pval', 'zscore','cs', 'locus')){
+process_finemapping_sumstats <- function(finemapstats,
+                                         snp = 'snp',
+                                         chr = 'chr',
+                                         pos = 'pos',
+                                         pip = 'pip',
+                                         pval = 'pval',
+                                         zscore = 'zscore',
+                                         cs = 'cs',
+                                         locus = 'locus',
+                                         pip.thresh = 1e-5,
+                                         filterCS = FALSE,
+                                         maxL = 10,
+                                         cols.to.keep = c('snp','chr','pos', 'pip', 'pval', 'zscore','cs', 'locus')){
 
-  cat('Process fine-mapping summary statistics ...\n')
-  finemap <- finemap %>% dplyr::rename(snp = all_of(snp),
-                                       chr = all_of(chr),
-                                       pos = all_of(pos),
-                                       pip = all_of(pip))
+  cat('Processing fine-mapping summary statistics ...\n')
+  finemapstats <- finemapstats %>% dplyr::rename(snp = all_of(snp),
+                                                 chr = all_of(chr),
+                                                 pos = all_of(pos),
+                                                 pip = all_of(pip))
 
-  if( pval %in% colnames(finemap) ){
-    finemap <- dplyr::rename(finemap, pval = all_of(pval))
+  if( pval %in% colnames(finemapstats) ){
+    finemapstats <- dplyr::rename(finemapstats, pval = all_of(pval))
   }else{
-    finemap$pval <- NA
+    finemapstats$pval <- NA
   }
 
-  if( zscore %in% colnames(finemap) ){
-    finemap <- dplyr::rename(finemap, zscore = all_of(zscore))
+  if( zscore %in% colnames(finemapstats) ){
+    finemapstats <- dplyr::rename(finemapstats, zscore = all_of(zscore))
   }else{
-    finemap$zscore <- NA
+    finemapstats$zscore <- NA
   }
 
-  if( cs %in% colnames(finemap) ){
-    finemap <- dplyr::rename(finemap, cs = all_of(cs))
+  if( cs %in% colnames(finemapstats) ){
+    finemapstats <- dplyr::rename(finemapstats, cs = all_of(cs))
   }else{
-    finemap$cs <- NA
+    finemapstats$cs <- NA
   }
 
-  if( locus %in% colnames(finemap) ){
-    finemap <- dplyr::rename(finemap, locus = all_of(locus))
+  if( locus %in% colnames(finemapstats) ){
+    finemapstats <- dplyr::rename(finemapstats, locus = all_of(locus))
   }else{
-    finemap$locus <- NA
+    finemapstats$locus <- NA
   }
 
   # Remove SNPs with multiple PIPs
-  if(any(duplicated(paste(finemap$chr, finemap$pos)))){
+  if(any(duplicated(paste(finemapstats$chr, finemapstats$pos)))){
     cat('Remove SNPs with multiple PIPs...\n')
-    finemap <- finemap %>% dplyr::arrange(desc(pip)) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
+    finemapstats <- finemapstats %>% dplyr::arrange(desc(pip)) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
   }
 
-  finemap.gr <- makeGRangesFromDataFrame(finemap, start.field = 'pos', end.field = 'pos', keep.extra.columns = TRUE)
-  finemap.gr$chr <- finemap$chr
-  finemap.gr$pos <- finemap$pos
-  mcols(finemap.gr) <- mcols(finemap.gr)[,cols.to.keep]
-  GenomeInfoDb::seqlevelsStyle(finemap.gr) <- 'UCSC'
+  finemapstats.gr <- makeGRangesFromDataFrame(finemapstats, start.field = 'pos', end.field = 'pos', keep.extra.columns = TRUE)
+  finemapstats.gr$chr <- finemapstats$chr
+  finemapstats.gr$pos <- finemapstats$pos
+  mcols(finemapstats.gr) <- mcols(finemapstats.gr)[,cols.to.keep]
+  GenomeInfoDb::seqlevelsStyle(finemapstats.gr) <- 'UCSC'
 
   if( pip.thresh > 0 ) {
     cat('Filter SNPs with PIP threshold of', pip.thresh, '\n')
-    finemap.gr <- finemap.gr[finemap.gr$pip > pip.thresh, ]
+    finemapstats.gr <- finemapstats.gr[finemapstats.gr$pip > pip.thresh, ]
   }
 
   if( filterCS ) {
     cat('Filter SNPs in credible sets \n')
-    finemap.gr <- finemap.gr[finemap.gr$cs >= 1 & finemap.gr$cs <= maxCS, ]
+    finemapstats.gr <- finemapstats.gr[finemapstats.gr$cs >= 1 & finemapstats.gr$cs <= maxL, ]
   }
 
-  return(finemap.gr)
+  return(finemapstats.gr)
 
 }

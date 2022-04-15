@@ -7,7 +7,7 @@
 snp_view_summary(
   genemapping_res,
   gene.annots,
-  finemap.gr,
+  finemapstats.gr,
   fractional.PIP.thresh = 0.02
 )
 }
@@ -16,7 +16,7 @@ snp_view_summary(
 
 \item{gene.annots}{data frame of gene annotations}
 
-\item{finemap.gr}{GRange object of fine mapping result}
+\item{finemapstats.gr}{GRange object of fine mapping result}
 
 \item{fractional.PIP.thresh}{Filter SNPs with fractional PIP cutoff (default: 0.02)}
 }

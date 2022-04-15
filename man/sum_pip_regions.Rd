@@ -4,10 +4,14 @@
 \alias{sum_pip_regions}
 \title{Sum PIPs for genomic regions}
 \usage{
-sum_pip_regions(finemap.locus.gr, regions.gr, type = c("inside", "outside"))
+sum_pip_regions(
+  finemapstats.locus.gr,
+  regions.gr,
+  type = c("inside", "outside")
+)
 }
 \arguments{
-\item{finemap.locus.gr}{a GRanges object of fine mapping result for a locus.}
+\item{finemapstats.locus.gr}{a GRanges object of fine mapping result for a locus.}
 
 \item{regions.gr}{a GRanges object of genomic regions.}
 

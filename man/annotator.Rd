@@ -2,7 +2,7 @@
 % Please edit documentation in R/gwas.R
 \name{annotator}
 \alias{annotator}
-\title{Assign SNPs with annotations based on overlap}
+\title{Assigns SNPs with annotations based on overlap}
 \usage{
 annotator(gwas, annotations)
 }
@@ -12,5 +12,5 @@ annotator(gwas, annotations)
 \item{annotations}{annotation BED files}
 }
 \description{
-Assign SNPs with annotations based on overlap
+Assigns SNPs with annotations based on overlap
 }
