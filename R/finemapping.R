@@ -1,6 +1,6 @@
 
 #' @title Prepare SuSiE data
-#' @description Adds torus results to cleaned summary statistics
+#' @description Adds Torus results to the summary statistics
 #' @param sumstats a tibble or data frame containing raw summary statistics
 #' @param torus_pip a tibble containing PIP of each SNP (result from run_torus)
 #' @param torus_fdr a tibble containing the FDR of each region (result from run_torus)
@@ -20,30 +20,31 @@ prepare_susie_data <- function(sumstats, torus_pip, torus_fdr, fdr_thresh=0.1){
 }
 
 #' @title Run finemapping
-#' @description Runs SuSiE with L = 1
+#' @description Run finemapping with SuSiE for all LD blocks
 #' @param sumstats a tibble or data frame containing raw summary statistics; must have header!
 #' @param bigSNP a bigsnpr object attached via bigsnpr::snp_attach()
 #' @param priortype prior type: "torus" or "uniform".
+#' @param L Number of causal signals
 #' @return list of finemapping results; one per LD block
 #' @export
-run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform')){
+run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'), L = 1){
 
-  stopifnot('torus_pip' %in% colnames(sumstats))
   priortype <- match.arg(priortype)
 
   if(priortype == 'torus'){
-    usePrior <- TRUE
+    useprior <- TRUE
+    stopifnot('torus_pip' %in% colnames(sumstats))
   }else if(priortype == 'uniform'){
-    usePrior <- FALSE
+    useprior <- FALSE
   }
 
   chunks <- unique(sumstats$locus)
 
   susie_res <- list()
   for(z in seq_along(chunks)){
-    cat(sprintf('Finemapping chunks %d of %d ...\n', z, length(chunks)))
+    cat(sprintf('Finemapping chunk %d of %d ...\n', z, length(chunks)))
     susie.df <- sumstats[sumstats$locus == z, ]
-    susie_res[[as.character(z)]] <- run_susie(susie.df, bigSNP, z, L = 1, prior = usePrior)
+    susie_res[[as.character(z)]] <- run_susie(susie.df, bigSNP, z, L, useprior)
   }
 
   return(susie_res)
@@ -51,25 +52,24 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'))
 }
 
 
-#' @title run SUSIE
+#' @title Run finemapping with SUSIE for one LD block
 #' @param sumstats summary statistics
-#'
 #' @param bigSNP bigSNP object
-#' @param ldchunk LD chunk
+#' @param locus LD block index
 #' @param L Number of causal signals
-#' @param prior Logical, if TRUE, use the \code{torus_pip} column
-#' in \code{sumstats} as prior
-#'
+#' @param useprior Logical, if TRUE, use the \code{torus_pip} column
+#' in \code{sumstats} as prior.
+#' @return finemapping results for one LD block
 #' @export
-run_susie <- function(sumstats, bigSNP, ldchunk, L, prior){
+run_susie <- function(sumstats, bigSNP, locus, L=1, useprior){
 
-  sub.sumstats <- sumstats[sumstats$locus == ldchunk, ]
+  sub.sumstats <- sumstats[sumstats$locus == locus, ]
   if(nrow(sub.sumstats) > 1){
     X <- bigSNP$genotypes[ , sub.sumstats$bigSNP_index]
     X <- scale(X, center = T, scale = T)
     zhat <- sub.sumstats$zscore
     R <- cov2cor((crossprod(X) + tcrossprod(zhat))/nrow(X))
-    if(prior){
+    if(useprior){
       res <- suppressWarnings(susieR::susie_rss(z = zhat,
                                                 prior_weights = sub.sumstats$torus_pip,
                                                 R = R,
@@ -109,6 +109,7 @@ merge_susie_sumstats <- function(susie_results, sumstats){
     }
     sumstats[sumstats$locus == as.numeric(l), 'CS'] <- snps.in.cs
   }
+
   return(sumstats)
 }
 
