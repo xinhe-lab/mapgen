@@ -12,7 +12,8 @@ partition_pip_regions(finemap.gr, annots.list)
 \item{annots.list}{a list of GRanges objects of functional annotations}
 }
 \value{
-a list with a data frame with the sum of PIPs and a data frame with the number of SNPs included for each annotation category.
+a list with a data frame with the sum of PIPs and
+a data frame with the number of SNPs included for each annotation category.
 }
 \description{
 Partition PIPs into functional annotation regions

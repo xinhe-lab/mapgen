@@ -23,7 +23,7 @@ Here we show a quick run-through of the enrichment and fine-mapping procedure us
 
 Load the package
 ```{r}
-library(Mapgen)
+library(mapgen)
 ```
 
 First we run `run_gwas_cleaner()`, which takes our summary statistics in either tab or comma delimited. 
@@ -42,12 +42,12 @@ The columns needed have to be given in the following order:
 We also need reference LD blocks. Here we loaded the reference LD blocks from European 1KG. 
 ```{r}
 # load LD blocks
-data('Euro_LD_Chunks', package='Mapgen')
+data('Euro_LD_Chunks', package='mapgen')
 ```
 
 Cleans GWAS summary statistics, adds metadata
 ```{r}
-sumstats_file <- system.file("extdata", "test_sumstats.txt.gz", package="Mapgen")
+sumstats_file <- system.file("extdata", "test_sumstats.txt.gz", package="mapgen")
 gwas <- run_gwas_cleaner(sumstats_file, 
                          cols.to.keep = c('chr','position_b37','bcac_onco2_beta','bcac_onco2_se','a0','a1','phase3_1kg_id','bcac_onco2_P1df_Wald'),
                          bigSNP = bigSNP,
@@ -70,7 +70,7 @@ chromosomes should be just the number (no "chr").
 *Currently only hg19/b37 coordinates are accepted. You will get wrong results if you use hg38/other.*
 
 ```{r}
-bed_annotations_dir <- system.file("extdata", "test_bed_dir/", package="Mapgen")
+bed_annotations_dir <- system.file("extdata", "test_bed_dir/", package="mapgen")
 annotation_bed_files <- list.files(path = bed_annotations_dir, pattern = "*.bed", full.names = TRUE)
 torus.files <- prepare_torus_input_files(gwas, annotation_bed_files)
 ```

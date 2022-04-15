@@ -60,12 +60,12 @@ suppressMessages(library(data.table))
 suppressMessages(library(tidyverse))
 suppressMessages(library(GenomicRanges))
 library(ggplot2)
-library(Mapgen)
+library(mapgen)
 ```
 
 Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.
 ```{r load-finemapping-res}
-finemap <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "Mapgen"))
+finemap <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "mapgen"))
 finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
                                           pos = 'pos', pip = 'susie_pip', 
                                           pval = 'pval', zscore = 'zscore', 
@@ -77,8 +77,7 @@ head(finemap.gr)
 
 Load genomic annotations (hg19) and gene information.
 ```{r load-annotations}
-genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "Mapgen"))
-
+genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "mapgen"))
 gene.annots <- genomic.annots$genes
 ```
 
@@ -86,13 +85,13 @@ Add Promoter-capture HiC (PCHi-C) data from iPSC derived
 cardiomyocytes (CMs). You can use your own pcHiC data, 
 or skip this if you do not have relevant PCHi-C data.
 ```{r load-pcHiC}
-genomic.annots$pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "Mapgen"))
+genomic.annots$pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "mapgen"))
 ```
 
 Add ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
 You may skip this if you do not have relevant ABC scores.
 ```{r process_ABC}
-ABC <- data.table::fread(system.file("extdata", "heart_ventricle-ENCODE_ABC.tsv.gz", package = "Mapgen"))
+ABC <- data.table::fread(system.file("extdata", "heart_ventricle-ENCODE_ABC.tsv.gz", package = "mapgen"))
 ABC.gr <- process_ABC(ABC, ABC.thresh = 0.015, full.element = TRUE)
 ABC.gr <- ABC.gr[ABC.gr$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
 genomic.annots$ABC <- ABC.gr
@@ -100,7 +99,7 @@ genomic.annots$ABC <- ABC.gr
 
 Define active promoters using OCRs. 
 ```{r active.promoters}
-genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "Mapgen"))
+genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, genomic.annots$OCRs_hg19, minoverlap = 100)
 ```
 
@@ -114,7 +113,7 @@ due to technical reasons,
 we also consider the OCRs within 20 kb of active promoters as “enhancer loops”. 
 
 ```{r enhancer.nearby.promoter.20kb}
-genomic.annots$enhancer_nearby_promoter_20kb <- readRDS(system.file("extdata", "enhancer.nearby.promoter.20kb.gr.rds", package = "Mapgen"))
+genomic.annots$enhancer_nearby_promoter_20kb <- readRDS(system.file("extdata", "enhancer.nearby.promoter.20kb.gr.rds", package = "mapgen"))
 ```
 
 Define enhancer regions by OCRs (you may skip this if you do not have relevant enhancer data)
@@ -149,14 +148,12 @@ head(gene.mapping.res)
 Extract gene-level result table
 ```{r extract_gene_level_result}
 gene.pip.res <- extract_gene_level_result(gene.mapping.res, gene.annots)
-
 head(gene.pip.res)
 ```
 
 Obtain 80% credible gene sets
 ```{r gene-cs}
 gene.cs.df <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
-
 head(gene.cs.df)
 ```
 
@@ -168,7 +165,7 @@ head(nearest_genes.df)
 
 
 Make a Manhattan plot of the gene PIPs, and label genes with gene PIP > 0.8.
-```{r gene-manhattan-plot, fig.width=10, fig.height=7, warning=FALSE}
+```{r gene-manhattan-plot, fig.width=8, fig.height=6, warning=FALSE}
 gene_manhattan_plot(gene.pip.res, sig.pip = 0.8)
 ```
 

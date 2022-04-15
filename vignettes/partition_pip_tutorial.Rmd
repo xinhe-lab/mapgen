@@ -25,12 +25,12 @@ Load R packages
 ```{r load-packages, message=FALSE, warning=FALSE}
 suppressMessages(library(tidyverse))
 suppressMessages(library(GenomicRanges))
-library(Mapgen)
+library(mapgen)
 ```
 
 Load fine-mapping summary statistics.
 ```{r load-finemapping-res}
-finemap <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "Mapgen"))
+finemap <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "mapgen"))
 finemap.gr <- process_finemapping_sumstat(finemap, snp = 'snp', chr = 'chr', 
                                           pos = 'pos', pip = 'susie_pip', 
                                           pval = 'pval', zscore = 'zscore', 
@@ -42,12 +42,12 @@ head(finemap.gr)
 
 Load genomic annotations (hg19). 
 ```{r load-annotations}
-genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "Mapgen"))
+genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "mapgen"))
 ```
 
 Load annotations and cell type OCR peaks (disjoint regions). This is a list of GRanges objects.
 ```{r load-disjoint-OCRs}
-OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "Mapgen"))
+OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "mapgen"))
 summary(OCRs)
 ```
 

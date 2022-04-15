@@ -13,20 +13,20 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Mapgen
+## mapgen
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-Mapgen is an R package that performs gene mapping based on functionally-informed genetic fine mapping.
+`mapgen` is an R package that performs gene mapping based on functionally-informed genetic fine mapping.
 
 ## Installation
 
-You can install the development version of Mapgen from [GitHub](https://github.com/) with:
+You can install the development version of `mapgen` from [GitHub](https://github.com/) with:
 
-```{r install-Mapgen-package, eval=FALSE}
+```{r install-mapgen-package, eval=FALSE}
 install.packages("devtools")
-devtools::install_github("kevinlkx/Mapgen")
+devtools::install_github("kevinlkx/mapgen")
 ```
 
 Please install the following dependent R packages: 
@@ -35,8 +35,8 @@ Please install the following dependent R packages:
 as well as `GenomicRanges`, `plyranges`, `rtracklayer` from Bioconductor.
 
 After installing, check that it loads properly:
-```{r load-Mapgen, eval=FALSE}
-library(Mapgen)
+```{r load-mapgen, eval=FALSE}
+library(mapgen)
 ```
 
 ## Overview of the workflow
@@ -61,7 +61,7 @@ Main steps:
 knitr::include_graphics("vignettes/workflow.overview.png")
 ```
 
-Please follow the [tutorials](https://kevinlkx.github.io/Mapgen/articles/index.html) 
+Please follow the [tutorials](https://kevinlkx.github.io/mapgen/articles/index.html) 
 to learn how to use the package. 
 
 

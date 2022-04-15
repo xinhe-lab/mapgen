@@ -25,7 +25,7 @@ run_gwas_cleaner <- function(sumstats_file, cols.to.keep, bigSNP, LD_Blocks){
   cat('Assining SNPs to LD blocks...\n')
   if(missing(LD_Blocks)){
     cat('No LD blocks supplied. Using the included 1KG European LD blocks.')
-    data('Euro_LD_Chunks', package='Mapgen')
+    data('Euro_LD_Chunks', package='mapgen')
   }
   cleaned_sumstats <- assign_locus_snp(cleaned.sumstats = cleaned_sumstats,
                                        ld = LD_Blocks)

@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gene mapping tutorial • Mapgen</title>
+<title>Gene mapping tutorial • mapgen</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Gene mapping tutorial">
-<meta property="og:description" content="Mapgen">
+<meta property="og:description" content="mapgen">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -32,8 +32,8 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">Mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
+        <a class="navbar-link" href="../index.html">mapgen</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Tutorials
      
     <span class="caret"></span>
@@ -86,15 +86,15 @@
     
     
 <div class="section level2">
-<h2 id="about-our-gene-mapping-procedure">About our gene mapping procedure<a class="anchor" aria-label="anchor" href="#about-our-gene-mapping-procedure"></a>
+<h2 id="gene-mapping-procedure">Gene mapping procedure<a class="anchor" aria-label="anchor" href="#gene-mapping-procedure"></a>
 </h2>
 <p>Despite our fine-mapping efforts, there remains considerable uncertainty of causal variants in most loci. Even if the causal variants are known, assigning target genes can be difficult due to complex, often long-range, regulatory relationships between enhancers and genes.</p>
 <p>We developed a novel gene mapping procedure to prioritize target genes:</p>
 <ol style="list-style-type: decimal">
 <li><p>For every putative causal SNP, we assign a weight to each nearby gene, taking into account multiple ways a SNP may affect a gene. The weight of a nearby gene can be viewed as the probability that this SNP targets that gene.</p></li>
 <li><p>The PIP of each SNP is then distributed among all potential target genes according to the weights of these genes. The “fractional PIP” a gene receives from a SNP can be viewed as the support the SNP provides to that gene.</p></li>
-<li><p>For each gene, we then sum over the fractional PIPs it receives from all candidate SNPs in the region. The resulting “gene PIP” approximates the probability of a gene being causal (Methods).</p></li>
-<li><p>Similar to variant-level fine-mapping, we also define a “credible gene set”, the set of genes that capture the causal signal at a locus with high probability (80% in our study)</p></li>
+<li><p>For each gene, we then sum over the fractional PIPs it receives from all candidate SNPs in the region. The resulting “gene PIP” approximates the probability of a gene being causal.</p></li>
+<li><p>Similar to variant-level fine-mapping, we also define a “credible gene set”, the set of genes that capture the causal signal at a locus with high probability (80% by default).</p></li>
 </ol>
 <div class="figure">
 <img src="gene.mapping.diagram.png" alt="Schematic of gene-level PIP calculation. s: SNP, g: gene" width="75%"><p class="caption">
@@ -117,10 +117,11 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/GenomicRanges" class="external-link">GenomicRanges</a></span><span class="op">)</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Mapgen</span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mapgen</span><span class="op">)</span></code></pre></div>
 <p>Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">finemap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"../inst/extdata/aFib_Finemapped.tble.rds"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">finemap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"aFib_Finemapped.tble.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">finemap.gr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_finemapping_sumstat.html">process_finemapping_sumstat</a></span><span class="op">(</span><span class="va">finemap</span>, snp <span class="op">=</span> <span class="st">'snp'</span>, chr <span class="op">=</span> <span class="st">'chr'</span>, 
                                           pos <span class="op">=</span> <span class="st">'pos'</span>, pip <span class="op">=</span> <span class="st">'susie_pip'</span>, 
                                           pval <span class="op">=</span> <span class="st">'pval'</span>, zscore <span class="op">=</span> <span class="st">'zscore'</span>, 
@@ -152,28 +153,26 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">##   seqinfo: 20 sequences from an unspecified genome; no seqlengths</span></code></pre>
 <p>Load genomic annotations (hg19) and gene information.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/genomic.annots.hg19.gr.rds'</span><span class="op">)</span>
-
+<code class="sourceCode R"><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"genomic.annots.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">gene.annots</span> <span class="op">&lt;-</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">genes</span></code></pre></div>
 <p>Add Promoter-capture HiC (PCHi-C) data from iPSC derived cardiomyocytes (CMs). You can use your own pcHiC data, or skip this if you do not have relevant PCHi-C data.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/pcHiC.CM.gr.rds'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pcHiC.CM.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Add ABC scores from heart ventricle (from Nasser <em>et al.</em> <em>Nature</em> 2021). You may skip this if you do not have relevant ABC scores.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="st">'../inst/extdata/heart_ventricle-ENCODE_ABC.tsv.gz'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"heart_ventricle-ENCODE_ABC.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">ABC.gr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_ABC.html">process_ABC</a></span><span class="op">(</span><span class="va">ABC</span>, ABC.thresh <span class="op">=</span> <span class="fl">0.015</span>, full.element <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">ABC.gr</span> <span class="op">&lt;-</span> <span class="va">ABC.gr</span><span class="op">[</span><span class="va">ABC.gr</span><span class="op">$</span><span class="va">gene_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="va">gene.annots</span><span class="op">$</span><span class="va">gene_name</span>, <span class="op">]</span> <span class="co"># restrict to protein coding genes</span>
 <span class="va">genomic.annots</span><span class="op">$</span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="va">ABC.gr</span></code></pre></div>
 <p>Define active promoters using OCRs.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/OCRs.hg19.gr.rds'</span><span class="op">)</span>
-
+<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"OCRs.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span> <span class="op">&lt;-</span> <span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/findOverlaps-methods.html" class="external-link">subsetByOverlaps</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">promoters</span>, <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span>, minoverlap <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
 <p>Define enhancer loops:</p>
 <p>We used “enhancer loops” from Activity-By-Contact (ABC) scores and promoter-capture HiC data (PC-HiC).</p>
 <p>Considering the fact that Hi-C and PC-HiC may miss contacts between close regions due to technical reasons, we also consider the OCRs within 20 kb of active promoters as “enhancer loops”.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_nearby_promoter_20kb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'../inst/extdata/enhancer.nearby.promoter.20kb.gr.rds'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_nearby_promoter_20kb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"enhancer.nearby.promoter.20kb.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Define enhancer regions by OCRs (you may skip this if you do not have relevant enhancer data)</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_regions</span> <span class="op">&lt;-</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span></code></pre></div>
@@ -252,17 +251,16 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <p>Obtain 80% credible gene sets</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gene.cs.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gene_cs.html">gene_cs</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
-
 <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.cs.df</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## <span style="color: #949494;"># A tibble: 6 × 6</span></span>
-<span class="co">##   locus gene_cs    gene_cs_locus_pip      top_gene top_locus_gene_… top_gene_pip</span>
-<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">## <span style="color: #BCBCBC;">1</span>     7 CASZ1      CASZ1(0.886)           CASZ1               0.886        0.886</span>
-<span class="co">## <span style="color: #BCBCBC;">2</span>    15 HSPG2,CEL… HSPG2(0.47),CELA3B(0.… HSPG2               0.470        0.470</span>
-<span class="co">## <span style="color: #BCBCBC;">3</span>    25 SLFNL1,CT… SLFNL1(0.624),CTPS1(0… SLFNL1              0.624        0.624</span>
-<span class="co">## <span style="color: #BCBCBC;">4</span>    31 BEND5      BEND5(0.997)           BEND5               0.997        0.997</span>
-<span class="co">## <span style="color: #BCBCBC;">5</span>    32 FAF1,CDKN… FAF1(0.382),CDKN2C(0.… FAF1                0.382        0.403</span>
-<span class="co">## <span style="color: #BCBCBC;">6</span>    33 TTC39A,EP… TTC39A(0.409),EPS15(0… TTC39A              0.409        0.411</span></code></pre>
+<span class="co">##   locus gene_cs          gene_cs_locus_p… top_gene top_locus_gene_… top_gene_pip</span>
+<span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">## <span style="color: #BCBCBC;">1</span>     7 CASZ1            CASZ1(0.886)     CASZ1               0.886        0.886</span>
+<span class="co">## <span style="color: #BCBCBC;">2</span>    15 HSPG2,CELA3B,LD… HSPG2(0.47),CEL… HSPG2               0.470        0.470</span>
+<span class="co">## <span style="color: #BCBCBC;">3</span>    25 SLFNL1,CTPS1     SLFNL1(0.624),C… SLFNL1              0.624        0.624</span>
+<span class="co">## <span style="color: #BCBCBC;">4</span>    31 BEND5            BEND5(0.997)     BEND5               0.997        0.997</span>
+<span class="co">## <span style="color: #BCBCBC;">5</span>    32 FAF1,CDKN2C,C1o… FAF1(0.382),CDK… FAF1                0.382        0.403</span>
+<span class="co">## <span style="color: #BCBCBC;">6</span>    33 TTC39A,EPS15     TTC39A(0.409),E… TTC39A              0.409        0.411</span></code></pre>
 <p>Find the nearest gene for the top SNP in each locus</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">nearest_genes.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_nearest_genes.html">find_nearest_genes</a></span><span class="op">(</span><span class="va">finemap.gr</span>, <span class="va">gene.annots</span>, dist.to <span class="op">=</span> <span class="st">"genebody"</span><span class="op">)</span>
@@ -277,7 +275,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <p>Make a Manhattan plot of the gene PIPs, and label genes with gene PIP &gt; 0.8.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/gene_manhattan_plot.html">gene_manhattan_plot</a></span><span class="op">(</span><span class="va">gene.pip.res</span>, sig.pip <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></code></pre></div>
-<p><img src="gene_mapping_tutorial_files/figure-html/gene-manhattan-plot-1.png" width="960"></p>
+<p><img src="gene_mapping_tutorial_files/figure-html/gene-manhattan-plot-1.png" width="768"></p>
 </div>
   </div>
 

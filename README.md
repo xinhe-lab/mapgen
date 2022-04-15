@@ -1,22 +1,22 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Mapgen
+## mapgen
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-Mapgen is an R package that performs gene mapping based on
+`mapgen` is an R package that performs gene mapping based on
 functionally-informed genetic fine mapping.
 
 ## Installation
 
-You can install the development version of Mapgen from
+You can install the development version of `mapgen` from
 [GitHub](https://github.com/) with:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("kevinlkx/Mapgen")
+devtools::install_github("kevinlkx/mapgen")
 ```
 
 Please install the following dependent R packages: `tidyverse`,
@@ -27,7 +27,7 @@ Bioconductor.
 After installing, check that it loads properly:
 
 ``` r
-library(Mapgen)
+library(mapgen)
 ```
 
 ## Overview of the workflow
@@ -55,5 +55,5 @@ Main steps:
 <img src="vignettes/workflow.overview.png" title="Overview of the workflow" alt="Overview of the workflow" width="75%" />
 
 Please follow the
-[tutorials](https://kevinlkx.github.io/Mapgen/articles/index.html) to
+[tutorials](https://kevinlkx.github.io/mapgen/articles/index.html) to
 learn how to use the package.
