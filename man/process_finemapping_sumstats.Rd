@@ -2,7 +2,7 @@
 % Please edit documentation in R/finemapping.R
 \name{process_finemapping_sumstats}
 \alias{process_finemapping_sumstats}
-\title{Process fine mapping summary statistics data}
+\title{Process fine-mapping summary statistics data}
 \usage{
 process_finemapping_sumstats(
   finemapstats,
@@ -51,5 +51,5 @@ process_finemapping_sumstats(
 A GRanges object with cleaned and filtered fine-mapping summary statistics
 }
 \description{
-Process fine mapping summary statistics data
+Process fine-mapping summary statistics data
 }

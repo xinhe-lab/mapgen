@@ -66,13 +66,13 @@ library(mapgen)
 Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.
 ```{r load-finemapping-res}
 finemapstats <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "mapgen"))
-finemapstats.gr <- process_finemapping_sumstat(finemapstats, 
-                                               snp = 'snp', chr = 'chr', 
-                                               pos = 'pos', pip = 'susie_pip', 
-                                               pval = 'pval', zscore = 'zscore', 
-                                               cs = 'CS', locus = 'locus',  
-                                               pip.thresh = 1e-5, 
-                                               cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'))
+finemapstats.gr <- process_finemapping_sumstats(finemapstats, 
+                                                snp = 'snp', chr = 'chr', 
+                                                pos = 'pos', pip = 'susie_pip', 
+                                                pval = 'pval', zscore = 'zscore', 
+                                                cs = 'CS', locus = 'locus',  
+                                                pip.thresh = 1e-5, 
+                                                cols.to.keep = c('snp','chr','pos', 'a0', 'a1', 'pip', 'pval', 'zscore', 'cs', 'locus'))
 head(finemapstats.gr)
 ```
 

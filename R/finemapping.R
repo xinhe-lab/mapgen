@@ -19,7 +19,7 @@ prepare_susie_data <- function(sumstats, torus_pip, torus_fdr, fdr_thresh=0.1){
 
 }
 
-#' @title Run finemapping
+#' @title Run fine-mapping
 #' @description Run finemapping with SuSiE for all LD blocks
 #' @param sumstats a tibble or data frame containing raw summary statistics; must have header!
 #' @param bigSNP a bigsnpr object attached via bigsnpr::snp_attach()
@@ -52,7 +52,7 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'),
 }
 
 
-#' @title Run finemapping with SUSIE for one LD block
+#' @title Run fine-mapping with SUSIE for one LD block
 #' @param sumstats summary statistics
 #' @param bigSNP bigSNP object
 #' @param locus LD block index
@@ -114,7 +114,7 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 }
 
 
-#' @title Process fine mapping summary statistics data
+#' @title Process fine-mapping summary statistics data
 #'
 #' @param finemapstats A data frame of fine-mapping summary statistics
 #' @param snp Name of the SNP ID (rsID) column in the summary statistics data
