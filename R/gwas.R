@@ -1,15 +1,34 @@
-#' @title Clean GWAS summary statistics and adds metadata
+#' @title Cleans GWAS summary statistics and adds metadata
 #' @description Cleans GWAS summary statistics and adds metadata
+#'
 #' @param sumstats_file file containing raw summary statistics.
-#' Coordinates should be hg39/b37; the pipeline does not support hg38.
-#' @param cols.to.keep character vector of the following columns:
-#' chr, position, allele1, allele2, beta, se, unique id, pvalue
+#' Coordinates should be hg19/b37; we current do not support hg38.
+#' @param chr Name of the chromosome column in summary statistics file.
+#' @param pos Name of the position column (base pair position, in *hg19*!).
+#' @param beta Name of beta column (if you have Odds Ratio,
+#' you will need to transform it to log(Odds Ratio)).
+#' @param se Name of the standard error (se) column.
+#' @param a0 Column name of the reference allele.
+#' @param a1 Column name of the association/effect allele.
+#' @param snp Name of the SNP ID (rsID) column.
+#' @param pval Name of the p-value column.
 #' @param bigSNP bigSNP object from \code{bigsnpr}.
 #' @param LD_Blocks Reference LD blocks
+#'
 #' @return Cleaned summary statistics + LD block of every SNP,
 #' as well as its index in the reference panel of genotypes
 #' @export
-run_gwas_cleaner <- function(sumstats_file, cols.to.keep, bigSNP, LD_Blocks){
+process_gwas_sumstats <- function(sumstats_file,
+                                  chr = 'chr',
+                                  pos = 'pos',
+                                  beta = 'beta',
+                                  se = 'se',
+                                  a0 = 'a0',
+                                  a1 = 'a1',
+                                  snp = 'snp',
+                                  pval = 'pval',
+                                  bigSNP,
+                                  LD_Blocks){
 
   cat('Loading summary statistics...\n')
   if(is.character(sumstats_file) & length(sumstats_file) == 1){
@@ -17,14 +36,16 @@ run_gwas_cleaner <- function(sumstats_file, cols.to.keep, bigSNP, LD_Blocks){
   }
 
   cat('Cleaning summary statistics...\n')
-  cleaned_sumstats <- clean_sumstats(sumstats, cols.to.keep)
+  cleaned_sumstats <- clean_sumstats(sumstats,
+                                     chr=chr, pos=pos, beta=beta, se=se,
+                                     a0=a0, a1=a1, snp=snp, pval=pval)
 
   cat('Matching to reference panel...\n')
   cleaned_sumstats <- merge_bigsnp_gwas(cleaned_sumstats, bigSNP = bigSNP)
 
-  cat('Assining SNPs to LD blocks...\n')
+  cat('Assigning SNPs to LD blocks...\n')
   if(missing(LD_Blocks)){
-    cat('No LD blocks supplied. Using the included 1KG European LD blocks.')
+    cat('No LD blocks supplied. Using the included European LD blocks from 1KG....\n')
     data('Euro_LD_Chunks', package='mapgen')
   }
   cleaned_sumstats <- assign_locus_snp(cleaned.sumstats = cleaned_sumstats,
@@ -34,64 +55,76 @@ run_gwas_cleaner <- function(sumstats_file, cols.to.keep, bigSNP, LD_Blocks){
 
 }
 
-#' @title Clean summary statistics
+#' @title Cleans summary statistics
 #' @param sumstats a tibble or data frame containing raw summary statistics.
-#' @param cols.to.keep columns to keep in the data frame
+#' @param cols.to.keep columns to keep.
+#' It is required to have 8 columns in the exact order of:
+#' chr, position, beta, se, allele1, allele2, SNP ID (rs), p-value.
 #'
 #' @export
-clean_sumstats <- function(sumstats, cols.to.keep){
+clean_sumstats <- function(sumstats,
+                           chr = 'chr',
+                           pos = 'pos',
+                           beta = 'beta',
+                           se = 'se',
+                           a0 = 'a0',
+                           a1 = 'a1',
+                           snp = 'snp',
+                           pval = 'pval'){
 
   stopifnot(!is.null(sumstats))
-  stopifnot(length(cols.to.keep) == 8)
 
-  chr <- cols.to.keep[1]
-  pos <- cols.to.keep[2]
-  beta <- cols.to.keep[3]
-  se <- cols.to.keep[4]
-  a0 <- cols.to.keep[5]
-  a1 <- cols.to.keep[6]
-  rs <- cols.to.keep[7]
-  pval <- cols.to.keep[8]
+  cols.to.keep <- c(chr, pos, beta, se, a0, a1, snp, pval)
 
-  # keep SNPs in 1kg
-  # sumstats <- inner_join(sumstats, snps.to.keep, by=rs)
+  if(!all(cols.to.keep %in% colnames(sumstats))){
+    stop(sprintf('Column: %s cannot be found in the summary statistics!',
+                 cols.to.keep[which(!cols.to.keep %in% colnames(sumstats))]))
+  }else{
+    # Extract relevant columns
+    cat('Rename and extract columns in summary statistics ...\n')
+    cleaned.sumstats <- sumstats[, c(chr, pos, beta, se, a0, a1, rs, pval)]
+    colnames(cleaned.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
+  }
 
-  # Extract relevant columns
-  clean.sumstats <- sumstats[ ,c(chr, pos, beta, se, a0, a1, rs, pval)]
-  colnames(clean.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
+  # Check chromosome names
+  if( any(grepl('chr', cleaned.sumstats$chr)) ){
+    cat("Remove \'chr\' from the chr column...\n")
+    cleaned.sumstats$chr <- gsub('chr', '', cleaned.sumstats$chr)
+  }
 
-  # drop XY chromosomes
-  cat('Remove chrX and chrY...\n')
-  clean.sumstats <- clean.sumstats[!(clean.sumstats$chr %in% c("X","Y")), ]
+  # drop X, Y chromosomes
+  cat('Drop X,Y chromosomes ...\n')
+  cleaned.sumstats <- cleaned.sumstats[!(cleaned.sumstats$chr %in% c('X','Y')), ]
   # make chromosomes integers
-  clean.sumstats$chr <- as.integer(clean.sumstats$chr)
+  cat('Chromosomes included: ', unique(cleaned.sumstats$chr), '\n')
+  cleaned.sumstats$chr <- as.integer(cleaned.sumstats$chr)
 
   # Compute Zscores
   cat('Compute z-scores ...\n')
-  zscore <- clean.sumstats$beta/clean.sumstats$se
-  clean.sumstats['zscore'] <- zscore
-  clean.sumstats <- clean.sumstats[!is.na(zscore),]
+  zscore <- cleaned.sumstats$beta/cleaned.sumstats$se
+  cleaned.sumstats['zscore'] <- zscore
+  cleaned.sumstats <- cleaned.sumstats[!is.na(zscore),]
 
   # convert alleles to upper case
-  clean.sumstats$a0 <- toupper(clean.sumstats$a0)
-  clean.sumstats$a1 <- toupper(clean.sumstats$a1)
+  cleaned.sumstats$a0 <- toupper(cleaned.sumstats$a0)
+  cleaned.sumstats$a1 <- toupper(cleaned.sumstats$a1)
 
   # Keep SNPs only, no indels
   cat('Remove indels ...\n')
   nucs <- c('A','C','T','G')
-  bola1 <- (clean.sumstats$a0 %in% nucs)
-  bola2 <- (clean.sumstats$a1 %in% nucs)
-  clean.sumstats <- clean.sumstats[bola1 & bola2,]
+  bola1 <- (cleaned.sumstats$a0 %in% nucs)
+  bola2 <- (cleaned.sumstats$a1 %in% nucs)
+  cleaned.sumstats <- cleaned.sumstats[bola1 & bola2,]
 
   # Sort by chromosome and position
-  clean.sumstats <- clean.sumstats[order(clean.sumstats$chr, clean.sumstats$pos), ]
+  cleaned.sumstats <- cleaned.sumstats[order(cleaned.sumstats$chr, cleaned.sumstats$pos), ]
 
   # drop duplicate SNPs
   cat('Remove duplicate SNPs ...\n')
-  chrpos <- paste0(clean.sumstats$chr, '_', clean.sumstats$pos)
-  clean.sumstats <- clean.sumstats[!duplicated(chrpos), ]
+  chrpos <- paste0(cleaned.sumstats$chr, '_', cleaned.sumstats$pos)
+  cleaned.sumstats <- cleaned.sumstats[!duplicated(chrpos), ]
 
-  return(clean.sumstats)
+  return(cleaned.sumstats)
 }
 
 
@@ -120,7 +153,7 @@ assign_locus_snp <- function(cleaned.sumstats, ld){
 }
 
 
-#' @title Assign SNPs with annotations based on overlap
+#' @title Assigns SNPs with annotations based on overlap
 #' @param gwas a data frame or tibble of GWAS summary statistics
 #' @param annotations annotation BED files
 #'

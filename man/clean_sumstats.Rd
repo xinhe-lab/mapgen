@@ -2,15 +2,27 @@
 % Please edit documentation in R/gwas.R
 \name{clean_sumstats}
 \alias{clean_sumstats}
-\title{Clean summary statistics}
+\title{Cleans summary statistics}
 \usage{
-clean_sumstats(sumstats, cols.to.keep)
+clean_sumstats(
+  sumstats,
+  chr = "chr",
+  pos = "pos",
+  beta = "beta",
+  se = "se",
+  a0 = "a0",
+  a1 = "a1",
+  snp = "snp",
+  pval = "pval"
+)
 }
 \arguments{
 \item{sumstats}{a tibble or data frame containing raw summary statistics.}
 
-\item{cols.to.keep}{columns to keep in the data frame}
+\item{cols.to.keep}{columns to keep.
+It is required to have 8 columns in the exact order of:
+chr, position, beta, se, allele1, allele2, SNP ID (rs), p-value.}
 }
 \description{
-Clean summary statistics
+Cleans summary statistics
 }
