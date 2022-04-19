@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.3</span>
       </span>
     </div>
 
@@ -145,10 +145,10 @@
                        torus_path <span class="op">=</span> <span class="st">"torus"</span><span class="op">)</span></code></pre></div>
 <p>Lets add the TORUS results back onto our cleaned summary statistics. <code><a href="../reference/prepare_susie_data.html">prepare_susie_data()</a></code> takes a parameter called <code>fdr_thresh</code> which is the FDR associated with each chunk. This value is 10% by default, and chunks with FDR &lt; 10% are removed. We set it to 1 here just to keep all chunks but you will want to lower this or just use default.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">susie.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_susie_data.html">prepare_susie_data</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas</span>, torus_pip <span class="op">=</span> <span class="va">torus.result</span><span class="op">$</span><span class="va">snp_pip</span>, torus_fdr <span class="op">=</span> <span class="va">torus.fdr</span>, fdr_thresh <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p>We see we have a new column called <code>torus_pip</code></p>
+<code class="sourceCode R"><span class="va">susie.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_susie_data.html">prepare_susie_data</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas</span>, torus_prior <span class="op">=</span> <span class="va">torus.result</span><span class="op">$</span><span class="va">snp_prior</span>, torus_fdr <span class="op">=</span> <span class="va">torus.fdr</span>, fdr_thresh <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<p>We see we have a new column called <code>torus_prior</code></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">susie.df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_pip'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span class="va">susie.df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
 <p>With this data frame, we can perform fine-mapping. We use <code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> with SNP-level priors computed from TORUS based on enrichment estimates. Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP. This step could take a while if chunks contain many SNPs (<span class="math inline">\(O(n^2)\)</span> where n is # of SNPs).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">susie_finemap_L1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">susie.df</span>, bigSNP <span class="op">=</span> <span class="va">bigSNP</span>, 
@@ -158,7 +158,7 @@
 <code class="sourceCode R"><span class="va">gwas_finemapped</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span>susie_results <span class="op">=</span> <span class="va">susie_finemap_L1</span>, sumstats <span class="op">=</span> <span class="va">susie.df</span><span class="op">)</span></code></pre></div>
 <p>Lets look at the final cleaned, and finemapped summary statistics. We see we have a new column called <code>susie_pip</code> which is the probability of being causal.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">gwas_finemapped</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_pip'</span>,<span class="st">'susie_pip'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span class="va">gwas_finemapped</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span>,<span class="st">'susie_pip'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

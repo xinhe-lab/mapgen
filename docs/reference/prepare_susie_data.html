@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.3</span>
       </span>
     </div>
 
@@ -60,15 +60,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">prepare_susie_data</span><span class="op">(</span><span class="va">sumstats</span>, <span class="va">torus_pip</span>, <span class="va">torus_fdr</span>, fdr_thresh <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">prepare_susie_data</span><span class="op">(</span><span class="va">sumstats</span>, <span class="va">torus_prior</span>, <span class="va">torus_fdr</span>, fdr_thresh <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sumstats</dt>
 <dd><p>a tibble or data frame containing raw summary statistics</p></dd>
-<dt>torus_pip</dt>
-<dd><p>a tibble containing PIP of each SNP (result from run_torus)</p></dd>
+<dt>torus_prior</dt>
+<dd><p>a tibble containing SNP level priors (result from run_torus)</p></dd>
 <dt>torus_fdr</dt>
 <dd><p>a tibble containing the FDR of each region (result from run_torus)</p></dd>
 </dl></div>
