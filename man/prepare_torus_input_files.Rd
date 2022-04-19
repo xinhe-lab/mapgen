@@ -2,7 +2,7 @@
 % Please edit documentation in R/torus.R
 \name{prepare_torus_input_files}
 \alias{prepare_torus_input_files}
-\title{Prepare Torus input files}
+\title{Prepare TORUS input files}
 \usage{
 prepare_torus_input_files(
   sumstats,
@@ -29,7 +29,7 @@ You will get wrong results if you use hg38 or other
 a list containing paths to the z-score file and annotation file.
 }
 \description{
-Prepares two files necessary for running Torus:
+Prepares two files necessary for running TORUS:
 z-score file and annotation file.
 }
 \examples{

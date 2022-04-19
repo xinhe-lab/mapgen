@@ -4,12 +4,12 @@
 \alias{prepare_susie_data}
 \title{Prepare SuSiE data}
 \usage{
-prepare_susie_data(sumstats, torus_pip, torus_fdr, fdr_thresh = 0.1)
+prepare_susie_data(sumstats, torus_prior, torus_fdr, fdr_thresh = 0.1)
 }
 \arguments{
 \item{sumstats}{a tibble or data frame containing raw summary statistics}
 
-\item{torus_pip}{a tibble containing PIP of each SNP (result from run_torus)}
+\item{torus_prior}{a tibble containing SNP level priors (result from run_torus)}
 
 \item{torus_fdr}{a tibble containing the FDR of each region (result from run_torus)}
 }

@@ -106,13 +106,13 @@ This value is 10% by default, and chunks with FDR < 10% are removed.
 We set it to 1 here just to keep all chunks but you will want to lower this or just use default.
 
 ```{r}
-susie.df <- prepare_susie_data(sumstats = gwas, torus_pip = torus.result$snp_pip, torus_fdr = torus.fdr, fdr_thresh = 1)
+susie.df <- prepare_susie_data(sumstats = gwas, torus_prior = torus.result$snp_prior, torus_fdr = torus.fdr, fdr_thresh = 1)
 ```
 
-We see we have a new column called `torus_pip` 
+We see we have a new column called `torus_prior` 
 
 ```{r}
-susie.df[,c('chr','pos','beta','se','snp','pval','zscore','torus_pip')]
+susie.df[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior')]
 ```
 
 With this data frame, we can perform fine-mapping. 
@@ -138,6 +138,6 @@ Lets look at the final cleaned, and finemapped summary statistics.
 We see we have a new column called `susie_pip` which is the probability of being causal. 
 
 ```{r}
-gwas_finemapped[,c('chr','pos','beta','se','snp','pval','zscore','torus_pip','susie_pip')]
+gwas_finemapped[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior','susie_pip')]
 ```
 

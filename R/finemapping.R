@@ -2,18 +2,18 @@
 #' @title Prepare SuSiE data
 #' @description Adds Torus results to the summary statistics
 #' @param sumstats a tibble or data frame containing raw summary statistics
-#' @param torus_pip a tibble containing PIP of each SNP (result from run_torus)
+#' @param torus_prior a tibble containing SNP level priors (result from run_torus)
 #' @param torus_fdr a tibble containing the FDR of each region (result from run_torus)
 #' @return tibble of summary statistics updated with torus output
 #' @export
-prepare_susie_data <- function(sumstats, torus_pip, torus_fdr, fdr_thresh=0.1){
+prepare_susie_data <- function(sumstats, torus_prior, torus_fdr, fdr_thresh=0.1){
 
   # keep loci at fdr_thresh FDR (10% by default)
   chunks <- torus_fdr$region_id[torus_fdr$fdr < fdr_thresh]
   sumstats <- sumstats[sumstats$locus %in% chunks, ]
 
   # Add Torus PIP
-  sumstats <- dplyr::inner_join(sumstats, torus_pip, by='snp')
+  sumstats <- dplyr::inner_join(sumstats, torus_prior, by='snp')
 
   return(sumstats)
 
@@ -33,7 +33,7 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'),
 
   if(priortype == 'torus'){
     useprior <- TRUE
-    stopifnot('torus_pip' %in% colnames(sumstats))
+    stopifnot('torus_prior' %in% colnames(sumstats))
   }else if(priortype == 'uniform'){
     useprior <- FALSE
   }
@@ -57,7 +57,7 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'),
 #' @param bigSNP bigSNP object
 #' @param locus LD block index
 #' @param L Number of causal signals
-#' @param useprior Logical, if TRUE, use the \code{torus_pip} column
+#' @param useprior Logical, if TRUE, use the \code{torus_prior} column
 #' in \code{sumstats} as prior.
 #' @return finemapping results for one LD block
 #' @export
@@ -71,7 +71,7 @@ run_susie <- function(sumstats, bigSNP, locus, L=1, useprior){
     R <- cov2cor((crossprod(X) + tcrossprod(zhat))/nrow(X))
     if(useprior){
       res <- suppressWarnings(susieR::susie_rss(z = zhat,
-                                                prior_weights = sub.sumstats$torus_pip,
+                                                prior_weights = sub.sumstats$torus_prior,
                                                 R = R,
                                                 L = L,
                                                 verbose = F))

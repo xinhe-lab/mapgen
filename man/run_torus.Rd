@@ -2,7 +2,7 @@
 % Please edit documentation in R/torus.R
 \name{run_torus}
 \alias{run_torus}
-\title{Run enrichment analysis and compute SNP-level priors using Torus}
+\title{Run enrichment analysis and compute SNP-level priors using TORUS}
 \usage{
 run_torus(
   torus_annot_file,
@@ -15,7 +15,7 @@ run_torus(
 \item{torus_annot_file}{SNP annotation file prepared by
 the \code{prepare_torus_input_files} function.
 The SNP annotation file contains SNP-level genomic annotations used by
-Torus analysis. The annotation file uses a header to specify the number
+TORUS analysis. The annotation file uses a header to specify the number
 and the nature (categorical or continuous) of the annotations.
 The first column with the header "SNP" represents the SNP name.
 The following columns represent specific annotations.
@@ -27,7 +27,7 @@ analysis, prepared by
 the \code{prepare_torus_input_files} function.
 Should be compressed in gzip format.}
 
-\item{option}{Torus options:
+\item{option}{TORUS options:
 \dQuote{est}, obtain estimates of enrichment parameters and their confidence intervals;
 \dQuote{est-prior}, perform enrichment analysis and
 compute SNP-level priors using
@@ -42,7 +42,7 @@ Enrichment result contains the point estimate (MLE) of the log odds ratio,
 as well as 95\% confidence interval for the corresponding point estimate.
 }
 \description{
-Perform enrichment analysis using Torus and then
+Perform enrichment analysis using TORUS and then
 compute SNP-level priors using the enrichment estimates.
 }
 \examples{

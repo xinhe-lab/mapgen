@@ -1,5 +1,5 @@
-#' @title Prepare Torus input files
-#' @description Prepares two files necessary for running Torus:
+#' @title Prepare TORUS input files
+#' @description Prepares two files necessary for running TORUS:
 #' z-score file and annotation file.
 #' @param sumstats cleaned summary statistics
 #' @param annotation_bed_files annotation files in BED format.
@@ -29,28 +29,28 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
   cat('Annotating SNPs...\n')
   snps.annots <- annotate_snps_binary(sumstats, annotations = annotation_bed_files, keep.annot.only=T)
 
-  cat('Generating Torus input files ...\n')
+  cat('Generating TORUS input files ...\n')
   if(missing(torus_annot_file)){
     torus_annot_file <- tempfile(pattern = "torus_annotations.", fileext = ".txt.gz")
   }
   readr::write_tsv(snps.annots, file=torus_annot_file, col_names = T)
-  cat('Wrote Torus annotation files to', torus_annot_file, '\n')
+  cat('Wrote TORUS annotation files to', torus_annot_file, '\n')
 
   if(missing(torus_zscore_file)){
     torus_zscore_file <- tempfile(pattern = "torus_zscore.", fileext = ".txt.gz")
   }
   readr::write_tsv(sumstats[,c('snp','locus','zscore')], file=torus_zscore_file, col_names = T)
-  cat('Wrote Torus z-score files to', torus_zscore_file, '\n')
+  cat('Wrote TORUS z-score files to', torus_zscore_file, '\n')
   return(list(torus_annot_file=torus_annot_file, torus_zscore_file=torus_zscore_file))
 }
 
-#' @title Run enrichment analysis and compute SNP-level priors using Torus
-#' @description Perform enrichment analysis using Torus and then
+#' @title Run enrichment analysis and compute SNP-level priors using TORUS
+#' @description Perform enrichment analysis using TORUS and then
 #' compute SNP-level priors using the enrichment estimates.
 #' @param torus_annot_file SNP annotation file prepared by
 #' the \code{prepare_torus_input_files} function.
 #' The SNP annotation file contains SNP-level genomic annotations used by
-#' Torus analysis. The annotation file uses a header to specify the number
+#' TORUS analysis. The annotation file uses a header to specify the number
 #' and the nature (categorical or continuous) of the annotations.
 #' The first column with the header "SNP" represents the SNP name.
 #' The following columns represent specific annotations.
@@ -60,7 +60,7 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' analysis, prepared by
 #' the \code{prepare_torus_input_files} function.
 #' Should be compressed in gzip format.
-#' @param option Torus options:
+#' @param option TORUS options:
 #' \dQuote{est}, obtain estimates of enrichment parameters and their confidence intervals;
 #' \dQuote{est-prior}, perform enrichment analysis and
 #' compute SNP-level priors using
@@ -93,14 +93,14 @@ run_torus <- function(torus_annot_file,
                       torus_path='torus'){
 
   if(!file.exists(torus_annot_file)){
-    stop('Cannot find Torus annotation file.')
+    stop('Cannot find TORUS annotation file.')
   }
   if(!file.exists(torus_zscore_file)){
-    stop('Cannot find Torus z-score file.')
+    stop('Cannot find TORUS z-score file.')
   }
 
   option <- match.arg(option)
-  cat('Run Torus...\n')
+  cat('Run TORUS...\n')
 
   torus.result <- list()
   if(option == 'est'){
@@ -128,10 +128,10 @@ run_torus <- function(torus_annot_file,
     files <- list.files(path = 'prior/', pattern = '*.prior', full.names = T)
     files.str <- paste0(files, collapse = " ")
     system(paste('cat', files.str, '> prior/allchunks.txt'))
-    snp_pip <- suppressMessages(vroom::vroom('prior/allchunks.txt', col_names = F, delim = "  "))
-    colnames(snp_pip) <- c("snp","torus_pip")
+    snp_prior <- suppressMessages(vroom::vroom('prior/allchunks.txt', col_names = F, delim = "  "))
+    colnames(snp_prior) <- c("snp","torus_prior")
     system('rm -rf prior/')
-    return(list(enrich = enrich, snp_pip = snp_pip))
+    return(list(enrich = enrich, snp_prior = snp_prior))
 
   }else if(option == 'fdr'){
     torus_args <- c('-d', torus_zscore_file,
