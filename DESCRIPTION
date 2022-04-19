@@ -1,6 +1,6 @@
 Package: mapgen
 Title: Performs gene mapping based on functionally-informed genetic fine mapping
-Version: 0.3.2
+Version: 0.3.3
 Authors@R: c(
     person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
     person("Alan", "Selewa", email = "selewa@uchicago.edu", role = c("aut")),
