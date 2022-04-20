@@ -46,6 +46,7 @@ Perform enrichment analysis using TORUS and then
 compute SNP-level priors using the enrichment estimates.
 }
 \examples{
+\dontrun{
 # Get enrichment estimates and confidence intervals
 torus.result <- run_torus("torus_annotations.txt.gz",
                           "torus_zscore.txt.gz",
@@ -59,5 +60,5 @@ torus.result <- run_torus("torus_annotations.txt.gz",
 torus.result <- run_torus("torus_annotations.txt.gz",
                           "torus_zscore.txt.gz",
                           option = "fdr")
-
+}
 }

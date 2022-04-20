@@ -13,7 +13,9 @@
 #' @return a list containing paths to the z-score file and annotation file.
 #' @export
 #' @examples
+#' \dontrun{
 #' torus.files <- prepare_torus_input_files(sumstats, annotation_bed_files)
+#' }
 prepare_torus_input_files <- function(sumstats, annotation_bed_files,
                                       torus_annot_file='torus_annotations.txt.gz',
                                       torus_zscore_file='torus_zscore.txt.gz'){
@@ -73,6 +75,7 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' as well as 95% confidence interval for the corresponding point estimate.
 #' @export
 #' @examples
+#' \dontrun{
 #' # Get enrichment estimates and confidence intervals
 #' torus.result <- run_torus("torus_annotations.txt.gz",
 #'                           "torus_zscore.txt.gz",
@@ -86,7 +89,7 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' torus.result <- run_torus("torus_annotations.txt.gz",
 #'                           "torus_zscore.txt.gz",
 #'                           option = "fdr")
-#'
+#' }
 run_torus <- function(torus_annot_file,
                       torus_zscore_file,
                       option=c('est', 'est-prior', 'fdr'),

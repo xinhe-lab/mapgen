@@ -33,5 +33,7 @@ Prepares two files necessary for running TORUS:
 z-score file and annotation file.
 }
 \examples{
+\dontrun{
 torus.files <- prepare_torus_input_files(sumstats, annotation_bed_files)
+}
 }
