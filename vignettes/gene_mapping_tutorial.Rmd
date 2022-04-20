@@ -1,6 +1,6 @@
 ---
 title: "Gene mapping tutorial"
-author: Kaixuan Luo
+author: Kaixuan Luo, Alan Selewa
 output: html_document
 ---
 
@@ -36,7 +36,7 @@ we also define a “credible gene set”, the set of genes that
 capture the causal signal at a locus with high probability (80% by default).
 
 ```{r gene-mapping-diagram, echo=FALSE, fig.cap="Schematic of gene-level PIP calculation. s: SNP, g: gene", out.width = '75%'}
-knitr::include_graphics("gene.mapping.diagram.png")
+knitr::include_graphics("../man/figures/gene.mapping.diagram.png")
 ```
 
 Gene mapping tutorial

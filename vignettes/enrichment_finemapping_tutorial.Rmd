@@ -1,6 +1,6 @@
 ---
 title: "Tutorial for enrichment analysis and fine-mapping with functional priors"
-author: Kaixuan Luo, Alan Selewa
+author: Alan Selewa, Kaixuan Luo
 output: html_document
 ---
 
