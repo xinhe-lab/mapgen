@@ -18,7 +18,8 @@
 #' }
 prepare_torus_input_files <- function(sumstats, annotation_bed_files,
                                       torus_annot_file='torus_annotations.txt.gz',
-                                      torus_zscore_file='torus_zscore.txt.gz'){
+                                      torus_zscore_file='torus_zscore.txt.gz',
+                                      torus_input_dir='torus_input/'){
 
   stopifnot(all(file.exists(annotation_bed_files)))
 
@@ -31,15 +32,19 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
   cat('Annotating SNPs...\n')
   snps.annots <- annotate_snps_binary(sumstats, annotations = annotation_bed_files, keep.annot.only=T)
 
+  if(!dir.exists(torus_input_dir)){
+    dir.create(torus_input_dir, showWarnings = FALSE, recursive = TRUE)
+  }
+
   cat('Generating TORUS input files ...\n')
   if(missing(torus_annot_file)){
-    torus_annot_file <- tempfile(pattern = "torus_annotations.", fileext = ".txt.gz")
+    torus_annot_file <- file.path(torus_input_dir, 'torus_annotations.txt.gz')
   }
   readr::write_tsv(snps.annots, file=torus_annot_file, col_names = T)
   cat('Wrote TORUS annotation files to', torus_annot_file, '\n')
 
   if(missing(torus_zscore_file)){
-    torus_zscore_file <- tempfile(pattern = "torus_zscore.", fileext = ".txt.gz")
+    torus_zscore_file <- file.path(torus_input_dir, 'torus_zscore.txt.gz')
   }
   readr::write_tsv(sumstats[,c('snp','locus','zscore')], file=torus_zscore_file, col_names = T)
   cat('Wrote TORUS z-score files to', torus_zscore_file, '\n')
@@ -70,7 +75,8 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
 #' or \dQuote{fdr}, perform Bayesian FDR control, and output the result.
 #' @param torus_path Path to \code{torus} executable.
 #' @importFrom tibble as_tibble
-#' @return a list of enrichment results and SNP-level prior probabilities.
+#' @return a list of enrichment results, SNP-level prior probabilities,
+#' and/or FDR result.
 #' Enrichment result contains the point estimate (MLE) of the log odds ratio,
 #' as well as 95% confidence interval for the corresponding point estimate.
 #' @export
@@ -105,7 +111,8 @@ run_torus <- function(torus_annot_file,
   option <- match.arg(option)
   cat('Run TORUS...\n')
 
-  torus.result <- list()
+  torus.res <- list()
+
   if(option == 'est'){
     torus_args <- c('-d', torus_zscore_file,
                     '-annot', torus_annot_file,
@@ -115,7 +122,7 @@ run_torus <- function(torus_annot_file,
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd = TRUE, echo = TRUE)
     enrich <- as_tibble(read.table(file = textConnection(res$stdout),skip=1,header=F,stringsAsFactors = F))
     colnames(enrich) <- c("term", "estimate", "low", "high")
-    return(enrich)
+    torus.res$enrich <- enrich
 
   }else if(option == 'est-prior'){
     torus_args <- c('-d', torus_zscore_file,
@@ -127,6 +134,7 @@ run_torus <- function(torus_annot_file,
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd = TRUE, echo = TRUE)
     enrich <- as_tibble(read.table(file = textConnection(res$stdout),skip=1,header=F,stringsAsFactors = F))
     colnames(enrich) <- c("term", "estimate", "low", "high")
+    torus.res$enrich <- enrich
 
     files <- list.files(path = 'prior/', pattern = '*.prior', full.names = T)
     files.str <- paste0(files, collapse = " ")
@@ -134,7 +142,7 @@ run_torus <- function(torus_annot_file,
     snp_prior <- suppressMessages(vroom::vroom('prior/allchunks.txt', col_names = F, delim = "  "))
     colnames(snp_prior) <- c("snp","torus_prior")
     system('rm -rf prior/')
-    return(list(enrich = enrich, snp_prior = snp_prior))
+    torus.res$snp_prior <- snp_prior
 
   }else if(option == 'fdr'){
     torus_args <- c('-d', torus_zscore_file,
@@ -145,7 +153,10 @@ run_torus <- function(torus_annot_file,
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd = TRUE, echo = TRUE)
     torus_fdr <- as_tibble(read.table(file = textConnection(res$stdout),header=F,stringsAsFactors = F))
     colnames(torus_fdr) <- c("rej","region_id","fdr","decision")
-    return(torus_fdr)
+    torus.res$fdr <- torus_fdr
+
   }
+
+  return(torus.res)
 }
 

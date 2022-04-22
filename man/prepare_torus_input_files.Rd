@@ -8,7 +8,8 @@ prepare_torus_input_files(
   sumstats,
   annotation_bed_files,
   torus_annot_file = "torus_annotations.txt.gz",
-  torus_zscore_file = "torus_zscore.txt.gz"
+  torus_zscore_file = "torus_zscore.txt.gz",
+  torus_input_dir = "torus_input"
 )
 }
 \arguments{
