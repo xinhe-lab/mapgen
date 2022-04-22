@@ -88,6 +88,9 @@ torus.result <- run_torus(torus.files$torus_annot_file,
                           torus.files$torus_zscore_file,
                           option = "est-prior",
                           torus_path = "torus") # you may need to set the installed path to 'torus' executable.
+
+torus.enrich <- torus.result$enrich
+torus.prior <- torus.result$snp_prior
 ```
 
 TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. 
@@ -97,7 +100,7 @@ We can filter our chunks with low probability, thus saving us on computational t
 torus.fdr <- run_torus(torus.files$torus_annot_file, 
                        torus.files$torus_zscore_file,
                        option = "fdr",
-                       torus_path = "torus")
+                       torus_path = "torus")$fdr
 ```
 
 Lets add the TORUS results back onto our cleaned summary statistics. 
@@ -106,7 +109,7 @@ This value is 10% by default, and chunks with FDR < 10% are removed.
 We set it to 1 here just to keep all chunks but you will want to lower this or just use default.
 
 ```{r}
-susie.df <- prepare_susie_data(sumstats = gwas, torus_prior = torus.result$snp_prior, torus_fdr = torus.fdr, fdr_thresh = 1)
+susie.df <- prepare_susie_data(sumstats = gwas, torus_prior = torus.prior, torus_fdr = torus.fdr, fdr_thresh = 1)
 ```
 
 We see we have a new column called `torus_prior` 

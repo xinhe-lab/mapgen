@@ -10,6 +10,7 @@
 #' (The reference panel we used is in hg19).
 #' @param torus_annot_file Annotation file name.
 #' @param torus_zscore_file z-score file name.
+#' @param torus_input_dir Directory to save TORUS input files.
 #' @return a list containing paths to the z-score file and annotation file.
 #' @export
 #' @examples
