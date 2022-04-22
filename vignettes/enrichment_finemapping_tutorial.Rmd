@@ -73,7 +73,7 @@ chromosomes should be just the number (no "chr").
 ```{r prepare-torus-files}
 bed_annotations_dir <- system.file("extdata", "test_bed_dir/", package="mapgen")
 annotation_bed_files <- list.files(path = bed_annotations_dir, pattern = "*.bed", full.names = TRUE)
-torus.files <- prepare_torus_input_files(gwas, annotation_bed_files)
+torus.files <- prepare_torus_input_files(gwas, annotation_bed_files, torus_input_dir = "./torus_input")
 ```
 
 Now that the appropriate files have been generated, let's run TORUS. 
@@ -104,12 +104,12 @@ torus.fdr <- run_torus(torus.files$torus_annot_file,
 ```
 
 Lets add the TORUS results back onto our cleaned summary statistics. 
-`prepare_susie_data()` takes a parameter called `fdr_thresh` which is the FDR associated with each chunk. 
+`prepare_susie_data_with_torus_result()` takes a parameter called `fdr_thresh` which is the FDR associated with each chunk. 
 This value is 10% by default, and chunks with FDR < 10% are removed. 
 We set it to 1 here just to keep all chunks but you will want to lower this or just use default.
 
 ```{r}
-susie.df <- prepare_susie_data(sumstats = gwas, torus_prior = torus.prior, torus_fdr = torus.fdr, fdr_thresh = 1)
+susie.df <- prepare_susie_data_with_torus_result(sumstats = gwas, torus_prior = torus.prior, torus_fdr = torus.fdr, fdr_thresh = 1)
 ```
 
 We see we have a new column called `torus_prior` 

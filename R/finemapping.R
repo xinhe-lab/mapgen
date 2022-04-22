@@ -1,12 +1,12 @@
 
-#' @title Prepare SuSiE data
-#' @description Adds Torus results to the summary statistics
+#' @title Prepare SuSiE summary statistics with TORUS results
+#' @description Adds TORUS results to the summary statistics
 #' @param sumstats a tibble or data frame containing raw summary statistics
 #' @param torus_prior a tibble containing SNP level priors (result from run_torus)
 #' @param torus_fdr a tibble containing the FDR of each region (result from run_torus)
 #' @return tibble of summary statistics updated with torus output
 #' @export
-prepare_susie_data <- function(sumstats, torus_prior, torus_fdr, fdr_thresh=0.1){
+prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fdr, fdr_thresh=0.1){
 
   # keep loci at fdr_thresh FDR (10% by default)
   chunks <- torus_fdr$region_id[torus_fdr$fdr < fdr_thresh]
