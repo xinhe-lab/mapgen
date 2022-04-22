@@ -8,8 +8,9 @@
 #' and should be in hg19/b37 format.
 #' You will get wrong results if you use hg38 or other
 #' (The reference panel we used is in hg19).
-#' @param torus_annot_file Annotation file name.
-#' @param torus_zscore_file z-score file name.
+#' @param torus_input_dir Directory to save TORUS input files.
+#' @param torus_annot_file Annotation file name (without path).
+#' @param torus_zscore_file z-score file name (without path).
 #' @return a list containing paths to the z-score file and annotation file.
 #' @export
 #' @examples
@@ -17,6 +18,7 @@
 #' torus.files <- prepare_torus_input_files(sumstats, annotation_bed_files)
 #' }
 prepare_torus_input_files <- function(sumstats, annotation_bed_files,
+                                      torus_input_dir='torus_input',
                                       torus_annot_file='torus_annotations.txt.gz',
                                       torus_zscore_file='torus_zscore.txt.gz'){
 
@@ -32,19 +34,13 @@ prepare_torus_input_files <- function(sumstats, annotation_bed_files,
   snps.annots <- annotate_snps_binary(sumstats, annotations = annotation_bed_files, keep.annot.only=T)
 
   cat('Generating TORUS input files ...\n')
-  if(missing(torus_annot_file)){
-    torus_input_dir <- 'torus_input/'
-    if(!dir.exists(torus_input_dir)) dir.create(torus_input_dir, recursive = TRUE)
-    torus_annot_file <- file.path(torus_input_dir, 'torus_annotations.txt.gz')
-  }
+  if(!dir.exists(torus_input_dir)) dir.create(torus_input_dir, recursive = TRUE)
+
+  torus_annot_file <- file.path(torus_input_dir, torus_annot_file)
   readr::write_tsv(snps.annots, file=torus_annot_file, col_names = T)
   cat('Wrote TORUS annotation files to', torus_annot_file, '\n')
 
-  if(missing(torus_zscore_file)){
-    torus_input_dir <- 'torus_input/'
-    if(!dir.exists(torus_input_dir)) dir.create(torus_input_dir, recursive = TRUE)
-    torus_zscore_file <- file.path(torus_input_dir, 'torus_zscore.txt.gz')
-  }
+  torus_zscore_file <- file.path(torus_input_dir, torus_zscore_file)
   readr::write_tsv(sumstats[,c('snp','locus','zscore')], file=torus_zscore_file, col_names = T)
   cat('Wrote TORUS z-score files to', torus_zscore_file, '\n')
   return(list(torus_annot_file=torus_annot_file, torus_zscore_file=torus_zscore_file))

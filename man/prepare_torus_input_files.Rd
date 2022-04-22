@@ -7,6 +7,7 @@
 prepare_torus_input_files(
   sumstats,
   annotation_bed_files,
+  torus_input_dir = "torus_input",
   torus_annot_file = "torus_annotations.txt.gz",
   torus_zscore_file = "torus_zscore.txt.gz"
 )
@@ -21,9 +22,11 @@ and should be in hg19/b37 format.
 You will get wrong results if you use hg38 or other
 (The reference panel we used is in hg19).}
 
-\item{torus_annot_file}{Annotation file name.}
+\item{torus_input_dir}{Directory to save TORUS input files.}
 
-\item{torus_zscore_file}{z-score file name.}
+\item{torus_annot_file}{Annotation file name (without path).}
+
+\item{torus_zscore_file}{z-score file name (without path).}
 }
 \value{
 a list containing paths to the z-score file and annotation file.
