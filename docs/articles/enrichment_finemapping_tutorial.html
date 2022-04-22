@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.5</span>
       </span>
     </div>
 
@@ -136,16 +136,19 @@
 <code class="sourceCode R"><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_torus.html">run_torus</a></span><span class="op">(</span><span class="va">torus.files</span><span class="op">$</span><span class="va">torus_annot_file</span>, 
                           <span class="va">torus.files</span><span class="op">$</span><span class="va">torus_zscore_file</span>,
                           option <span class="op">=</span> <span class="st">"est-prior"</span>,
-                          torus_path <span class="op">=</span> <span class="st">"torus"</span><span class="op">)</span> <span class="co"># you may need to set the installed path to 'torus' executable.</span></code></pre></div>
+                          torus_path <span class="op">=</span> <span class="st">"torus"</span><span class="op">)</span> <span class="co"># you may need to set the installed path to 'torus' executable.</span>
+
+<span class="va">torus.enrich</span> <span class="op">&lt;-</span> <span class="va">torus.result</span><span class="op">$</span><span class="va">enrich</span>
+<span class="va">torus.prior</span> <span class="op">&lt;-</span> <span class="va">torus.result</span><span class="op">$</span><span class="va">snp_prior</span></code></pre></div>
 <p>TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. We run <code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "fdr"</code> to get the probability of each chunk containing a causal variant. We can filter our chunks with low probability, thus saving us on computational time!</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">torus.fdr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_torus.html">run_torus</a></span><span class="op">(</span><span class="va">torus.files</span><span class="op">$</span><span class="va">torus_annot_file</span>, 
                        <span class="va">torus.files</span><span class="op">$</span><span class="va">torus_zscore_file</span>,
                        option <span class="op">=</span> <span class="st">"fdr"</span>,
-                       torus_path <span class="op">=</span> <span class="st">"torus"</span><span class="op">)</span></code></pre></div>
+                       torus_path <span class="op">=</span> <span class="st">"torus"</span><span class="op">)</span><span class="op">$</span><span class="va">fdr</span></code></pre></div>
 <p>Lets add the TORUS results back onto our cleaned summary statistics. <code><a href="../reference/prepare_susie_data.html">prepare_susie_data()</a></code> takes a parameter called <code>fdr_thresh</code> which is the FDR associated with each chunk. This value is 10% by default, and chunks with FDR &lt; 10% are removed. We set it to 1 here just to keep all chunks but you will want to lower this or just use default.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">susie.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_susie_data.html">prepare_susie_data</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas</span>, torus_prior <span class="op">=</span> <span class="va">torus.result</span><span class="op">$</span><span class="va">snp_prior</span>, torus_fdr <span class="op">=</span> <span class="va">torus.fdr</span>, fdr_thresh <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">susie.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_susie_data.html">prepare_susie_data</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas</span>, torus_prior <span class="op">=</span> <span class="va">torus.prior</span>, torus_fdr <span class="op">=</span> <span class="va">torus.fdr</span>, fdr_thresh <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p>We see we have a new column called <code>torus_prior</code></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">susie.df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span><span class="op">)</span><span class="op">]</span></code></pre></div>
