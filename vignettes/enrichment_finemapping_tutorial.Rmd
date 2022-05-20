@@ -87,15 +87,14 @@ you can set `option = "est"`.
 torus.result <- run_torus(torus.files$torus_annot_file, 
                           torus.files$torus_zscore_file,
                           option = "est-prior",
-                          torus_path = "torus") # you may need to set the installed path to 'torus' executable.
+                          torus_path = "torus") # set the path to 'torus' executable.
 
 torus.enrich <- torus.result$enrich
 torus.prior <- torus.result$snp_prior
 ```
 
-TORUS also gives us the uncertainty associated with whether each chunk contains a causal variant or not. 
-We run `run_torus()` with `option = "fdr"` to get the probability of each chunk containing a causal variant. 
-We can filter our chunks with low probability, thus saving us on computational time!
+TORUS also gives us the uncertainty of whether each locus contains a causal variant or not. 
+We run `run_torus()` with `option = "fdr"` to get the probability of each locus containing a causal variant. 
 ```{r run-torus-fdr}
 torus.fdr <- run_torus(torus.files$torus_annot_file, 
                        torus.files$torus_zscore_file,
@@ -103,19 +102,23 @@ torus.fdr <- run_torus(torus.files$torus_annot_file,
                        torus_path = "torus")$fdr
 ```
 
-Lets add the TORUS results back onto our cleaned summary statistics. 
-`prepare_susie_data_with_torus_result()` takes a parameter called `fdr_thresh` which is the FDR associated with each chunk. 
-This value is 10% by default, and chunks with FDR < 10% are removed. 
-We set it to 1 here just to keep all chunks but you will want to lower this or just use default.
-
-```{r}
-susie.df <- prepare_susie_data_with_torus_result(sumstats = gwas, torus_prior = torus.prior, torus_fdr = torus.fdr, fdr_thresh = 1)
+Lets add the TORUS SNP-level priors to our summary statistics. 
+```{r add-torus-priors}
+sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas, torus_prior = torus.prior)
 ```
 
-We see we have a new column called `torus_prior` 
-
+We see we have a new column called `torus_prior`.
 ```{r}
-susie.df[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior')]
+sumstats.for.susie[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior')]
+```
+
+You could limit loci with GWAS p-value cutoff (e.g. pval < 5e-8).
+
+If you want to limit loci with FDR cutoff, you can set the parameter `fdr_thresh`, 
+which is the FDR associated with each locus obtained from running `run_torus()` with `option = "fdr"`. 
+We set it to 1 here just to keep all loci. You could lower this or just use default (FDR < 10%).
+```{r add-torus-priors-fdr}
+sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas, torus_prior = torus.prior, torus_fdr = torus.fdr, fdr_thresh = 1)
 ```
 
 With this data frame, we can perform fine-mapping. 
@@ -124,7 +127,7 @@ Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 ca
 This step could take a while if chunks contain many SNPs ($O(n^2)$ where n is # of SNPs). 
 
 ```{r run-susie}
-susie_finemap_L1 <- run_finemapping(sumstats = susie.df, bigSNP = bigSNP, 
+susie_finemap_L1 <- run_finemapping(sumstats = sumstats.for.susie, bigSNP = bigSNP, 
                                     priortype = 'torus', L = 1)
 ```
 
@@ -134,13 +137,13 @@ which gives the probability of a SNP being causal.
 We can annotate our cleaned summary statistics with this information using `merge_susie_sumstats()`
 
 ```{r}
-gwas_finemapped <- merge_susie_sumstats(susie_results = susie_finemap_L1, sumstats = susie.df)
+finemap.sumstats <- merge_susie_sumstats(susie_results = susie_finemap_L1, sumstats = sumstats.for.susie)
 ```
 
 Lets look at the final cleaned, and finemapped summary statistics. 
 We see we have a new column called `susie_pip` which is the probability of being causal. 
 
 ```{r}
-gwas_finemapped[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior','susie_pip')]
+finemap.sumstats[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior','susie_pip')]
 ```
 
