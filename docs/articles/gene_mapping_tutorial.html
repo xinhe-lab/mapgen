@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8</span>
       </span>
     </div>
 
@@ -263,7 +263,10 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## <span style="color: #BCBCBC;">6</span>    33 TTC39A,EPS15     TTC39A(0.409),E… TTC39A              0.409        0.411</span></code></pre>
 <p>Find the nearest gene for the top SNP in each locus</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">nearest_genes.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_nearest_genes.html">find_nearest_genes</a></span><span class="op">(</span><span class="va">finemapstats.gr</span>, <span class="va">gene.annots</span>, dist.to <span class="op">=</span> <span class="st">"genebody"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">finemapstats.gr</span> <span class="op">&lt;-</span> <span class="va">finemapstats.gr</span><span class="op">[</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">finemapstats.gr</span><span class="op">$</span><span class="va">zscore</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="op">]</span>
+<span class="va">topsnps.gr</span> <span class="op">&lt;-</span> <span class="va">finemapstats.gr</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/duplicated.html" class="external-link">duplicated</a></span><span class="op">(</span><span class="va">finemapstats.gr</span><span class="op">$</span><span class="va">locus</span><span class="op">)</span>, <span class="op">]</span>
+  
+<span class="va">nearest_genes.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_nearest_genes.html">find_nearest_genes</a></span><span class="op">(</span><span class="va">topsnps.gr</span>, <span class="va">gene.annots</span>, dist.to <span class="op">=</span> <span class="st">"genebody"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nearest_genes.df</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##          snp chr       pos nearest_gene</span>
 <span class="co">## 1  rs2200732   4 111710042        PITX2</span>
