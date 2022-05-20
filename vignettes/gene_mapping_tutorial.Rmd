@@ -159,7 +159,10 @@ head(gene.cs.df)
 
 Find the nearest gene for the top SNP in each locus
 ```{r nearest-genes}
-nearest_genes.df <- find_nearest_genes(finemapstats.gr, gene.annots, dist.to = "genebody")
+finemapstats.gr <- finemapstats.gr[order(abs(finemapstats.gr$zscore), decreasing = TRUE), ]
+topsnps.gr <- finemapstats.gr[!duplicated(finemapstats.gr$locus), ]
+  
+nearest_genes.df <- find_nearest_genes(topsnps.gr, gene.annots, dist.to = "genebody")
 head(nearest_genes.df)
 ```
 

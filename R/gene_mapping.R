@@ -319,48 +319,40 @@ gene_by_distance <- function(snps.gr, promoters.gr, c.dist = 50000){
 
 #' @title Find the nearest genes for top SNPs in each locus.
 #'
-#' @param gwas.gr a GRanges object of the GWAS summary statistics
+#' @param top.snps.gr a GRanges object of the GWAS summary statistics for the top SNPs
 #' @param genes.gr a GRanges object of gene information
-#' @param dist.to Find nearest genes by distance to gene body or TSS.
-#' @param cols.to.keep columns to keep in the returned GRanges object
+#' @param dist.to Find nearest genes by distance to gene body or TSS
+#' @param cols.to.keep columns to keep in the result
 #' @importFrom magrittr %>%
 #' @export
 #' @return a data frame with SNP location and nearest gene.
 #'
-find_nearest_genes <- function(gwas.gr,
+find_nearest_genes <- function(top.snps.gr,
                                genes.gr,
                                dist.to = c('genebody', 'tss'),
                                cols.to.keep = c('snp','chr','pos', 'nearest_gene')){
 
   dist.to <- match.arg(dist.to)
 
-  GenomeInfoDb::seqlevelsStyle(gwas.gr) <- 'UCSC'
+  GenomeInfoDb::seqlevelsStyle(top.snps.gr) <- 'UCSC'
   GenomeInfoDb::seqlevelsStyle(genes.gr) <- 'UCSC'
-
-  if(!is.null(gwas.gr$zscore)){
-    gwas.gr <- gwas.gr[order(abs(gwas.gr$zscore), decreasing = TRUE), ]
-  }else{
-    gwas.gr <- gwas.gr[order(gwas.gr$pval), ]
-  }
-
-  snps.gr <- gwas.gr[!duplicated(gwas.gr$locus), ]
 
   gene.locations <- as.data.frame(genes.gr)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
 
-  snps.gr$nearest_gene <- NA
+  top.snps.gr$nearest_gene <- NA
 
   if(dist.to == 'tss'){
     gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
     gene.locations$start <- gene.locations$end <- gene.locations$tss
     gene.locations.gr <- GenomicRanges::makeGRangesFromDataFrame(gene.locations, keep.extra.columns = T)
 
-    snp.nearest.gene.idx <- GenomicRanges::nearest(snps.gr, gene.locations.gr)
-    snps.gr$nearest_gene <- gene.locations.gr$gene_name[snp.nearest.gene.idx]
+    snp.nearest.gene.idx <- GenomicRanges::nearest(top.snps.gr, gene.locations.gr)
+    top.snps.gr$nearest_gene <- gene.locations.gr$gene_name[snp.nearest.gene.idx]
   }else if(dist.to == 'genebody'){
     gene.locations.gr <- GenomicRanges::makeGRangesFromDataFrame(gene.locations, keep.extra.columns = T)
-    snp.nearest.gene.hits <- as.data.frame(nearest(snps.gr, gene.locations.gr, select = 'all'))
+    snp.nearest.gene.hits <- as.data.frame(nearest(top.snps.gr, gene.locations.gr, select = 'all'))
     colnames(snp.nearest.gene.hits) <- c('snp_idx', 'gene_idx')
-    snp.nearest.gene.hits$snp <- snps.gr$snp[snp.nearest.gene.hits$snp_idx]
+    snp.nearest.gene.hits$snp <- top.snps.gr$snp[snp.nearest.gene.hits$snp_idx]
     snp.nearest.gene.hits$gene_name <- gene.locations.gr$gene_name[snp.nearest.gene.hits$gene_idx]
 
     snp.nearest.gene.df <- snp.nearest.gene.hits %>%
@@ -370,12 +362,11 @@ find_nearest_genes <- function(gwas.gr,
 
     snp.nearest.gene.df$nearestGene <- as.character(snp.nearest.gene.df$nearestGene)
 
-    snps.gr$nearest_gene <- snp.nearest.gene.df$nearestGene[match(snps.gr$snp, snp.nearest.gene.df$snp)]
+    top.snps.gr$nearest_gene <- snp.nearest.gene.df$nearestGene[match(top.snps.gr$snp, snp.nearest.gene.df$snp)]
 
   }
 
-  res <- as.data.frame(snps.gr)[, cols.to.keep]
-  return(res)
+  return(as.data.frame(top.snps.gr)[,cols.to.keep])
 }
 
 
