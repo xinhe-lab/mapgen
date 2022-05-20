@@ -1,18 +1,24 @@
 
-#' @title Prepare SuSiE summary statistics with TORUS results
-#' @description Adds TORUS results to the summary statistics
+#' @title Prepare SuSiE summary statistics with TORUS prior probabilities
+#' @description Adds TORUS SNP level prior probabilities to the summary statistics
 #' @param sumstats a tibble or data frame containing raw summary statistics
-#' @param torus_prior a tibble containing SNP level priors (result from run_torus)
-#' @param torus_fdr a tibble containing the FDR of each region (result from run_torus)
-#' @return tibble of summary statistics updated with torus output
+#' @param torus_prior a tibble containing SNP level priors
+#' (result from run_torus with \code{option=\dQuote{est-prior}})
+#' @param torus_fdr a tibble containing the FDR of each region
+#' (result from run_torus with \code{option=\dQuote{fdr}}).
+#' Optional, if available, only keep the loci with Torus FDR < fdr_thresh.
+#' @param fdr_thresh FDR cutoff (default: 0.1)
+#' @return tibble of summary statistics updated with TORUS prior probabilities
 #' @export
 prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fdr, fdr_thresh=0.1){
 
-  # keep loci at fdr_thresh FDR (10% by default)
-  chunks <- torus_fdr$region_id[torus_fdr$fdr < fdr_thresh]
-  sumstats <- sumstats[sumstats$locus %in% chunks, ]
+  if(!missing(torus_fdr)){
+    # keep loci at fdr_thresh FDR (10% by default)
+    chunks <- torus_fdr$region_id[torus_fdr$fdr < fdr_thresh]
+    sumstats <- sumstats[sumstats$locus %in% chunks, ]
+  }
 
-  # Add Torus PIP
+  # Add Torus SNP-level prior probabilities
   sumstats <- dplyr::inner_join(sumstats, torus_prior, by='snp')
 
   return(sumstats)
@@ -41,8 +47,9 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'),
   chunks <- unique(sumstats$locus)
 
   susie_res <- list()
-  for(z in seq_along(chunks)){
-    cat(sprintf('Finemapping chunk %d of %d ...\n', z, length(chunks)))
+  for(i in seq_along(chunks)){
+    z <- chunks[i]
+    cat(sprintf('Finemapping locus %s (%d out of %d loci)...\n', z, i, length(chunks)))
     susie.df <- sumstats[sumstats$locus == z, ]
     susie_res[[as.character(z)]] <- run_susie(susie.df, bigSNP, z, L, useprior)
   }
