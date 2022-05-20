@@ -2,7 +2,7 @@
 % Please edit documentation in R/finemapping.R
 \name{prepare_susie_data_with_torus_result}
 \alias{prepare_susie_data_with_torus_result}
-\title{Prepare SuSiE summary statistics with TORUS results}
+\title{Prepare SuSiE summary statistics with TORUS prior probabilities}
 \usage{
 prepare_susie_data_with_torus_result(
   sumstats,
@@ -14,13 +14,18 @@ prepare_susie_data_with_torus_result(
 \arguments{
 \item{sumstats}{a tibble or data frame containing raw summary statistics}
 
-\item{torus_prior}{a tibble containing SNP level priors (result from run_torus)}
+\item{torus_prior}{a tibble containing SNP level priors
+(result from run_torus with \code{option=\dQuote{est-prior}})}
 
-\item{torus_fdr}{a tibble containing the FDR of each region (result from run_torus)}
+\item{torus_fdr}{a tibble containing the FDR of each region
+(result from run_torus with \code{option=\dQuote{fdr}}).
+Optional, if available, only keep the loci with Torus FDR < fdr_thresh.}
+
+\item{fdr_thresh}{FDR cutoff (default: 0.1)}
 }
 \value{
-tibble of summary statistics updated with torus output
+tibble of summary statistics updated with TORUS prior probabilities
 }
 \description{
-Adds TORUS results to the summary statistics
+Adds TORUS SNP level prior probabilities to the summary statistics
 }
