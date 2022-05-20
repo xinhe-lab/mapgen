@@ -16,7 +16,7 @@ prepare_torus_input_files(
 \item{sumstats}{cleaned summary statistics}
 
 \item{annotation_bed_files}{annotation files in BED format.
-The bed file must have three columns: chr, start, end.
+The bed file must have at least these three columns: chr, start, end.
 Chromosomes should be numeric (no "chr")
 and should be in hg19/b37 format.
 You will get wrong results if you use hg38 or other
