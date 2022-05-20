@@ -48,10 +48,10 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'),
   susie_res <- list()
   for(i in seq_along(chunks)){
     z <- chunks[i]
-    cat(sprintf('\rFinemapping locus %s...', z))
+    cat(sprintf('Finemapping locus %s...\t', z))
     susie.df <- sumstats[sumstats$locus == z, ]
     susie_res[[as.character(z)]] <- run_susie(susie.df, bigSNP, z, L, useprior)
-    cat(sprintf('%.0f%% completed.', i/length(chunks)*100))
+    cat(sprintf('%.0f%% completed.\n', length(susie_res)/length(chunks)*100))
   }
 
   return(susie_res)
