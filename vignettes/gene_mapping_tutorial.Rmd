@@ -81,11 +81,30 @@ genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", p
 gene.annots <- genomic.annots$genes
 ```
 
-Add Promoter-capture HiC (PCHi-C) data from iPSC derived 
-cardiomyocytes (CMs). You can use your own pcHiC data, 
-or skip this if you do not have relevant PCHi-C data.
+Load OCRs 
+```{r load-OCRs}
+genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
+```
+
+Define active promoters using OCRs. 
+```{r active.promoters}
+genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, genomic.annots$OCRs_hg19, minoverlap = 100)
+```
+
+Define enhancer loops: 
+
+Add Promoter-capture HiC (PCHi-C) data from iPSC derived cardiomyocytes (CMs).
 ```{r load-pcHiC}
 genomic.annots$pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "mapgen"))
+```
+
+You can use your own pcHiC data as follows, 
+or skip this if you do not have relevant PCHi-C data.
+```{r load-pcHiC-2, eval=FALSE}
+evapcHiC <- data.table::fread(pcHiC.file)
+pcHiC.gr <- process_pcHiC(pcHiC)
+pcHiC.gr <- pcHiC.gr[pcHiC.gr$gene_name %in% gene.annots$gene_name,] # restrict to protein coding genes
+genomic.annots$pcHiC <- pcHiC.gr
 ```
 
 Add ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
@@ -97,35 +116,17 @@ ABC.gr <- ABC.gr[ABC.gr$gene_name %in% gene.annots$gene_name, ] # restrict to pr
 genomic.annots$ABC <- ABC.gr
 ```
 
-Define active promoters using OCRs. 
-```{r active.promoters}
-genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
-genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, genomic.annots$OCRs_hg19, minoverlap = 100)
-```
-
-Define enhancer loops: 
-
-We used "enhancer loops" from Activity-By-Contact (ABC) scores and 
-promoter-capture HiC data (PC-HiC). 
-
 Considering the fact that Hi-C and PC-HiC may miss contacts between close regions
 due to technical reasons, 
-we also consider the OCRs within 20 kb of active promoters as “enhancer loops”. 
+we also consider enhancer regions (the OCRs in this case) within 20 kb of active promoters as “enhancer loops”. 
+
+```{r load-enhancers}
+genomic.annots$enhancer_regions <- genomic.annots$OCRs_hg19[genomic.annots$OCRs_hg19$peakType!="Promoter",]
+```
 
 ```{r enhancer.nearby.promoter.20kb}
-genomic.annots$enhancer_nearby_promoter_20kb <- readRDS(system.file("extdata", "enhancer.nearby.promoter.20kb.gr.rds", package = "mapgen"))
+enhancer_nearby_promoter_20kb <- nearby_interactions(genomic.annots$enhancer_regions, genomic.annots$active_promoters, dist_limit = 20000)
 ```
-
-Define enhancer regions by OCRs (you may skip this if you do not have relevant enhancer data)
-```{r load-enhancers}
-genomic.annots$enhancer_regions <- genomic.annots$OCRs_hg19
-```
-
-Let's look at all the annotation categories we included here:
-```{r}
-summary(genomic.annots)
-```
-
 
 Run gene mapping
 ===================
