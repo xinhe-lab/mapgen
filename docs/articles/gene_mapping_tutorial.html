@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9</span>
       </span>
     </div>
 
@@ -155,44 +155,33 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"genomic.annots.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">gene.annots</span> <span class="op">&lt;-</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">genes</span></code></pre></div>
-<p>Add Promoter-capture HiC (PCHi-C) data from iPSC derived cardiomyocytes (CMs). You can use your own pcHiC data, or skip this if you do not have relevant PCHi-C data.</p>
+<p>Load OCRs</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pcHiC.CM.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Add ABC scores from heart ventricle (from Nasser <em>et al.</em> <em>Nature</em> 2021). You may skip this if you do not have relevant ABC scores.</p>
+<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"OCRs.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Define active promoters using OCRs.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span> <span class="op">&lt;-</span> <span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/findOverlaps-methods.html" class="external-link">subsetByOverlaps</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">promoters</span>, <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span>, minoverlap <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
+<p>Define enhancer loops:</p>
+<p>Add Promoter-capture HiC (PCHi-C) data from iPSC derived cardiomyocytes (CMs).</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pcHiC.CM.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>You can use your own pcHiC data as follows, or skip this if you do not have relevant PCHi-C data.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">evapcHiC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="va">pcHiC.file</span><span class="op">)</span>
+<span class="va">pcHiC.gr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_pcHiC.html">process_pcHiC</a></span><span class="op">(</span><span class="va">pcHiC</span><span class="op">)</span>
+<span class="va">pcHiC.gr</span> <span class="op">&lt;-</span> <span class="va">pcHiC.gr</span><span class="op">[</span><span class="va">pcHiC.gr</span><span class="op">$</span><span class="va">gene_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="va">gene.annots</span><span class="op">$</span><span class="va">gene_name</span>,<span class="op">]</span> <span class="co"># restrict to protein coding genes</span>
+<span class="va">genomic.annots</span><span class="op">$</span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="va">pcHiC.gr</span></code></pre></div>
+<p>Add ABC scores from heart ventricle (from Nasser <em>et al.</em> <em>Nature</em> 2021). You may skip this if you do not have relevant ABC scores.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"heart_ventricle-ENCODE_ABC.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
 <span class="va">ABC.gr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_ABC.html">process_ABC</a></span><span class="op">(</span><span class="va">ABC</span>, ABC.thresh <span class="op">=</span> <span class="fl">0.015</span>, full.element <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">ABC.gr</span> <span class="op">&lt;-</span> <span class="va">ABC.gr</span><span class="op">[</span><span class="va">ABC.gr</span><span class="op">$</span><span class="va">gene_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="va">gene.annots</span><span class="op">$</span><span class="va">gene_name</span>, <span class="op">]</span> <span class="co"># restrict to protein coding genes</span>
 <span class="va">genomic.annots</span><span class="op">$</span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="va">ABC.gr</span></code></pre></div>
-<p>Define active promoters using OCRs.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"OCRs.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span> <span class="op">&lt;-</span> <span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/findOverlaps-methods.html" class="external-link">subsetByOverlaps</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">promoters</span>, <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span>, minoverlap <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></code></pre></div>
-<p>Define enhancer loops:</p>
-<p>We used “enhancer loops” from Activity-By-Contact (ABC) scores and promoter-capture HiC data (PC-HiC).</p>
-<p>Considering the fact that Hi-C and PC-HiC may miss contacts between close regions due to technical reasons, we also consider the OCRs within 20 kb of active promoters as “enhancer loops”.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_nearby_promoter_20kb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"enhancer.nearby.promoter.20kb.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Define enhancer regions by OCRs (you may skip this if you do not have relevant enhancer data)</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_regions</span> <span class="op">&lt;-</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span></code></pre></div>
-<p>Let’s look at all the annotation categories we included here:</p>
+<p>Considering the fact that Hi-C and PC-HiC may miss contacts between close regions due to technical reasons, we also consider enhancer regions (the OCRs in this case) within 20 kb of active promoters as “enhancer loops”.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##                               Length Class   Mode</span>
-<span class="co">## exons                         195913 GRanges S4  </span>
-<span class="co">## introns                       189762 GRanges S4  </span>
-<span class="co">## UTRs                           50889 GRanges S4  </span>
-<span class="co">## promoters                      19430 GRanges S4  </span>
-<span class="co">## splice_junctions              391826 GRanges S4  </span>
-<span class="co">## HiC                           377504 GRanges S4  </span>
-<span class="co">## genes                          19430 GRanges S4  </span>
-<span class="co">## pcHiC                         377504 GRanges S4  </span>
-<span class="co">## ABC                            48102 GRanges S4  </span>
-<span class="co">## OCRs_hg19                     353731 GRanges S4  </span>
-<span class="co">## active_promoters               14029 GRanges S4  </span>
-<span class="co">## enhancer_nearby_promoter_20kb 124947 GRanges S4  </span>
-<span class="co">## enhancer_regions              353731 GRanges S4</span></code></pre>
+<code class="sourceCode R"><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_regions</span> <span class="op">&lt;-</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span><span class="op">[</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs_hg19</span><span class="op">$</span><span class="va">peakType</span><span class="op">!=</span><span class="st">"Promoter"</span>,<span class="op">]</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">enhancer_nearby_promoter_20kb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nearby_interactions.html">nearby_interactions</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_regions</span>, <span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span>, dist_limit <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-gene-mapping">Run gene mapping<a class="anchor" aria-label="anchor" href="#run-gene-mapping"></a>
@@ -228,13 +217,13 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">## 4 rs4845618   1 154400015 1.149990e-05 10.16240 -6.537313  0    77      IL6R</span>
 <span class="co">## 5 rs6687726   1 154400320 1.392576e-05 10.29390 -6.567164  0    77      IL6R</span>
 <span class="co">## 6 rs2793374   1 205647508 1.950893e-04  4.70421  4.268657  0   106   SLC45A3</span>
-<span class="co">##         category weight  frac_pip     gene_pip</span>
-<span class="co">## 1 ABC,nearby20kb      1 0.3333333 4.697451e-01</span>
-<span class="co">## 2            ABC      1 0.3333333 2.130613e-02</span>
-<span class="co">## 3            ABC      1 1.0000000 7.609475e-02</span>
-<span class="co">## 4            ABC      1 1.0000000 3.297559e-05</span>
-<span class="co">## 5            ABC      1 0.5000000 3.297559e-05</span>
-<span class="co">## 6            ABC      1 1.0000000 4.722192e-02</span></code></pre>
+<span class="co">##   category weight  frac_pip     gene_pip</span>
+<span class="co">## 1      ABC      1 0.3333333 3.731341e-01</span>
+<span class="co">## 2      ABC      1 0.3333333 2.591496e-02</span>
+<span class="co">## 3      ABC      1 1.0000000 7.609949e-02</span>
+<span class="co">## 4      ABC      1 1.0000000 3.297559e-05</span>
+<span class="co">## 5      ABC      1 0.5000000 3.297559e-05</span>
+<span class="co">## 6      ABC      1 1.0000000 4.721804e-02</span></code></pre>
 <p>Extract gene-level result table</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gene.pip.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_gene_level_result.html">extract_gene_level_result</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, <span class="va">gene.annots</span><span class="op">)</span></code></pre></div>
@@ -242,12 +231,12 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/S4Vectors/man/Vector-class.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.pip.res</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">##    chr       pos gene_name     gene_pip</span>
-<span class="co">## 1 chr1  22263790     HSPG2 4.697451e-01</span>
-<span class="co">## 2 chr1  22110099     USP48 2.130613e-02</span>
-<span class="co">## 3 chr1  41707826     SCMH1 7.609475e-02</span>
+<span class="co">## 1 chr1  22263790     HSPG2 3.731341e-01</span>
+<span class="co">## 2 chr1  22110099     USP48 2.591496e-02</span>
+<span class="co">## 3 chr1  41707826     SCMH1 7.609949e-02</span>
 <span class="co">## 4 chr1 154377669      IL6R 3.297559e-05</span>
-<span class="co">## 5 chr1 205649587   SLC45A3 4.722192e-02</span>
-<span class="co">## 6 chr1 205719404    NUCKS1 6.782052e-01</span></code></pre>
+<span class="co">## 5 chr1 205649587   SLC45A3 4.721804e-02</span>
+<span class="co">## 6 chr1 205719404    NUCKS1 6.253132e-01</span></code></pre>
 <p>Obtain 80% credible gene sets</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gene.cs.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gene_cs.html">gene_cs</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>
@@ -256,11 +245,11 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span class="co">##   locus gene_cs          gene_cs_locus_p… top_gene top_locus_gene_… top_gene_pip</span>
 <span class="co">##   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="co">## <span style="color: #BCBCBC;">1</span>     7 CASZ1            CASZ1(0.886)     CASZ1               0.886        0.886</span>
-<span class="co">## <span style="color: #BCBCBC;">2</span>    15 HSPG2,CELA3B,LD… HSPG2(0.47),CEL… HSPG2               0.470        0.470</span>
+<span class="co">## <span style="color: #BCBCBC;">2</span>    15 HSPG2,CELA3B,LD… HSPG2(0.373),CE… HSPG2               0.373        0.373</span>
 <span class="co">## <span style="color: #BCBCBC;">3</span>    25 SLFNL1,CTPS1     SLFNL1(0.624),C… SLFNL1              0.624        0.624</span>
 <span class="co">## <span style="color: #BCBCBC;">4</span>    31 BEND5            BEND5(0.997)     BEND5               0.997        0.997</span>
-<span class="co">## <span style="color: #BCBCBC;">5</span>    32 FAF1,CDKN2C,C1o… FAF1(0.382),CDK… FAF1                0.382        0.403</span>
-<span class="co">## <span style="color: #BCBCBC;">6</span>    33 TTC39A,EPS15     TTC39A(0.409),E… TTC39A              0.409        0.411</span></code></pre>
+<span class="co">## <span style="color: #BCBCBC;">5</span>    32 FAF1,CDKN2C,C1o… FAF1(0.368),CDK… FAF1                0.368        0.390</span>
+<span class="co">## <span style="color: #BCBCBC;">6</span>    33 TTC39A,EPS15     TTC39A(0.425),E… TTC39A              0.425        0.427</span></code></pre>
 <p>Find the nearest gene for the top SNP in each locus</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">finemapstats.gr</span> <span class="op">&lt;-</span> <span class="va">finemapstats.gr</span><span class="op">[</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">finemapstats.gr</span><span class="op">$</span><span class="va">zscore</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="op">]</span>
