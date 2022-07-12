@@ -2,12 +2,22 @@
 % Please edit documentation in R/finemapping.R
 \name{run_susie}
 \alias{run_susie}
-\title{Run fine-mapping with SUSIE for one LD block}
+\title{Run fine-mapping with SuSiE for one LD block}
 \usage{
-run_susie(sumstats, bigSNP, locus, L = 1, useprior)
+run_susie(
+  sumstats,
+  R,
+  bigSNP,
+  locus,
+  L = 1,
+  useprior,
+  estimate_residual_variance = FALSE
+)
 }
 \arguments{
 \item{sumstats}{summary statistics}
+
+\item{R}{p x p LD (correlation) matrix}
 
 \item{bigSNP}{bigSNP object}
 
@@ -17,10 +27,15 @@ run_susie(sumstats, bigSNP, locus, L = 1, useprior)
 
 \item{useprior}{Logical, if TRUE, use the \code{torus_prior} column
 in \code{sumstats} as prior.}
+
+\item{estimate_residual_variance}{The default is FALSE,
+the residual variance is fixed to 1 or variance of y.
+If the in-sample LD matrix is provided,
+we recommend setting estimate_residual_variance = TRUE.}
 }
 \value{
 finemapping results for one LD block
 }
 \description{
-Run fine-mapping with SUSIE for one LD block
+Run fine-mapping with SuSiE for one LD block
 }

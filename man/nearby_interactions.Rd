@@ -15,7 +15,7 @@ nearby_interactions(
 
 \item{active_promoters.gr}{GRanges object of active promoters}
 
-\item{dist_limit}{Distance limit (default: 20,000)}
+\item{dist_limit}{Distance limit (default: 20kb)}
 }
 \description{
 Get nearby interactions for enhancer regions near active promoters

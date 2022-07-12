@@ -4,7 +4,14 @@
 \alias{run_finemapping}
 \title{Run fine-mapping}
 \usage{
-run_finemapping(sumstats, bigSNP, priortype = c("torus", "uniform"), L = 1)
+run_finemapping(
+  sumstats,
+  R,
+  bigSNP,
+  priortype = c("torus", "uniform"),
+  L = 1,
+  estimate_residual_variance = FALSE
+)
 }
 \arguments{
 \item{sumstats}{a tibble or data frame containing raw summary statistics; must have header!}
@@ -14,6 +21,11 @@ run_finemapping(sumstats, bigSNP, priortype = c("torus", "uniform"), L = 1)
 \item{priortype}{prior type: "torus" or "uniform".}
 
 \item{L}{Number of causal signals}
+
+\item{estimate_residual_variance}{The default is FALSE,
+the residual variance is fixed to 1 or variance of y.
+If the in-sample LD matrix is provided,
+we recommend setting estimate_residual_variance = TRUE.}
 }
 \value{
 list of finemapping results; one per LD block
