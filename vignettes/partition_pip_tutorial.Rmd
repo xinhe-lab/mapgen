@@ -19,7 +19,7 @@ and cell-type specific open chromatin regions (OCRs).
 **Required input data**:
 
 * Fine-mapping summary statistics.
-* A list of annotation regions (cell-type specific OCRs in this example). 
+* A list of GRanges objects of annotation regions. 
 
 Load R packages
 ```{r load-packages, message=FALSE, warning=FALSE}
@@ -39,43 +39,87 @@ finemapstats.gr <- process_finemapping_sumstats(finemapstats,
                                                 pip.thresh = 1e-5)
 ```
 
+We can partition PIPs into different functional annotation categories.
+
 Load genomic annotations (hg19). 
-```{r load-annotations}
+```{r load-genomic-annotations}
 genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "mapgen"))
 ```
 
-Load annotations and cell type OCR peaks (disjoint regions). This is a list of GRanges objects.
-```{r load-disjoint-OCRs}
-OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "mapgen"))
+Load all OCRs (hg19).
+```{r load-all-OCRs}
+genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 ```
 
-Sum PIPs within cell-type specific OCRs.
-```{r sum-pip-disjoint-OCRs}
-sum_pip_res <- partition_pip_regions(finemapstats.gr, OCRs)
+Create a list of the annotations, with priority in the order of OCRs, UTRS, Exons, and Introns.
+```{r create-annots.list}
+annots.list <- list(OCRs = genomic.annots$OCRs_hg19,
+                    UTRs = genomic.annots$UTRs,
+                    Exons = genomic.annots$exons,
+                    Introns = genomic.annots$introns)
 ```
 
-Sum of PIPs:
+Sum PIPs within annotation categories. 
+Unlike partition_pip_regions(), it is OK to have overlapping annotations here. 
+If a SNP is in multiple annotation categories, it will be assigned to the first ordered category.
+```{r sum-pip-annots}
+sum_pip_res <- partition_pip_annots(finemapstats.gr, annots.list)
+```
+
+Sum of PIPs in each annotation category:
 ```{r}
 sum.pips <- sum_pip_res$sum.pips
 head(sum.pips)
 ```
 
-Number of SNPs included:
+Number of SNPs included in each annotation category:
 ```{r}
 n.snps <- sum_pip_res$n.snps
 head(n.snps)
 ```
+```{r get-prop-pips-annots}
+colnames(sum.pips)[colnames(sum.pips) == "others"] <- "Intergenic"
+sum.pips <- sum.pips[with(sum.pips, order(-OCRs, UTRs, Exons, Introns, Intergenic)),]
+prop.pip.mat <- sum.pips/rowSums(sum.pips)
+```
+
+We can make a structure plot to show the proportion of PIPs in each annotation category.
+```{r structure-plot-annots, fig.width=10, fig.height=2.5}
+categories <- c("OCRs", "UTRs", "Exons", "Introns", "Intergenic")
+colors <- c(OCRs = "#E18727FF", UTRs = "#238b45", Exons =  "#bee6af", Introns = "#B09C85FF", Intergenic = "#aaaaaa")
+
+dat <- compile_structure_plot_data(prop.pip.mat, categories = rev(categories))
+structure_plot(dat, colors = rev(colors))
+```
+We can further partition PIPs into disjoint OCRs for different cell types.
+
+Load cell type OCR peaks. 
+This is a list of GRanges objects containing disjoint OCRs for different cell types. 
+```{r load-disjoint-OCRs}
+disjoint_OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "mapgen"))
+```
+
+Sum PIPs within cell-type specific OCRs.
+```{r sum-pip-disjoint-OCRs}
+sum_pip_res <- partition_pip_regions(finemapstats.gr, disjoint_OCRs)
+```
+
+Sum of PIPs in each cell type OCR category:
+```{r}
+sum.pips <- sum_pip_res$sum.pips
+head(sum.pips)
+```
 
 Filter loci with a cutoff of total PIPs in OCR > 0.25, 
 compute the proportion of PIPs partitioned in each cell type category.
-```{r filter-locus-proportion-pips}
+```{r filter-locus-proportion-pips-OCRs}
 sum.pips.filtered <- sum.pips[rowSums(sum.pips) > 0.25,]
 prop.pip.mat <- sum.pips.filtered/rowSums(sum.pips.filtered)
 prop.pip.mat <- prop.pip.mat[with(prop.pip.mat, order(-Cardiomyocyte)), ]
 ```
 
 We can make a structure plot to show the proportion of PIPs in each cell type category.
-```{r structure-plot, fig.width=10, fig.height=2.5}
+```{r structure-plot-OCRs, fig.width=10, fig.height=2.5}
 categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid", 
                 "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
 colors <- c("#b22222", "#8DD3C7", "#BEBADA", "#FB8072", 
