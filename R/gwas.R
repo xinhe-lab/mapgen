@@ -211,7 +211,7 @@ annotator_merged <- function(gwas, annotations){
   return(gwas)
 }
 
-#' @title merge_bigsnp_gwas
+#' @title Match GWAS SNPs with reference panel from the bigSNP object.
 #' @param gwas  GWAS summary statistics
 #' @param bigSNP  bigSNP object
 #' @importFrom magrittr %>%
