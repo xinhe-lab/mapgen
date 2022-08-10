@@ -2,7 +2,7 @@
 % Please edit documentation in R/gene_mapping.R
 \name{gene_by_distance}
 \alias{gene_by_distance}
-\title{Find all genes (promoters) within 1MB genes and assign weights based on distance}
+\title{Find all genes (promoters) within 1MB of the SNPs and assign weights based on distance}
 \usage{
 gene_by_distance(snps.gr, promoters.gr, c.dist = 50000)
 }
@@ -18,5 +18,5 @@ Weight = exp(-dist/c). Default = 50000 (50kb).}
 a GRanges object with SNP to gene distance and weights calculated based on distance.
 }
 \description{
-Find all genes (promoters) within 1MB genes and assign weights based on distance
+Find all genes (promoters) within 1MB of the SNPs and assign weights based on distance
 }

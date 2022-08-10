@@ -286,7 +286,7 @@ gene_cs <- function(snp.gene.pip.mat,
 
 
 
-#' @title Find all genes (promoters) within 1MB genes and assign weights based on distance
+#' @title Find all genes (promoters) within 1MB of the SNPs and assign weights based on distance
 #'
 #' @param snps.gr a GRanges object with the SNP locations.
 #' @param promoters.gr a GRanges object with the gene promoter locations.
