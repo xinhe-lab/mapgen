@@ -254,6 +254,7 @@ gene_cs <- function(snp.gene.pip.mat,
     # for each locus, keep the genes with gene locus PIP cumsum > 0.8
     gene.cumsum.df <- locus.gene.pip.df %>%
       dplyr::group_by(locus) %>%
+      dplyr::filter(sum(locus_gene_pip) >= gene.cs.percent.thresh) %>%
       dplyr::arrange(desc(locus_gene_pip)) %>%
       dplyr::mutate(gene_pip_csum = cumsum(locus_gene_pip)) %>%
       dplyr::slice(1:which(gene_pip_csum >= gene.cs.percent.thresh)[1])
@@ -269,6 +270,7 @@ gene_cs <- function(snp.gene.pip.mat,
     # for each locus, keep the genes with gene PIP cumsum > 0.8
     gene.cumsum.df <- locus.gene.pip.df %>%
       dplyr::group_by(locus) %>%
+      dplyr::filter(sum(gene_pip) >= gene.cs.percent.thresh) %>%
       dplyr::arrange(desc(gene_pip)) %>%
       dplyr::mutate(gene_pip_csum = cumsum(gene_pip)) %>%
       dplyr::slice(1:which(gene_pip_csum >= gene.cs.percent.thresh)[1])
