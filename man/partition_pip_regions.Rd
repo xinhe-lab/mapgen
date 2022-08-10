@@ -2,19 +2,20 @@
 % Please edit documentation in R/partition_pips.R
 \name{partition_pip_regions}
 \alias{partition_pip_regions}
-\title{Partition PIPs into functional annotation regions}
+\title{Partition PIPs into disjoint functional annotation regions}
 \usage{
 partition_pip_regions(finemapstats.gr, annots.list)
 }
 \arguments{
 \item{finemapstats.gr}{a GRanges object of fine mapping summary statistics}
 
-\item{annots.list}{a list of GRanges objects of functional annotations}
+\item{annots.list}{a list of GRanges objects of disjoint functional annotations.
+Note: the annotation regions need to be disjoint!}
 }
 \value{
 a list with a data frame with the sum of PIPs and
 a data frame with the number of SNPs included for each annotation category.
 }
 \description{
-Partition PIPs into functional annotation regions
+Partition PIPs into disjoint functional annotation regions
 }
