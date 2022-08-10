@@ -2,7 +2,7 @@
 % Please edit documentation in R/gwas.R
 \name{merge_bigsnp_gwas}
 \alias{merge_bigsnp_gwas}
-\title{merge_bigsnp_gwas}
+\title{Match GWAS SNPs with reference panel from the bigSNP object.}
 \usage{
 merge_bigsnp_gwas(gwas, bigSNP)
 }
@@ -12,5 +12,5 @@ merge_bigsnp_gwas(gwas, bigSNP)
 \item{bigSNP}{bigSNP object}
 }
 \description{
-merge_bigsnp_gwas
+Match GWAS SNPs with reference panel from the bigSNP object.
 }
