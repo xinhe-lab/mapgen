@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
       </tr><tr><td>
           <p><code><a href="gene_by_distance.html">gene_by_distance()</a></code> </p>
         </td>
-        <td><p>Find all genes (promoters) within 1MB genes and assign weights based on distance</p></td>
+        <td><p>Find all genes (promoters) within 1MB of the SNPs and assign weights based on distance</p></td>
       </tr><tr><td>
           <p><code><a href="gene_cs.html">gene_cs()</a></code> </p>
         </td>
@@ -116,7 +116,7 @@
       </tr><tr><td>
           <p><code><a href="merge_bigsnp_gwas.html">merge_bigsnp_gwas()</a></code> </p>
         </td>
-        <td><p>merge_bigsnp_gwas</p></td>
+        <td><p>Match GWAS SNPs with reference panel from the bigSNP object.</p></td>
       </tr><tr><td>
           <p><code><a href="merge_susie_sumstats.html">merge_susie_sumstats()</a></code> </p>
         </td>
@@ -126,9 +126,13 @@
         </td>
         <td><p>Get nearby interactions for enhancer regions near active promoters</p></td>
       </tr><tr><td>
+          <p><code><a href="partition_pip_annots.html">partition_pip_annots()</a></code> </p>
+        </td>
+        <td><p>Partition PIPs into functional annotation categories.</p></td>
+      </tr><tr><td>
           <p><code><a href="partition_pip_regions.html">partition_pip_regions()</a></code> </p>
         </td>
-        <td><p>Partition PIPs into functional annotation regions</p></td>
+        <td><p>Partition PIPs into disjoint functional annotation regions</p></td>
       </tr><tr><td>
           <p><code><a href="prepare_susie_data_with_torus_result.html">prepare_susie_data_with_torus_result()</a></code> </p>
         </td>
@@ -177,6 +181,11 @@
           <p><code><a href="structure_plot.html">structure_plot()</a></code> </p>
         </td>
         <td><p>structure plot</p></td>
+      </tr><tr><td>
+          <p><code><a href="sum_pip_annots.html">sum_pip_annots()</a></code> </p>
+        </td>
+        <td><p>Sum PIPs for each annotation category,
+assign SNPs to annotations with the priority of the earlier category</p></td>
       </tr><tr><td>
           <p><code><a href="sum_pip_regions.html">sum_pip_regions()</a></code> </p>
         </td>

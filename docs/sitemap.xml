@@ -82,6 +82,9 @@
     <loc>https://kevinlkx.github.io/mapgen/reference/nearby_interactions.html</loc>
   </url>
   <url>
+    <loc>https://kevinlkx.github.io/mapgen/reference/partition_pip_annots.html</loc>
+  </url>
+  <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/partition_pip_regions.html</loc>
   </url>
   <url>
@@ -119,6 +122,9 @@
   </url>
   <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/structure_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/mapgen/reference/sum_pip_annots.html</loc>
   </url>
   <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/sum_pip_regions.html</loc>
