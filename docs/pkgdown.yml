@@ -5,7 +5,7 @@ articles:
   enrichment_finemapping_tutorial: enrichment_finemapping_tutorial.html
   gene_mapping_tutorial: gene_mapping_tutorial.html
   partition_pip_tutorial: partition_pip_tutorial.html
-last_built: 2022-08-10T22:00Z
+last_built: 2022-08-11T02:09Z
 urls:
   reference: https://kevinlkx.github.io/mapgen/reference
   article: https://kevinlkx.github.io/mapgen/articles

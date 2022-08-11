@@ -169,7 +169,7 @@ head(nearest_genes.df)
 
 
 Make a Manhattan plot of the gene PIPs, and label genes with gene PIP > 0.8.
-```{r gene-manhattan-plot, fig.width=7, fig.height=3, warning=FALSE}
+```{r gene-manhattan-plot, fig.width=8, fig.height=5, warning=FALSE}
 gene_manhattan_plot(gene.pip.res, sig.pip = 0.8, title = "AF gene mapping")
 ```
 
