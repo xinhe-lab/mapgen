@@ -92,9 +92,11 @@ gene_manhattan_plot <- function(gene.pip.res,
       legend.position="none",
       panel.border = element_blank(),
       panel.grid.major.x = element_blank(),
-      panel.grid.minor.x = element_blank()
+      panel.grid.minor.x = element_blank(),
+      plot.title = element_text(hjust = 0.5)
     ) +
     ggtitle(title) +
+    theme() +
     xlab("Chromosome") +
     ylab("Gene PIP")
 
