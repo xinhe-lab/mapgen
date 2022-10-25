@@ -1,6 +1,6 @@
 ---
 title: "Tutorial for enrichment analysis and fine-mapping with functional priors"
-author: Alan Selewa, Kaixuan Luo
+author: Kaixuan Luo, Alan Selewa
 output: html_document
 ---
 
@@ -10,8 +10,9 @@ knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
 In this tutorial, we perform enrichment analysis and fine-mapping on a small GWAS dataset.
 
-We use a reference genotype panel from European population (1KG). If you are in the He lab, 
-you can load the `EUR_variable_1kg.rds` file from RCC. 
+We use a reference genotype panel from European population (1KG). 
+
+If you are in the He lab, you can load the `EUR_variable_1kg.rds` file from RCC. 
 
 ```{r, eval=FALSE, message=FALSE}
 bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
