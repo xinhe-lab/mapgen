@@ -104,7 +104,8 @@ torus.fdr <- run_torus(torus.files$torus_annot_file,
 
 Lets add the TORUS SNP-level priors to our summary statistics. 
 ```{r add-torus-priors}
-sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas, torus_prior = torus.prior)
+sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas, 
+                                                           torus_prior = torus.prior)
 ```
 
 We see we have a new column called `torus_prior`.
@@ -118,7 +119,10 @@ If you want to limit loci with FDR cutoff, you can set the parameter `fdr_thresh
 which is the FDR associated with each locus obtained from running `run_torus()` with `option = "fdr"`. 
 We set it to 1 here just to keep all loci. You could lower this or just use default (FDR < 10%).
 ```{r add-torus-priors-fdr}
-sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas, torus_prior = torus.prior, torus_fdr = torus.fdr, fdr_thresh = 1)
+sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas, 
+                                                           torus_prior = torus.prior, 
+                                                           torus_fdr = torus.fdr, 
+                                                           fdr_thresh = 1)
 ```
 
 With this data frame, we can perform fine-mapping. 
@@ -127,8 +131,10 @@ Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 ca
 This step could take a while if chunks contain many SNPs ($O(n^2)$ where n is # of SNPs). 
 
 ```{r run-susie}
-susie_finemap_L1 <- run_finemapping(sumstats = sumstats.for.susie, bigSNP = bigSNP, 
-                                    priortype = 'torus', L = 1)
+susie_finemap_L1 <- run_finemapping(sumstats = sumstats.for.susie, 
+                                    bigSNP = bigSNP, 
+                                    priortype = 'torus', 
+                                    L = 1)
 ```
 
 `susie_finemap_L1` is a list of SuSiE results, one for each chunk/LD block. 
@@ -137,7 +143,8 @@ which gives the probability of a SNP being causal.
 We can annotate our cleaned summary statistics with this information using `merge_susie_sumstats()`
 
 ```{r}
-finemap.sumstats <- merge_susie_sumstats(susie_results = susie_finemap_L1, sumstats = sumstats.for.susie)
+finemap.sumstats <- merge_susie_sumstats(susie_results = susie_finemap_L1, 
+                                         sumstats = sumstats.for.susie)
 ```
 
 Lets look at the final cleaned, and finemapped summary statistics. 
