@@ -91,3 +91,30 @@ make_ranges <- function(seqname, start, end){
   return(GenomicRanges::GRanges(seqnames = seqname,
                                 ranges = IRanges::IRanges(start = start, end = end)))
 }
+
+
+# get LD (r^2) between each SNP and the top SNP in sumstats
+get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
+
+  # only include SNPs in bigSNP markers
+  sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
+  sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
+
+  if(missing(topSNP)){
+    if( min(sumstats$pval) >=0 && max(sumstats$pval) <= 1 ){
+      sumstats$pval <- -log10(sumstats$pval)
+    }
+    top_snp_idx <- sumstats$bigSNP_idx[which.max(sumstats$pval)]
+  }else{
+    top_snp_idx <- sumstats$bigSNP_idx[sumstats$snp == topSNP]
+  }
+
+  top_snp_genotype <- bigSNP$genotypes[,top_snp_idx]
+  genotype.mat <- bigSNP$genotypes[,sumstats$bigSNP_idx]
+
+  r2.vals <- as.vector(cor(top_snp_genotype, genotype.mat))^2
+  sumstats$r2 <- round(r2.vals, 4)
+
+  return(sumstats)
+}
+
