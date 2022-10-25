@@ -18,19 +18,19 @@ Imports:
     tibble,
     data.table,
     R.utils,
-    vroom,
     bigsnpr,
     ggplot2,
-    ggrepel,
-    ggrastr,
-    cowplot,
-    processx
+    susieR
 Remotes:
-    stephenslab/susieR,
     bioc::3.3/GenomicRanges,
     bioc::3.3/plyranges,
     bioc::3.3/rtracklayer
 Suggests: 
+    ggrepel,
+    ggrastr,
+    cowplot,
+    vroom,
+    processx,
     bedtoolsr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1

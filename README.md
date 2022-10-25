@@ -19,10 +19,9 @@ You can install the development version of `mapgen` from
 remotes::install_github("kevinlkx/mapgen")
 ```
 
-Please install the following dependent R packages: `tidyverse`,
-`data.table`, `bigsnpr`, `ggplot2`, `ggrepel`, `ggrastr`, `processx`,
-`R.utils` from CRAN, as well as `GenomicRanges`, `plyranges`,
-`rtracklayer` from Bioconductor.
+Please install the following dependent R packages: `susieR`,
+`tidyverse`, `data.table`, `bigsnpr`, `ggplot2`, `R.utils`from CRAN, as
+well as `GenomicRanges`, `plyranges`, `rtracklayer` from Bioconductor.
 
 After installing, check that it loads properly:
 
