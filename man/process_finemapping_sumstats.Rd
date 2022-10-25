@@ -14,7 +14,7 @@ process_finemapping_sumstats(
   zscore = "zscore",
   cs = "cs",
   locus = "locus",
-  pip.thresh = 1e-05,
+  pip.thresh = 0,
   filterCS = FALSE,
   maxL = 10,
   cols.to.keep = c("snp", "chr", "pos", "pip", "pval", "zscore", "cs", "locus")
@@ -39,7 +39,7 @@ process_finemapping_sumstats(
 
 \item{locus}{Name of the locus column in the summary statistics data frame}
 
-\item{pip.thresh}{PIP threshold (default = 1e-5).}
+\item{pip.thresh}{PIP threshold (default = 0).}
 
 \item{filterCS}{If TRUE, limiting to SNPs within credible sets.}
 

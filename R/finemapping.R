@@ -186,7 +186,7 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 #' @param cs Name of the CS column in the summary statistics data frame
 #' @param locus Name of the locus column in the summary statistics data frame
 #' @param cols.to.keep columns to keep in the returned data frame
-#' @param pip.thresh PIP threshold (default = 1e-5).
+#' @param pip.thresh PIP threshold (default = 0).
 #' @param filterCS If TRUE, limiting to SNPs within credible sets.
 #' @param maxL Maximum number of credible sets (default = 10).
 #' @importFrom magrittr %>%
@@ -202,7 +202,7 @@ process_finemapping_sumstats <- function(finemapstats,
                                          zscore = 'zscore',
                                          cs = 'cs',
                                          locus = 'locus',
-                                         pip.thresh = 1e-5,
+                                         pip.thresh = 0,
                                          filterCS = FALSE,
                                          maxL = 10,
                                          cols.to.keep = c('snp','chr','pos', 'pip', 'pval', 'zscore','cs', 'locus')){
