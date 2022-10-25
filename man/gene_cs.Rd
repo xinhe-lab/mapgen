@@ -15,7 +15,8 @@ If FALSE, get credible gene sets based on gene PIP.}
 \item{gene.cs.percent.thresh}{percentage threshold for credible gene sets}
 }
 \value{
-a data frame of credible gene set result. Columns:
+a data frame of credible gene set result.
+Columns:
 gene_cs: credible gene sets,
 gene_cs_locus_pip: credible gene sets and corresponding locus-level gene PIPs.
 gene_cs_pip: credible gene sets and corresponding gene PIPs.

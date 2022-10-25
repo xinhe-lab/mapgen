@@ -218,7 +218,8 @@ extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
 #' If FALSE, get credible gene sets based on gene PIP.
 #' @param gene.cs.percent.thresh percentage threshold for credible gene sets
 #' @importFrom magrittr %>%
-#' @return a data frame of credible gene set result. Columns:
+#' @return a data frame of credible gene set result.
+#' Columns:
 #' gene_cs: credible gene sets,
 #' gene_cs_locus_pip: credible gene sets and corresponding locus-level gene PIPs.
 #' gene_cs_pip: credible gene sets and corresponding gene PIPs.
@@ -275,6 +276,7 @@ gene_cs <- function(snp.gene.pip.mat,
                        top_gene_pip = gene_pip[1])
   }
 
+  gene.cs.df <- as.data.frame(gene.cs.df)
   return(gene.cs.df)
 }
 
@@ -469,7 +471,6 @@ block_view_summary <- function(genemapping_res, finemapstats.gr){
 #'
 #' @param snp.gene.pip.mat A data frame of SNP-level gene mapping result
 #' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
 #' @export
 #'
 get_locus_level_gene_pip <- function(snp.gene.pip.mat){
@@ -482,7 +483,8 @@ get_locus_level_gene_pip <- function(snp.gene.pip.mat){
   # simplify to get locus, gene_name, locus_gene_pip, and gene_pip
   locus.gene.pip.df <- snp.locus.gene.pip.mat %>%
     dplyr::select(locus, gene_name, gene_pip, locus_gene_pip) %>%
-    dplyr::distinct(locus, gene_name, .keep_all=TRUE)
+    dplyr::distinct(locus, gene_name, .keep_all=TRUE) %>% as.data.frame()
 
+  locus.gene.pip.df <- as.data.frame(locus.gene.pip.df)
   return(locus.gene.pip.df)
 }
