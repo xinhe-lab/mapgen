@@ -20,9 +20,9 @@ devtools::install_github("kevinlkx/mapgen")
 ```
 
 Please install the following dependent R packages: `tidyverse`,
-`data.table`, `bigsnpr`, `ggplot2`, `ggrepel`, `ggrastr`, `processx`
-from CRAN, as well as `GenomicRanges`, `plyranges`, `rtracklayer` from
-Bioconductor.
+`data.table`, `bigsnpr`, `ggplot2`, `ggrepel`, `ggrastr`, `processx`,
+`R.utils` from CRAN, as well as `GenomicRanges`, `plyranges`,
+`rtracklayer` from Bioconductor.
 
 After installing, check that it loads properly:
 
@@ -52,7 +52,7 @@ Main steps:
 5.  Use our novel gene mapping procedure to infer causal genes at each
     locus.
 
-<img src="man/figures/workflow.overview.png" title="Overview of the workflow" alt="Overview of the workflow" width="75%" />
+<img src="man/figures/workflow.overview.png" alt="Overview of the workflow" width="75%" />
 
 Please follow the
 [tutorials](https://kevinlkx.github.io/mapgen/articles/index.html) to

@@ -17,6 +17,7 @@ Imports:
     tidyr,
     tibble,
     data.table,
+    R.utils,
     vroom,
     bigsnpr,
     ggplot2,
