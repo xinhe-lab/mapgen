@@ -232,15 +232,7 @@ gene_cs <- function(snp.gene.pip.mat,
                     gene.cs.percent.thresh = 0.8){
 
   # Get locus level gene PIP
-  # For each locus - gene pair, sum over the fractional PIPs for SNPs in the locus and linked to the gene
-  snp.locus.gene.pip.mat <- snp.gene.pip.mat %>%
-    dplyr::group_by(locus, gene_name) %>%
-    dplyr::mutate(locus_gene_pip = sum(pip * frac_pip)) %>% dplyr::ungroup()
-
-  # simplify to get locus, gene_name, locus_gene_pip, and gene_pip
-  locus.gene.pip.df <- snp.locus.gene.pip.mat %>%
-    dplyr::select(locus, gene_name, gene_pip, locus_gene_pip) %>%
-    dplyr::distinct(locus, gene_name, .keep_all=TRUE)
+  locus.gene.pip.df <- get_locus_level_gene_pip(snp.gene.pip.mat)
 
   # check to make sure gene PIP is equal to the sum of gene-locus PIP
   for(gene in unique(locus.gene.pip.df$gene_name)){
@@ -473,3 +465,24 @@ block_view_summary <- function(genemapping_res, finemapstats.gr){
   return(block.view.df)
 }
 
+#' @title Get locus level gene PIP
+#'
+#' @param snp.gene.pip.mat A data frame of SNP-level gene mapping result
+#' @importFrom magrittr %>%
+#' @importFrom tibble as_tibble
+#' @export
+#'
+get_locus_level_gene_pip <- function(snp.gene.pip.mat){
+
+  # For each locus - gene pair, sum over the fractional PIPs for SNPs in the locus and linked to the gene
+  snp.locus.gene.pip.mat <- snp.gene.pip.mat %>%
+    dplyr::group_by(locus, gene_name) %>%
+    dplyr::mutate(locus_gene_pip = sum(pip * frac_pip)) %>% dplyr::ungroup()
+
+  # simplify to get locus, gene_name, locus_gene_pip, and gene_pip
+  locus.gene.pip.df <- snp.locus.gene.pip.mat %>%
+    dplyr::select(locus, gene_name, gene_pip, locus_gene_pip) %>%
+    dplyr::distinct(locus, gene_name, .keep_all=TRUE)
+
+  return(locus.gene.pip.df)
+}
