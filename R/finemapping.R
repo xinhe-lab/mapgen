@@ -25,15 +25,29 @@ prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fd
 
 }
 
-#' @title Run fine-mapping
-#' @description Run finemapping with SuSiE for all LD blocks
+#' @title Run fine-mapping using GWAS summary statistics
+#' @description Run finemapping with SuSiE using GWAS summary statistics
+#' for all LD blocks with prior probabilities computed by TORUS
 #' @param sumstats a tibble or data frame containing raw summary statistics; must have header!
 #' @param bigSNP a bigsnpr object attached via bigsnpr::snp_attach()
+#' @param n The sample size
 #' @param priortype prior type: "torus" or "uniform".
 #' @param L Number of causal signals
+#' @param estimate_residual_variance The default is FALSE,
+#' the residual variance is fixed to 1 or variance of y.
+#' If the in-sample LD matrix is provided,
+#' we recommend setting estimate_residual_variance = TRUE.
+#' @param verbose If verbose = TRUE, print progress,
+#' and a summary of the optimization settings from susie.
 #' @return list of finemapping results; one per LD block
 #' @export
-run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'), L = 1){
+run_finemapping <- function(sumstats,
+                            bigSNP,
+                            n,
+                            priortype = c('torus', 'uniform'),
+                            L = 1,
+                            estimate_residual_variance = FALSE,
+                            verbose = FALSE){
 
   priortype <- match.arg(priortype)
 
@@ -47,10 +61,16 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'),
   chunks <- unique(sumstats$locus)
   susie_res <- list()
   for(i in seq_along(chunks)){
-    z <- chunks[i]
-    cat(sprintf('Finemapping locus %s...\t', z))
-    susie.df <- sumstats[sumstats$locus == z, ]
-    susie_res[[as.character(z)]] <- run_susie(susie.df, bigSNP, z, L, useprior)
+    locus <- chunks[i]
+    cat(sprintf('Finemapping locus %s...\n', locus))
+    sumstats_locus <- sumstats[sumstats$locus == locus, ]
+    susie_res[[as.character(locus)]] <- run_susie_rss(sumstats_locus,
+                                                      bigSNP=bigSNP,
+                                                      n=n,
+                                                      L=L,
+                                                      useprior=useprior,
+                                                      estimate_residual_variance=estimate_residual_variance,
+                                                      verbose=verbose)
     cat(sprintf('%.0f%% completed.\n', length(susie_res)/length(chunks)*100))
   }
 
@@ -58,39 +78,72 @@ run_finemapping <- function(sumstats, bigSNP, priortype = c('torus', 'uniform'),
 
 }
 
-
-#' @title Run fine-mapping with SUSIE for one LD block
+#' @title Run fine-mapping with SuSiE using summary statistics
 #' @param sumstats summary statistics
+#' @param R p x p correlation (LD) matrix
 #' @param bigSNP bigSNP object
-#' @param locus LD block index
+#' @param n The sample size
 #' @param L Number of causal signals
 #' @param useprior Logical, if TRUE, use the \code{torus_prior} column
 #' in \code{sumstats} as prior.
-#' @return finemapping results for one LD block
+#' @param estimate_residual_variance The default is FALSE,
+#' the residual variance is fixed to 1 or variance of y.
+#' If the in-sample LD matrix is provided,
+#' we recommend setting estimate_residual_variance = TRUE.
+#' @param verbose If verbose = TRUE, print progress,
+#' and a summary of the optimization settings from susie.
+#' @return finemapping results
 #' @export
-run_susie <- function(sumstats, bigSNP, locus, L=1, useprior){
+run_susie_rss <- function(sumstats,
+                          bigSNP,
+                          R,
+                          n,
+                          L=1,
+                          useprior=FALSE,
+                          estimate_residual_variance=FALSE,
+                          verbose=FALSE){
 
-  sub.sumstats <- sumstats[sumstats$locus == locus, ]
-  if(nrow(sub.sumstats) > 1){
-    X <- bigSNP$genotypes[ , sub.sumstats$bigSNP_index]
-    X <- scale(X, center = T, scale = T)
-    zhat <- sub.sumstats$zscore
-    R <- cov2cor((crossprod(X) + tcrossprod(zhat))/nrow(X))
-    if(useprior){
-      res <- suppressWarnings(susieR::susie_rss(z = zhat,
-                                                prior_weights = sub.sumstats$torus_prior,
-                                                R = R,
-                                                L = L,
-                                                verbose = F))
-    }
-    else{
-      res <- suppressWarnings(susieR::susie_rss(z = zhat,
-                                                R = R,
-                                                L = L,
-                                                verbose = F))
-    }
-    return(res)
+  if(nrow(sumstats) == 0){
+    stop("No data in sumstats. Please check...\n")
   }
+
+  z <- sumstats$zscore
+
+  if(missing(R)){
+    # compute R using reference panel in bigSNP object
+    if(missing(bigSNP)){
+      stop("Please provide R matrix or bigSNP object!")
+    }
+    if(verbose){
+      cat("Computing R from bigSNP genotype matrix...\n")
+    }
+    X <- bigSNP$genotypes[, sumstats$bigSNP_index]
+    X <- scale(X, center = T, scale = T)
+    R <- cor(X)
+  }
+
+  if(useprior){
+    prior_weights <- sumstats$torus_prior
+  }else{
+    prior_weights <- NULL
+  }
+
+  if(verbose){
+    cat(sprintf('Run susie_rss with n=%d, L=%d, useprior=%s, estimate_residual_variance=%s...\n',
+                n, L, useprior, estimate_residual_variance))
+  }else{
+    cat(sprintf('Run susie_rss...\n'))
+  }
+
+  res <- susieR::susie_rss(z = z,
+                           R = R,
+                           n = n,
+                           L = L,
+                           prior_weights = prior_weights,
+                           estimate_residual_variance = estimate_residual_variance,
+                           verbose = verbose)
+  return(res)
+
 }
 
 #' @title merges SuSiE results with original summary statistics data frame
