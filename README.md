@@ -15,8 +15,8 @@ You can install the development version of `mapgen` from
 [GitHub](https://github.com/xinhe-lab/mapgen) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("kevinlkx/mapgen")
+# install.packages("remotes")
+remotes::install_github("kevinlkx/mapgen")
 ```
 
 Please install the following dependent R packages: `tidyverse`,
