@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
@@ -60,51 +60,76 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gene_manhattan_plot</span><span class="op">(</span>
-  <span class="va">gene.pip.res</span>,
-  chr <span class="op">=</span> <span class="st">"chr"</span>,
-  pos <span class="op">=</span> <span class="st">"pos"</span>,
-  gene_name <span class="op">=</span> <span class="st">"gene_name"</span>,
-  gene_pip <span class="op">=</span> <span class="st">"gene_pip"</span>,
-  sig.pip <span class="op">=</span> <span class="fl">0.8</span>,
-  highlight <span class="op">=</span> <span class="cn">TRUE</span>,
-  ylim <span class="op">=</span> <span class="fl">1.25</span>,
-  point.size <span class="op">=</span> <span class="fl">2</span>,
-  label.size <span class="op">=</span> <span class="va">point.size</span> <span class="op">*</span> <span class="fl">2</span>,
-  font.size <span class="op">=</span> <span class="fl">15</span>,
-  max.overlaps <span class="op">=</span> <span class="fl">10</span>,
-  title <span class="op">=</span> <span class="st">""</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gene_manhattan_plot</span><span class="op">(</span></span>
+<span>  <span class="va">gene.pip.res</span>,</span>
+<span>  chr <span class="op">=</span> <span class="st">"chr"</span>,</span>
+<span>  pos <span class="op">=</span> <span class="st">"pos"</span>,</span>
+<span>  gene_name <span class="op">=</span> <span class="st">"gene_name"</span>,</span>
+<span>  gene_pip <span class="op">=</span> <span class="st">"gene_pip"</span>,</span>
+<span>  sig.pip <span class="op">=</span> <span class="fl">0.8</span>,</span>
+<span>  highlight <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ylim <span class="op">=</span> <span class="fl">1.25</span>,</span>
+<span>  point.size <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  label.size <span class="op">=</span> <span class="va">point.size</span> <span class="op">*</span> <span class="fl">2</span>,</span>
+<span>  font.size <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  max.overlaps <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  title <span class="op">=</span> <span class="st">""</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>gene.pip.res</dt>
 <dd><p>Gene level finemapping result</p></dd>
+
+
 <dt>chr</dt>
 <dd><p>Name of the chr column in the gene finemapping summary statistics data</p></dd>
+
+
 <dt>pos</dt>
 <dd><p>Name of the pos column in the gene finemapping summary statistics data</p></dd>
+
+
 <dt>gene_name</dt>
 <dd><p>Name of the gene name column in the gene finemapping summary statistics data</p></dd>
+
+
 <dt>gene_pip</dt>
 <dd><p>Name of the gene PIP column in the gene finemapping summary statistics data</p></dd>
+
+
 <dt>sig.pip</dt>
 <dd><p>Signficant gene PIP (default: 0.8)</p></dd>
+
+
 <dt>highlight</dt>
 <dd><p>Highlight genes with gene PIP &gt; sig.pip</p></dd>
+
+
 <dt>ylim</dt>
 <dd><p>Truncate gene PIP to ylim value in the plot (default: 1.25).</p></dd>
+
+
 <dt>point.size</dt>
 <dd><p>Size of the points.</p></dd>
+
+
 <dt>label.size</dt>
 <dd><p>Size of the labels.</p></dd>
+
+
 <dt>font.size</dt>
 <dd><p>Font size of the text.</p></dd>
+
+
 <dt>max.overlaps</dt>
 <dd><p>Exclude text labels that overlap too many things (default: 10).</p></dd>
+
+
 <dt>title</dt>
 <dd><p>Title of the plot</p></dd>
+
 </dl></div>
 
   </div>
@@ -119,7 +144,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -1,11 +1,11 @@
-pandoc: 2.14.0.3
-pkgdown: 2.0.2
+pandoc: '2.18'
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   enrichment_finemapping_tutorial: enrichment_finemapping_tutorial.html
   gene_mapping_tutorial: gene_mapping_tutorial.html
   partition_pip_tutorial: partition_pip_tutorial.html
-last_built: 2022-08-11T02:09Z
+last_built: 2022-10-25T19:00Z
 urls:
   reference: https://kevinlkx.github.io/mapgen/reference
   article: https://kevinlkx.github.io/mapgen/articles

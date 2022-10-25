@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
@@ -60,27 +60,30 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">clean_sumstats</span><span class="op">(</span>
-  <span class="va">sumstats</span>,
-  chr <span class="op">=</span> <span class="st">"chr"</span>,
-  pos <span class="op">=</span> <span class="st">"pos"</span>,
-  beta <span class="op">=</span> <span class="st">"beta"</span>,
-  se <span class="op">=</span> <span class="st">"se"</span>,
-  a0 <span class="op">=</span> <span class="st">"a0"</span>,
-  a1 <span class="op">=</span> <span class="st">"a1"</span>,
-  snp <span class="op">=</span> <span class="st">"snp"</span>,
-  pval <span class="op">=</span> <span class="st">"pval"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">clean_sumstats</span><span class="op">(</span></span>
+<span>  <span class="va">sumstats</span>,</span>
+<span>  chr <span class="op">=</span> <span class="st">"chr"</span>,</span>
+<span>  pos <span class="op">=</span> <span class="st">"pos"</span>,</span>
+<span>  beta <span class="op">=</span> <span class="st">"beta"</span>,</span>
+<span>  se <span class="op">=</span> <span class="st">"se"</span>,</span>
+<span>  a0 <span class="op">=</span> <span class="st">"a0"</span>,</span>
+<span>  a1 <span class="op">=</span> <span class="st">"a1"</span>,</span>
+<span>  snp <span class="op">=</span> <span class="st">"snp"</span>,</span>
+<span>  pval <span class="op">=</span> <span class="st">"pval"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sumstats</dt>
 <dd><p>a tibble or data frame containing raw summary statistics.</p></dd>
+
+
 <dt>cols.to.keep</dt>
 <dd><p>columns to keep.
 It is required to have 8 columns in the exact order of:
 chr, position, beta, se, allele1, allele2, SNP ID (rs), p-value.</p></dd>
+
 </dl></div>
 
   </div>
@@ -95,7 +98,7 @@ chr, position, beta, se, allele1, allele2, SNP ID (rs), p-value.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

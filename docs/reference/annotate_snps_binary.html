@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
@@ -60,22 +60,29 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">annotate_snps_binary</span><span class="op">(</span><span class="va">gwas</span>, <span class="va">annotations</span>, keep.annot.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">annotate_snps_binary</span><span class="op">(</span><span class="va">gwas</span>, <span class="va">annotations</span>, keep.annot.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>gwas</dt>
 <dd><p>a data frame or tibble of GWAS summary statistics</p></dd>
+
+
 <dt>annotations</dt>
 <dd><p>annotation BED files</p></dd>
+
+
 <dt>keep.annot.only</dt>
 <dd><p>Logical. If TRUE, only returns the
 snp and annotation columns</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>if <code>keep.annot.only=TRUE</code>, returns
+    
+
+<p>if <code>keep.annot.only=TRUE</code>, returns
 a data frame or tibble of snp and annotations. Otherwise, returns
 a data frame or tibble of GWAS summary statistics and annotations.</p>
     </div>
@@ -92,7 +99,7 @@ a data frame or tibble of GWAS summary statistics and annotations.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
@@ -60,55 +60,82 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">process_finemapping_sumstats</span><span class="op">(</span>
-  <span class="va">finemapstats</span>,
-  snp <span class="op">=</span> <span class="st">"snp"</span>,
-  chr <span class="op">=</span> <span class="st">"chr"</span>,
-  pos <span class="op">=</span> <span class="st">"pos"</span>,
-  pip <span class="op">=</span> <span class="st">"pip"</span>,
-  pval <span class="op">=</span> <span class="st">"pval"</span>,
-  zscore <span class="op">=</span> <span class="st">"zscore"</span>,
-  cs <span class="op">=</span> <span class="st">"cs"</span>,
-  locus <span class="op">=</span> <span class="st">"locus"</span>,
-  pip.thresh <span class="op">=</span> <span class="fl">1e-05</span>,
-  filterCS <span class="op">=</span> <span class="cn">FALSE</span>,
-  maxL <span class="op">=</span> <span class="fl">10</span>,
-  cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snp"</span>, <span class="st">"chr"</span>, <span class="st">"pos"</span>, <span class="st">"pip"</span>, <span class="st">"pval"</span>, <span class="st">"zscore"</span>, <span class="st">"cs"</span>, <span class="st">"locus"</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_finemapping_sumstats</span><span class="op">(</span></span>
+<span>  <span class="va">finemapstats</span>,</span>
+<span>  snp <span class="op">=</span> <span class="st">"snp"</span>,</span>
+<span>  chr <span class="op">=</span> <span class="st">"chr"</span>,</span>
+<span>  pos <span class="op">=</span> <span class="st">"pos"</span>,</span>
+<span>  pip <span class="op">=</span> <span class="st">"pip"</span>,</span>
+<span>  pval <span class="op">=</span> <span class="st">"pval"</span>,</span>
+<span>  zscore <span class="op">=</span> <span class="st">"zscore"</span>,</span>
+<span>  cs <span class="op">=</span> <span class="st">"cs"</span>,</span>
+<span>  locus <span class="op">=</span> <span class="st">"locus"</span>,</span>
+<span>  pip.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  filterCS <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  maxL <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snp"</span>, <span class="st">"chr"</span>, <span class="st">"pos"</span>, <span class="st">"pip"</span>, <span class="st">"pval"</span>, <span class="st">"zscore"</span>, <span class="st">"cs"</span>, <span class="st">"locus"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>finemapstats</dt>
 <dd><p>A data frame of fine-mapping summary statistics</p></dd>
+
+
 <dt>snp</dt>
 <dd><p>Name of the SNP ID (rsID) column in the summary statistics data</p></dd>
+
+
 <dt>chr</dt>
 <dd><p>Name of the chr column in the summary statistics data frame</p></dd>
+
+
 <dt>pos</dt>
 <dd><p>Name of the position column in the summary statistics data frame</p></dd>
+
+
 <dt>pip</dt>
 <dd><p>Name of the PIP column in the summary statistics data frame</p></dd>
+
+
 <dt>pval</dt>
 <dd><p>Name of the P-value column in the summary statistics data frame</p></dd>
+
+
 <dt>zscore</dt>
 <dd><p>Name of the z-score column in the summary statistics data frame</p></dd>
+
+
 <dt>cs</dt>
 <dd><p>Name of the CS column in the summary statistics data frame</p></dd>
+
+
 <dt>locus</dt>
 <dd><p>Name of the locus column in the summary statistics data frame</p></dd>
+
+
 <dt>pip.thresh</dt>
-<dd><p>PIP threshold (default = 1e-5).</p></dd>
+<dd><p>PIP threshold (default = 0).</p></dd>
+
+
 <dt>filterCS</dt>
 <dd><p>If TRUE, limiting to SNPs within credible sets.</p></dd>
+
+
 <dt>maxL</dt>
 <dd><p>Maximum number of credible sets (default = 10).</p></dd>
+
+
 <dt>cols.to.keep</dt>
 <dd><p>columns to keep in the returned data frame</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A GRanges object with cleaned and filtered fine-mapping summary statistics</p>
+    
+
+<p>A GRanges object with cleaned and filtered fine-mapping summary statistics</p>
     </div>
 
   </div>
@@ -123,7 +150,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

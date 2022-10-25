@@ -67,6 +67,9 @@
     <loc>https://kevinlkx.github.io/mapgen/reference/gene_view_summary.html</loc>
   </url>
   <url>
+    <loc>https://kevinlkx.github.io/mapgen/reference/get_locus_level_gene_pip.html</loc>
+  </url>
+  <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/index.html</loc>
   </url>
   <url>
@@ -113,6 +116,9 @@
   </url>
   <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/run_susie.html</loc>
+  </url>
+  <url>
+    <loc>https://kevinlkx.github.io/mapgen/reference/run_susie_rss.html</loc>
   </url>
   <url>
     <loc>https://kevinlkx.github.io/mapgen/reference/run_torus.html</loc>

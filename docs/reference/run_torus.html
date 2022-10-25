@@ -18,7 +18,7 @@ compute SNP-level priors using the enrichment estimates."><!-- mathjax --><scrip
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
@@ -62,12 +62,12 @@ compute SNP-level priors using the enrichment estimates.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">run_torus</span><span class="op">(</span>
-  <span class="va">torus_annot_file</span>,
-  <span class="va">torus_zscore_file</span>,
-  option <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"est"</span>, <span class="st">"est-prior"</span>, <span class="st">"fdr"</span><span class="op">)</span>,
-  torus_path <span class="op">=</span> <span class="st">"torus"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_torus</span><span class="op">(</span></span>
+<span>  <span class="va">torus_annot_file</span>,</span>
+<span>  <span class="va">torus_zscore_file</span>,</span>
+<span>  option <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"est"</span>, <span class="st">"est-prior"</span>, <span class="st">"fdr"</span><span class="op">)</span>,</span>
+<span>  torus_path <span class="op">=</span> <span class="st">"torus"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -82,11 +82,15 @@ The first column with the header "SNP" represents the SNP name.
 The following columns represent specific annotations.
 For categorical/discrete annotations, the header should have a suffix "_d";
 whereas for continuous annotations, the header should ends with "_c".</p></dd>
+
+
 <dt>torus_zscore_file</dt>
 <dd><p>Summary statistics from single SNP association
 analysis, prepared by
 the <code>prepare_torus_input_files</code> function.
 Should be compressed in gzip format.</p></dd>
+
+
 <dt>option</dt>
 <dd><p>TORUS options:
 “est”, obtain estimates of enrichment parameters and their confidence intervals;
@@ -94,12 +98,17 @@ Should be compressed in gzip format.</p></dd>
 compute SNP-level priors using
 the estimated enrichment estimates for each locus;
 or “fdr”, perform Bayesian FDR control, and output the result.</p></dd>
+
+
 <dt>torus_path</dt>
 <dd><p>Path to <code>torus</code> executable.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a list of enrichment results, SNP-level prior probabilities,
+    
+
+<p>a list of enrichment results, SNP-level prior probabilities,
 and/or FDR result.
 Enrichment result contains the point estimate (MLE) of the log odds ratio,
 as well as 95% confidence interval for the corresponding point estimate.</p>
@@ -107,21 +116,21 @@ as well as 95% confidence interval for the corresponding point estimate.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># Get enrichment estimates and confidence intervals</span></span>
-<span class="r-in"><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu">run_torus</span><span class="op">(</span><span class="st">"torus_annotations.txt.gz"</span>,</span>
-<span class="r-in">                          <span class="st">"torus_zscore.txt.gz"</span>,</span>
-<span class="r-in">                          option <span class="op">=</span> <span class="st">"est"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Get enrichment estimates and compute SNP-level priors</span></span>
-<span class="r-in"><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu">run_torus</span><span class="op">(</span><span class="st">"torus_annotations.txt.gz"</span>,</span>
-<span class="r-in">                          <span class="st">"torus_zscore.txt.gz"</span>,</span>
-<span class="r-in">                          option <span class="op">=</span> <span class="st">"est-prior"</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># Bayesian FDR control</span></span>
-<span class="r-in"><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu">run_torus</span><span class="op">(</span><span class="st">"torus_annotations.txt.gz"</span>,</span>
-<span class="r-in">                          <span class="st">"torus_zscore.txt.gz"</span>,</span>
-<span class="r-in">                          option <span class="op">=</span> <span class="st">"fdr"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># Get enrichment estimates and confidence intervals</span></span></span>
+<span class="r-in"><span><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu">run_torus</span><span class="op">(</span><span class="st">"torus_annotations.txt.gz"</span>,</span></span>
+<span class="r-in"><span>                          <span class="st">"torus_zscore.txt.gz"</span>,</span></span>
+<span class="r-in"><span>                          option <span class="op">=</span> <span class="st">"est"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get enrichment estimates and compute SNP-level priors</span></span></span>
+<span class="r-in"><span><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu">run_torus</span><span class="op">(</span><span class="st">"torus_annotations.txt.gz"</span>,</span></span>
+<span class="r-in"><span>                          <span class="st">"torus_zscore.txt.gz"</span>,</span></span>
+<span class="r-in"><span>                          option <span class="op">=</span> <span class="st">"est-prior"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Bayesian FDR control</span></span></span>
+<span class="r-in"><span><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu">run_torus</span><span class="op">(</span><span class="st">"torus_annotations.txt.gz"</span>,</span></span>
+<span class="r-in"><span>                          <span class="st">"torus_zscore.txt.gz"</span>,</span></span>
+<span class="r-in"><span>                          option <span class="op">=</span> <span class="st">"fdr"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -136,7 +145,7 @@ as well as 95% confidence interval for the corresponding point estimate.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

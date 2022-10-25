@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
@@ -60,22 +60,30 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gene_cs</span><span class="op">(</span><span class="va">snp.gene.pip.mat</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gene_cs</span><span class="op">(</span><span class="va">snp.gene.pip.mat</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>snp.gene.pip.mat</dt>
 <dd><p>A data frame of SNP level gene mapping table</p></dd>
+
+
 <dt>by.locus</dt>
 <dd><p>Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
 If FALSE, get credible gene sets based on gene PIP.</p></dd>
+
+
 <dt>gene.cs.percent.thresh</dt>
 <dd><p>percentage threshold for credible gene sets</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a data frame of credible gene set result. Columns:
+    
+
+<p>a data frame of credible gene set result.
+Columns:
 gene_cs: credible gene sets,
 gene_cs_locus_pip: credible gene sets and corresponding locus-level gene PIPs.
 gene_cs_pip: credible gene sets and corresponding gene PIPs.
@@ -97,7 +105,7 @@ top_gene_pip:  gene PIP of the top gene.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
