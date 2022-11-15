@@ -191,6 +191,8 @@ compile_structure_plot_data <- function (mat, categories) {
 #' @param rotation.title Rotation of the track titles
 #' @param verbose if TRUE, print detail messages for plotting
 #'
+#' @import Gviz
+#' @importFrom magrittr %>%
 #' @export
 finemapping_annot_trackplot <- function(finemapstats,
                                         region,
