@@ -101,7 +101,7 @@ get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
   sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
 
   if(missing(topSNP)){
-    if( min(sumstats$pval) >=0 && max(sumstats$pval) <= 1 ){
+    if( max(sumstats$pval) <= 1 ){
       sumstats$pval <- -log10(sumstats$pval)
     }
     top_snp_idx <- sumstats$bigSNP_idx[which.max(sumstats$pval)]
@@ -118,3 +118,86 @@ get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
   return(sumstats)
 }
 
+
+# Add LD information
+add_LD_bigSNP <- function(sumstats, bigSNP,
+                          r2_breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
+                          r2_labels = c("0-0.1","0.1-0.25","0.25-0.75","0.75-0.9","0.9-1")) {
+
+  # only include SNPs in bigSNP markers
+  sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
+  sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
+
+  if( max(sumstats$pval) <= 1 ){
+    sumstats$pval <- -log10(sumstats$pval)
+  }
+
+  locus_list <- unique(sumstats$locus)
+
+  sumstats.r2.df <- data.frame()
+  for(locus in locus_list){
+    curr_sumstats <- sumstats[sumstats$locus == locus, ]
+    top_snp_idx <- curr_sumstats$bigSNP_idx[which.max(curr_sumstats$pval)]
+    top_snp_genotype <- bigSNP$genotypes[,top_snp_idx]
+    genotype.mat <- bigSNP$genotypes[,curr_sumstats$bigSNP_idx]
+
+    r2.vals <- as.vector(cor(top_snp_genotype, genotype.mat))^2
+    r2.brackets <- cut(r2.vals, breaks = r2_breaks, labels = r2_labels)
+    curr_sumstats$r2 <- r2.brackets
+    sumstats.r2.df <- rbind(sumstats.r2.df, curr_sumstats)
+  }
+
+  return(sumstats.r2.df)
+}
+
+# get gene region
+get_gene_region <- function(gene.mapping.res, genes.of.interest, ext = 10000,
+                            select.region = c("all", "locus")){
+
+  select.region <- match.arg(select.region)
+
+  high.conf.snp.df <- gene.mapping.res %>% dplyr::filter(pip > 0.2) %>%
+    dplyr::group_by(snp) %>% dplyr::arrange(-gene_pip) %>% dplyr::slice(1)
+  gene.gr <- gene.annots[match(high.conf.snp.df$gene_name, gene.annots$gene_name),]
+  gene.gr$tss <- start(resize(gene.gr, width = 1))
+  gene.gr <- gene.gr[,c("gene_name","tss")]
+  high.conf.snp.df$tss <- gene.gr$tss
+
+  gene.snp.tss <- high.conf.snp.df %>%
+    dplyr::filter(gene_name %in% genes.of.interest) %>%
+    dplyr::group_by(locus) %>%
+    dplyr::arrange(-pip) %>%
+    dplyr::slice(1) %>%
+    dplyr::mutate(distToTSS = pos-tss) %>%
+    dplyr::select(gene_name, locus, chr, pos, tss, distToTSS)
+
+  if(select.region == "all"){
+    chr <- gene.snp.tss$chr[1]
+    locus <- paste(gene.snp.tss$locus, collapse = ",")
+    region_start <- min(c(gene.snp.tss$pos, gene.snp.tss$tss)) - ext
+    region_end <- max(c(gene.snp.tss$pos, gene.snp.tss$tss)) + ext
+    region <- GRanges(seqnames = chr,
+                      IRanges(start = region_start, end = region_end),
+                      locus = locus)
+    seqlevelsStyle(region) <- "UCSC"
+  }else if(select.region == "locus"){
+    region <- lapply(gene.snp.tss$locus, function(l){
+      locus <- l
+      locus.snp.tss <- gene.snp.tss[gene.snp.tss$locus == locus, ]
+      chr <- locus.snp.tss$chr
+      if(distToTSS < 0){ #snp is upstream
+        region_start <- locus.snp.tss$pos - ext
+        region_end <- locus.snp.tss$tss + ext
+      } else{ # snp is downstream
+        region_start <- locus.snp.tss$tss - ext
+        region_end <- locus.snp.tss$pos + ext
+      }
+      gene_locus_region.gr <- GRanges(seqnames = chr,
+                                      IRanges(start = region_start, end = region_end),
+                                      locus = locus)
+      seqlevelsStyle(gene_locus_region.gr) <- "UCSC"
+      gene_locus_region.gr
+    })
+  }
+  return(region)
+}
