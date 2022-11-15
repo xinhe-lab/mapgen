@@ -162,12 +162,41 @@ compile_structure_plot_data <- function (mat, categories) {
 }
 
 
-## Functions for making track plots
+#' @title Make gene track plot
+#'
+#' @param finemapstats A GRanges object or data frame of finemapping summary statistics
+#' @param region A GRanges object or data frame for the genomic range to plot
+#' @param gene.annots A GRanges object of gene annotations
+#' @param bigSNP A bigsnpr object attached via bigsnpr::snp_attach()
+#' @param txdb A txdb object of gene annotations
+#' @param genome Genome assembly version, hg19 (default) or hg38.
+#' @param genetrack_db Select a gene annotation database to use. Options:
+#' `txdb`: use the `txdb` objec.
+#' `gene.annots`: use the `gene.annots` object.
+#' `UCSC` uses `UCSC knownGene` annotations.
+#' @param filter_protein_coding_genes If TRUE, only shows protein coding gene
+#' @param countsdata A list of counts data
+#' @param peaks A list of peaks
+#' @param HiC_loops A list of HiC loops, e.g. PC-HiC, ABC, etc.
+#' @param filter_HiCloops_genes If TRUE, only shows HiC loops connected to
+#' the gene(s)
+#' @param filter_HiCloops_snps If TRUE, only shows HiC loops connected to
+#' the SNP(s)
+#' @param data_colors Colors for the `countsdata` tracks
+#' @param data_ylim ylim range for the `countsdata` tracks
+#' @param highlight_snps SNPs (rsIDs) to highlight
+#' @param highlight_colors Colors for the highlighted SNPs
+#' @param genelabel_side Side to put gene labels,
+#' options are: above (default), right, left, below
+#' @param rotation.title Rotation of the track titles
+#' @param verbose if TRUE, print detail messages for plotting
+#'
+#' @export
 finemapping_annot_trackplot <- function(finemapstats,
                                         region,
                                         gene.annots,
                                         bigSNP,
-                                        txdb=NULL,
+                                        txdb,
                                         genome = c("hg19", "hg38"),
                                         genetrack_db = c("txdb", "gene.annots","UCSC"),
                                         filter_protein_coding_genes = TRUE,
@@ -197,6 +226,7 @@ finemapping_annot_trackplot <- function(finemapstats,
     }
     finemapstats$pval <- -log10(finemapstats$pval)
   }
+  finemapstats <- as(finemapstats, "GRanges")
   seqlevelsStyle(finemapstats) <- "UCSC"
 
   # Limit to genomic region to visualize
