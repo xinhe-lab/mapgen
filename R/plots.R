@@ -191,8 +191,11 @@ compile_structure_plot_data <- function (mat, categories) {
 #' @param rotation.title Rotation of the track titles
 #' @param verbose if TRUE, print detail messages for plotting
 #'
-#' @import Gviz
+#' @importFrom Gviz DataTrack GenomeAxisTrack GeneRegionTrack HighlightTrack plotTracks
+#' @importFrom GenomicInteractions GenomicInteractions InteractionTrack
 #' @importFrom magrittr %>%
+#' @import GenomicRanges
+#'
 #' @export
 finemapping_annot_trackplot <- function(finemapstats,
                                         region,
@@ -418,7 +421,7 @@ finemapping_annot_trackplot <- function(finemapstats,
         HiC_loops.obj <- subsetByOverlaps(HiC_loops.obj, highlighted.snps.gr)
       }
 
-      HiC_loops.track <- InteractionTrack(HiC_loops.obj, name = x)
+      HiC_loops.track <- GenomicInteractions::InteractionTrack(HiC_loops.obj, name = x)
       displayPars(HiC_loops.track) <- dpars.HiC
       HiC_loops.track
     })
