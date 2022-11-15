@@ -31,6 +31,11 @@ Suggests:
     cowplot,
     vroom,
     processx,
-    bedtoolsr
+    bedtoolsr,
+    Gviz,
+    rtracklayer,
+    GenomicInteractions,
+    AnnotationDbi,
+    org.Hs.eg.db
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
