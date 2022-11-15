@@ -170,11 +170,12 @@ finemapping_annot_trackplot <- function(finemapstats,
                                         txdb=NULL,
                                         genome = c("hg19", "hg38"),
                                         genetrack_db = c("txdb", "gene.annots","UCSC"),
-                                        filter_protein_coding_genes = FALSE,
+                                        filter_protein_coding_genes = TRUE,
                                         countsdata,
                                         peaks,
                                         HiC_loops,
                                         filter_HiCloops_genes = NULL,
+                                        filter_HiCloops_snps = NULL,
                                         data_colors = seq_along(countsdata),
                                         data_ylim = c(0,1),
                                         highlight_snps = NULL,
@@ -365,26 +366,26 @@ finemapping_annot_trackplot <- function(finemapstats,
         HiC_loops.gr <- HiC_loops.gr[HiC_loops.gr$gene_name %in% gene.annots$gene_name]
       }
 
-      # m <- match(HiC_loops.gr$gene_name, gene.annots$gene_name)
-      # HiC_loops.gr$promoter_chr <- gene.annots$chr[m]
-      # HiC_loops.gr$promoter_start <- gene.annots$tss[m]
-      # HiC_loops.gr$promoter_end <- gene.annots$tss[m]
-
-      HiC_enhancers.gr <- GRanges(seqnames = seqnames(HiC_loops.gr),
-                                  ranges = IRanges(start = start(HiC_loops.gr), end = end(HiC_loops.gr)),
-                                  score = HiC_loops.gr$score,
-                                  gene = HiC_loops.gr$gene_name)
       HiC_promoters.gr <- GRanges(seqnames = HiC_loops.gr$promoter_chr,
                                   ranges = IRanges(start = HiC_loops.gr$promoter_start, end = HiC_loops.gr$promoter_end),
                                   score = HiC_loops.gr$score,
                                   gene = HiC_loops.gr$gene_name)
-      HiC_loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = HiC_enhancers.gr, anchor2 = HiC_promoters.gr)
+      HiC_enhancers.gr <- GRanges(seqnames = seqnames(HiC_loops.gr),
+                                  ranges = IRanges(start = start(HiC_loops.gr), end = end(HiC_loops.gr)))
+      HiC_loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = HiC_promoters.gr, anchor2 = HiC_enhancers.gr)
       HiC_loops.obj$counts <- round(HiC_loops.obj$anchor1.score)
 
       if(!is.null(filter_HiCloops_genes)){
         cat("Only shows", x, "links to", paste(filter_HiCloops_genes, collapse = ","), "\n")
-        HiC_loops_filtered.obj <- HiC_loops.obj[which(HiC_loops.obj$anchor1.gene %in% filter_HiCloops_genes),]
+        HiC_loops.obj <- HiC_loops.obj[which(HiC_loops.obj$anchor1.gene %in% filter_HiCloops_genes),]
       }
+
+      if(!is.null(filter_HiCloops_snps)){
+        cat("Only shows", x, "links to", paste(filter_HiCloops_snps, collapse = ","), "\n")
+        highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter_HiCloops_snps]
+        HiC_loops.obj <- subsetByOverlaps(HiC_loops.obj, highlighted.snps.gr)
+      }
+
       HiC_loops.track <- InteractionTrack(HiC_loops.obj, name = x)
       displayPars(HiC_loops.track) <- dpars.HiC
       HiC_loops.track
@@ -474,7 +475,9 @@ finemapping_annot_trackplot <- function(finemapstats,
 make_genetrack_obj <- function(curr.locus.gr,
                                genetrack_db = c("txdb", "gene.annots","UCSC"),
                                txdb = NULL, gene.annots = NULL,
-                               genome = "hg19", keytype = "ENSEMBL", track_name = "Genes"){
+                               genome = "hg19", keytype = "ENSEMBL",
+                               track_name = "Genes",
+                               filter_protein_coding_genes = TRUE){
 
   genetrack_db <- match.arg(genetrack_db)
 
@@ -531,85 +534,12 @@ make_genetrack_obj <- function(curr.locus.gr,
     symbol(grtrack) <- ifelse(is.na(symbol(grtrack)), gene(grtrack), symbol(grtrack))
   }
 
+
+  # restrict to protein coding genes
+  if(filter_protein_coding_genes){
+    grtrack <- grtrack[symbol(grtrack) %in% gene.annots$gene_name]
+  }
+
   return(grtrack)
 }
 
-
-# Add LD information
-add_LD_bigSNP <- function(sumstats, bigSNP,
-                          r2_breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
-                          r2_labels = c("0-0.1","0.1-0.25","0.25-0.75","0.75-0.9","0.9-1")) {
-
-  # only include SNPs in bigSNP markers
-  sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
-  sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
-
-  locus_list <- unique(sumstats$locus)
-
-  sumstats.r2.df <- data.frame()
-  for(locus in locus_list){
-    curr_sumstats <- sumstats[sumstats$locus == locus, ]
-    top_snp_idx <- curr_sumstats$bigSNP_idx[which.max(curr_sumstats$pval)]
-    top_snp_genotype <- bigSNP$genotypes[,top_snp_idx]
-    genotype.mat <- bigSNP$genotypes[,curr_sumstats$bigSNP_idx]
-
-    r2.vals <- as.vector(cor(top_snp_genotype, genotype.mat))^2
-    r2.brackets <- cut(r2.vals, breaks = r2_breaks, labels = r2_labels)
-    curr_sumstats$r2 <- r2.brackets
-    sumstats.r2.df <- rbind(sumstats.r2.df, curr_sumstats)
-  }
-
-  return(sumstats.r2.df)
-}
-
-# get gene region
-get_gene_region <- function(gene.mapping.res, genes.of.interest, ext = 10000,
-                            select.region = c("all", "locus")){
-
-  select.region <- match.arg(select.region)
-
-  high.conf.snp.df <- gene.mapping.res %>% dplyr::filter(pip > 0.2) %>%
-    dplyr::group_by(snp) %>% dplyr::arrange(-gene_pip) %>% dplyr::slice(1)
-  gene.gr <- gene.annots[match(high.conf.snp.df$gene_name, gene.annots$gene_name),]
-  gene.gr$tss <- start(resize(gene.gr, width = 1))
-  gene.gr <- gene.gr[,c("gene_name","tss")]
-  high.conf.snp.df$tss <- gene.gr$tss
-
-  gene.snp.tss <- high.conf.snp.df %>%
-    dplyr::filter(gene_name %in% genes.of.interest) %>%
-    dplyr::group_by(locus) %>%
-    dplyr::arrange(-pip) %>%
-    dplyr::slice(1) %>%
-    dplyr::mutate(distToTSS = pos-tss) %>%
-    dplyr::select(gene_name, locus, chr, pos, tss, distToTSS)
-
-  if(select.region == "all"){
-    chr <- gene.snp.tss$chr[1]
-    locus <- paste(gene.snp.tss$locus, collapse = ",")
-    region_start <- min(c(gene.snp.tss$pos, gene.snp.tss$tss)) - ext
-    region_end <- max(c(gene.snp.tss$pos, gene.snp.tss$tss)) + ext
-    region <- GRanges(seqnames = chr,
-                      IRanges(start = region_start, end = region_end),
-                      locus = locus)
-    seqlevelsStyle(region) <- "UCSC"
-  }else if(select.region == "locus"){
-    region <- lapply(gene.snp.tss$locus, function(l){
-      locus <- l
-      locus.snp.tss <- gene.snp.tss[gene.snp.tss$locus == locus, ]
-      chr <- locus.snp.tss$chr
-      if(distToTSS < 0){ #snp is upstream
-        region_start <- locus.snp.tss$pos - ext
-        region_end <- locus.snp.tss$tss + ext
-      } else{ # snp is downstream
-        region_start <- locus.snp.tss$tss - ext
-        region_end <- locus.snp.tss$pos + ext
-      }
-      gene_locus_region.gr <- GRanges(seqnames = chr,
-                                      IRanges(start = region_start, end = region_end),
-                                      locus = locus)
-      seqlevelsStyle(gene_locus_region.gr) <- "UCSC"
-      gene_locus_region.gr
-    })
-  }
-  return(region)
-}
