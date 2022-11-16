@@ -184,6 +184,8 @@ compile_structure_plot_data <- function (mat, categories) {
 #' the SNP(s)
 #' @param data_colors Colors for the `countsdata` tracks
 #' @param data_ylim ylim range for the `countsdata` tracks
+#' @param color_pip_by color SNPs in the PIP track by `locus`, `cs`,
+#' or `none` (same color).
 #' @param highlight_snps SNPs (rsIDs) to highlight
 #' @param highlight_colors Colors for the highlighted SNPs
 #' @param genelabel_side Side to put gene labels,
@@ -212,6 +214,7 @@ finemapping_annot_trackplot <- function(finemapstats,
                                         filter_HiCloops_snps = NULL,
                                         data_colors = seq_along(countsdata),
                                         data_ylim = c(0,1),
+                                        color_pip_by = c("locus", "cs", "none"),
                                         highlight_snps = NULL,
                                         highlight_colors = "pink",
                                         genelabel_side = c("above", "right", "left", "below"),
@@ -221,6 +224,7 @@ finemapping_annot_trackplot <- function(finemapstats,
   genome <- match.arg(genome)
   genetrack_db <- match.arg(genetrack_db)
   genelabel_side <- match.arg(genelabel_side)
+  color_pip_by <- match.arg(color_pip_by)
 
   if(verbose){ cat("Making trackplots ...\n") }
 
@@ -288,16 +292,33 @@ finemapping_annot_trackplot <- function(finemapstats,
   displayPars(pval.track) <- dpars.pval
 
   # PIP track
-  pip.df <- curr_finemapstats %>% dplyr::select(chr, pos, pip, locus) %>%
-    dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
-  pip.df <- pip.df %>% tidyr::pivot_wider(names_from = locus, names_sort = TRUE, values_from = "pip")
-  pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
-  seqlevelsStyle(pip.gr) <- "UCSC"
-  avail_locus_groups <- names(mcols(pip.gr))
+  if(color_pip_by == "locus"){
+    if(verbose){ cat("color PIP by loci. \n")}
+    pip.df <- curr_finemapstats %>% dplyr::select(chr, pos, pip, locus) %>%
+      dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
+    pip.df <- pip.df %>% tidyr::pivot_wider(names_from = locus, names_sort = TRUE, values_from = "pip")
+    pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
+    seqlevelsStyle(pip.gr) <- "UCSC"
+    avail_pip_groups <- names(mcols(pip.gr))
+  }else if(color_pip_by == "cs"){
+    if(verbose){ cat("color PIP by credible sets.\n")}
+    pip.df <- curr_finemapstats %>% dplyr::select(chr, pos, pip, cs) %>%
+      dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
+    pip.df <- pip.df %>% tidyr::pivot_wider(names_from = cs, names_sort = TRUE, values_from = "pip")
+    pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
+    seqlevelsStyle(pip.gr) <- "UCSC"
+    avail_pip_groups <- names(mcols(pip.gr))
+  }else{
+    pip.df <- curr_finemapstats %>% dplyr::select(chr, pos, pip) %>%
+      dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
+    pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
+    seqlevelsStyle(pip.gr) <- "UCSC"
+    avail_pip_groups <- NULL
+  }
 
   pip.track <- DataTrack(range = pip.gr,
                          genome = genome,
-                         groups = avail_locus_groups,
+                         groups = avail_pip_groups,
                          name = "PIP",
                          legend = FALSE)
 

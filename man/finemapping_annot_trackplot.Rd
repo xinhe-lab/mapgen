@@ -20,6 +20,7 @@ finemapping_annot_trackplot(
   filter_HiCloops_snps = NULL,
   data_colors = seq_along(countsdata),
   data_ylim = c(0, 1),
+  color_pip_by = c("locus", "cs", "none"),
   highlight_snps = NULL,
   highlight_colors = "pink",
   genelabel_side = c("above", "right", "left", "below"),
@@ -62,6 +63,9 @@ the SNP(s)}
 \item{data_colors}{Colors for the \code{countsdata} tracks}
 
 \item{data_ylim}{ylim range for the \code{countsdata} tracks}
+
+\item{color_pip_by}{color SNPs in the PIP track by \code{locus}, \code{cs},
+or \code{none} (same color).}
 
 \item{highlight_snps}{SNPs (rsIDs) to highlight}
 
