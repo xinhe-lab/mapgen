@@ -24,6 +24,7 @@ finemapping_annot_trackplot(
   highlight_snps = NULL,
   highlight_colors = "pink",
   genelabel_side = c("above", "right", "left", "below"),
+  track.sizes = NULL,
   rotation.title = 90,
   verbose = FALSE
 )
@@ -73,6 +74,8 @@ or \code{none} (same color).}
 
 \item{genelabel_side}{Side to put gene labels,
 options are: above (default), right, left, below}
+
+\item{track.sizes}{Sizes of the tracks}
 
 \item{rotation.title}{Rotation of the track titles}
 

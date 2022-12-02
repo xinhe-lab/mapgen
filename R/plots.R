@@ -190,6 +190,7 @@ compile_structure_plot_data <- function (mat, categories) {
 #' @param highlight_colors Colors for the highlighted SNPs
 #' @param genelabel_side Side to put gene labels,
 #' options are: above (default), right, left, below
+#' @param track.sizes Sizes of the tracks
 #' @param rotation.title Rotation of the track titles
 #' @param verbose if TRUE, print detail messages for plotting
 #'
@@ -218,6 +219,7 @@ finemapping_annot_trackplot <- function(finemapstats,
                                         highlight_snps = NULL,
                                         highlight_colors = "pink",
                                         genelabel_side = c("above", "right", "left", "below"),
+                                        track.sizes = NULL,
                                         rotation.title = 90,
                                         verbose = FALSE) {
 
@@ -478,13 +480,17 @@ finemapping_annot_trackplot <- function(finemapstats,
                       HiC_loops.tracks,
                       gene.track,
                       axisTrack)
-  track.sizes <- c(1,
-                   0.6,
-                   rep(0.4, length(countsdata.tracks)),
-                   rep(0.4, length(peaks.tracks)),
-                   rep(0.6, length(HiC_loops.tracks)),
-                   0.5,
-                   0.4)
+
+
+  if(missing(track.sizes)){
+    track.sizes <- c(1,
+                     0.6,
+                     rep(0.3, length(countsdata.tracks)),
+                     rep(0.2, length(peaks.tracks)),
+                     rep(0.6, length(HiC_loops.tracks)),
+                     0.5,
+                     0.4)
+  }
 
   # Highlight SNPs
   if( !missing(highlight_snps) && (length(highlight_snps) > 0)){
