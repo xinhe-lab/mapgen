@@ -24,7 +24,7 @@ Imports:
     plyranges,
     rtracklayer
 Suggests: 
-    susieR，
+    susieR,
     ggrepel,
     ggrastr,
     cowplot,
