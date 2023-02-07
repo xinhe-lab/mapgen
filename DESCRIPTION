@@ -18,14 +18,13 @@ Imports:
     tibble,
     data.table,
     R.utils,
-    bigsnpr,
     ggplot2,
-    susieR
-Remotes:
-    bioc::3.3/GenomicRanges,
-    bioc::3.3/plyranges,
-    bioc::3.3/rtracklayer
+    bigsnpr,
+    GenomicRanges,
+    plyranges,
+    rtracklayer
 Suggests: 
+    susieR，
     ggrepel,
     ggrastr,
     cowplot,
@@ -33,7 +32,6 @@ Suggests:
     processx,
     bedtoolsr,
     Gviz,
-    rtracklayer,
     GenomicInteractions,
     AnnotationDbi,
     org.Hs.eg.db
