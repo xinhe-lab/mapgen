@@ -1,6 +1,6 @@
 Package: mapgen
 Title: Performs gene mapping based on functionally-informed genetic fine mapping
-Version: 0.3.11.9004
+Version: 0.3.11.9005
 Authors@R: c(
     person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
     person("Alan", "Selewa", email = "selewa@uchicago.edu", role = c("aut")),
@@ -21,7 +21,9 @@ Imports:
     ggplot2,
     GenomicRanges,
     plyranges,
-    rtracklayer
+    rtracklayer,
+    Gviz,
+    GenomicInteractions
 Suggests: 
     bigsnpr,
     susieR,
@@ -31,9 +33,7 @@ Suggests:
     vroom,
     processx,
     bedtoolsr,
-    Gviz,
-    GenomicInteractions,
     AnnotationDbi,
     org.Hs.eg.db
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
