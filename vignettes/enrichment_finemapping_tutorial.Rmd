@@ -8,12 +8,14 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
-In this tutorial, we perform enrichment analysis and fine-mapping on a small GWAS dataset.
+In this tutorial, we perform enrichment analysis and fine-mapping (using TORUS + SuSiE)
+on a small GWAS dataset.
 
 We use a reference genotype panel from European population (1KG). 
 
 If you are in the He lab, you can load the `EUR_variable_1kg.rds` file from RCC. 
 
+We need the `bigsnpr` package for this tutorial.
 ```{r, eval=FALSE, message=FALSE}
 bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
@@ -21,9 +23,10 @@ bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variabl
 Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) 
 and use `bigsnpr::readBed()` to create the `.rds` file below.
 
-Load the package
+Load the packages. We need the `susieR` package to run finemapping.
 ```{r load-package}
 library(mapgen)
+library(susieR)
 ```
 
 First we run `process_gwas_sumstats()` to load and process the summary statistics.
@@ -126,7 +129,9 @@ sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas,
                                                            fdr_thresh = 1)
 ```
 
-With this data frame, we can perform fine-mapping. 
+With this data frame, we can perform fine-mapping using SuSiE, 
+you will need the `susieR` package for the steps below. 
+
 We use `run_finemapping()` with SNP-level priors computed from TORUS based on enrichment estimates.
 Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 1 causal variant per SNP. 
 This step could take a while if chunks contain many SNPs ($O(n^2)$ where n is # of SNPs). 
