@@ -17,11 +17,12 @@ If you are in the He lab, you can load the `EUR_variable_1kg.rds` file from RCC.
 
 We need the `bigsnpr` package for this tutorial.
 ```{r, eval=FALSE, message=FALSE}
-bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
+library(bigsnpr)
+bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
 
 Otherwise, you will need to obtain your own genotypes in PLINK format (bed/bim/fam) 
-and use `bigsnpr::readBed()` to create the `.rds` file below.
+and use `readBed()` from the `bigsnpr` package to create the `.rds` file below.
 
 Load the packages. We need the `susieR` package to run finemapping.
 ```{r load-package}

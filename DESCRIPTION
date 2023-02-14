@@ -19,11 +19,11 @@ Imports:
     data.table,
     R.utils,
     ggplot2,
-    bigsnpr,
     GenomicRanges,
     plyranges,
     rtracklayer
 Suggests: 
+    bigsnpr,
     susieR,
     ggrepel,
     ggrastr,
