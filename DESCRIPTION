@@ -21,12 +21,12 @@ Imports:
     ggplot2,
     GenomicRanges,
     plyranges,
-    rtracklayer,
-    Gviz,
-    GenomicInteractions
+    rtracklayer
 Suggests: 
     bigsnpr,
     susieR,
+    Gviz,
+    GenomicInteractions,
     ggrepel,
     ggrastr,
     cowplot,

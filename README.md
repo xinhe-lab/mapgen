@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 `mapgen` is an R package that performs gene mapping based on
-functionally-informed genetic fine mapping.
+functionally-informed genetic fine-mapping.
 
 ## Installation
 
@@ -16,12 +16,23 @@ You can install the development version of `mapgen` from
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("kevinlkx/mapgen")
+remotes::install_github("kevinlkx/mapgen_test")
 ```
 
-Please install the following dependent R packages: `susieR`,
-`tidyverse`, `data.table`, `bigsnpr`, `ggplot2`, `R.utils`from CRAN, as
-well as `GenomicRanges`, `plyranges`, `rtracklayer` from Bioconductor.
+Please install the following dependent R packages: `tidyverse`,
+`data.table`, `ggplot2`, `R.utils`from CRAN, as well as `GenomicRanges`,
+`plyranges`, `rtracklayer` from Bioconductor.
+
+Optional packages:
+
+-   You will need the R packages: `susieR`, `bigsnpr`, if you want to
+    run finemapping with GWAS summary statistics using SuSiE.
+-   Please install [TORUS](https://github.com/xqwen/torus) software
+    package and `processx` R package, if you want to run enrichment
+    analysis using TORUS.
+-   Please install R packages: `Gviz`, `GenomicInteractions` from
+    Bioconductor if you want to make genomic track plots (gene locus
+    plots) of functional fine-mapping result.
 
 After installing, check that it loads properly:
 
