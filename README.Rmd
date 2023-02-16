@@ -26,7 +26,7 @@ You can install the development version of `mapgen` from [GitHub](https://github
 
 ```{r install-mapgen-package, eval=FALSE}
 # install.packages("remotes")
-remotes::install_github("kevinlkx/mapgen_test")
+remotes::install_github("kevinlkx/mapgen")
 ```
 
 Please install the following dependent R packages: 
