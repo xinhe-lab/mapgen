@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11.9005</span>
       </span>
     </div>
 
@@ -87,19 +87,24 @@ Alan Selewa</h4>
 
     
     
-<p>In this tutorial, we perform enrichment analysis and fine-mapping on
-a small GWAS dataset.</p>
+<p>In this tutorial, we perform enrichment analysis and fine-mapping
+(using TORUS + SuSiE) on a small GWAS dataset.</p>
 <p>We use a reference genotype panel from European population (1KG).</p>
 <p>If you are in the He lab, you can load the
 <code>EUR_variable_1kg.rds</code> file from RCC.</p>
+<p>We need the <code>bigsnpr</code> package for this tutorial.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu">bigsnpr</span><span class="fu">::</span><span class="fu"><a href="https://privefl.github.io/bigsnpr/reference/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span></span>
+<span><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://privefl.github.io/bigsnpr/reference/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></span></code></pre></div>
 <p>Otherwise, you will need to obtain your own genotypes in PLINK format
-(bed/bim/fam) and use <code>bigsnpr::readBed()</code> to create the
-<code>.rds</code> file below.</p>
-<p>Load the package</p>
+(bed/bim/fam) and use <code>readBed()</code> from the
+<code>bigsnpr</code> package to create the <code>.rds</code> file
+below.</p>
+<p>Load the packages. We need the <code>susieR</code> package to run
+finemapping.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mapgen</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mapgen</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stephenslab/susieR" class="external-link">susieR</a></span><span class="op">)</span></span></code></pre></div>
 <p>First we run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to load and process
 the summary statistics. The summary statistics file could be in either
 tab or comma delimited. We need the following columns in the summary
@@ -191,11 +196,12 @@ You could lower this or just use default (FDR &lt; 10%).</p>
 <span>                                                           torus_prior <span class="op">=</span> <span class="va">torus.prior</span>, </span>
 <span>                                                           torus_fdr <span class="op">=</span> <span class="va">torus.fdr</span>, </span>
 <span>                                                           fdr_thresh <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p>With this data frame, we can perform fine-mapping. We use
-<code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> with SNP-level priors computed from TORUS
-based on enrichment estimates. Note that we ran SuSiE with L = 1 here,
-meaning we assumed there is at most 1 causal variant per SNP. This step
-could take a while if chunks contain many SNPs (<span class="math inline">\(O(n^2)\)</span> where n is # of SNPs).</p>
+<p>With this data frame, we can perform fine-mapping using SuSiE, you
+will need the <code>susieR</code> package for the steps below.</p>
+<p>We use <code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> with SNP-level priors computed
+from TORUS based on enrichment estimates. Note that we ran SuSiE with L
+= 1 here, meaning we assumed there is at most 1 causal variant per SNP.
+This step could take a while if chunks contain many SNPs (<span class="math inline">\(O(n^2)\)</span> where n is # of SNPs).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">susie_finemap_L1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">sumstats.for.susie</span>, </span>
 <span>                                    bigSNP <span class="op">=</span> <span class="va">bigSNP</span>, </span>
