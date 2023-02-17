@@ -196,7 +196,11 @@ compile_structure_plot_data <- function (mat, categories) {
 #'
 #' @importFrom Gviz DataTrack GenomeAxisTrack GeneRegionTrack HighlightTrack plotTracks
 #' @importFrom GenomicInteractions GenomicInteractions InteractionTrack
+<<<<<<< HEAD
 #' @import GenomicRanges
+=======
+#' @importFrom GenomicRanges makeGRangesFromDataFrame GRanges subsetByOverlaps
+>>>>>>> a73348f6d4e417fc6419ee42a198e122cde06c13
 #' @importFrom GenomeInfoDb seqlevelsStyle
 #' @importFrom magrittr %>%
 #'
