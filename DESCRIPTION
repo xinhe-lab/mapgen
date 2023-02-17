@@ -22,16 +22,16 @@ Imports:
     GenomicRanges,
     plyranges,
     rtracklayer,
+    bigsnpr,
     Gviz,
     GenomicInteractions,
     ggrepel,
     ggrastr,
     cowplot,
-    vroom
-Suggests: 
-    bigsnpr,
-    susieR,
+    vroom,
     processx,
+Suggests: 
+    susieR,
     AnnotationDbi,
     org.Hs.eg.db
 Remotes: PhanstielLab/bedtoolsr
