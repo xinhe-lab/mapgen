@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11.9005</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
       </span>
     </div>
 
@@ -89,11 +89,10 @@
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"kevinlkx/mapgen"</span><span class="op">)</span></span></code></pre></div>
 <p>Please install the following dependent R packages: <code>tidyverse</code>, <code>data.table</code>, <code>ggplot2</code>, <code>R.utils</code>from CRAN, as well as <code>GenomicRanges</code>, <code>plyranges</code>, <code>rtracklayer</code> from Bioconductor.</p>
-<p>Optional packages:</p>
+<p>Optional:</p>
 <ul>
 <li>You will need the R packages: <code>susieR</code>, <code>bigsnpr</code>, if you want to run finemapping with GWAS summary statistics using SuSiE.</li>
 <li>Please install <a href="https://github.com/xqwen/torus" class="external-link">TORUS</a> software package and <code>processx</code> R package, if you want to run enrichment analysis using TORUS.</li>
-<li>Please install R packages: <code>Gviz</code>, <code>GenomicInteractions</code> from Bioconductor if you want to make genomic track plots (gene locus plots) of functional fine-mapping result.</li>
 </ul>
 <p>After installing, check that it loads properly:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
