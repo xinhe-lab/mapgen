@@ -21,19 +21,21 @@ Imports:
     ggplot2,
     GenomicRanges,
     plyranges,
-    rtracklayer
-Suggests: 
-    bigsnpr,
-    susieR,
+    rtracklayer,
     Gviz,
     GenomicInteractions,
     ggrepel,
     ggrastr,
     cowplot,
-    vroom,
+    vroom
+Suggests: 
+    bigsnpr,
+    susieR,
     processx,
-    bedtoolsr,
     AnnotationDbi,
     org.Hs.eg.db
+Remotes: PhanstielLab/bedtoolsr
+biocViews: Software, GeneMapping, Finemapping, GWAS, scATAC-seq, SingleCell, FunctionalGenomics
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+VignetteBuilder: knitr
