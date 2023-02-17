@@ -196,8 +196,9 @@ compile_structure_plot_data <- function (mat, categories) {
 #'
 #' @importFrom Gviz DataTrack GenomeAxisTrack GeneRegionTrack HighlightTrack plotTracks
 #' @importFrom GenomicInteractions GenomicInteractions InteractionTrack
-#' @importFrom magrittr %>%
 #' @import GenomicRanges
+#' @importFrom GenomeInfoDb seqlevelsStyle
+#' @importFrom magrittr %>%
 #'
 #' @export
 finemapping_annot_trackplot <- function(finemapstats,
@@ -430,7 +431,7 @@ finemapping_annot_trackplot <- function(finemapstats,
                                   gene = HiC_loops.gr$gene_name)
       HiC_enhancers.gr <- GRanges(seqnames = seqnames(HiC_loops.gr),
                                   ranges = IRanges(start = start(HiC_loops.gr), end = end(HiC_loops.gr)))
-      HiC_loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = HiC_promoters.gr, anchor2 = HiC_enhancers.gr)
+      HiC_loops.obj <- GenomicInteractions(anchor1 = HiC_promoters.gr, anchor2 = HiC_enhancers.gr)
       HiC_loops.obj$counts <- round(HiC_loops.obj$anchor1.score)
 
       if(!is.null(filter_HiCloops_genes)){
@@ -444,7 +445,7 @@ finemapping_annot_trackplot <- function(finemapstats,
         HiC_loops.obj <- subsetByOverlaps(HiC_loops.obj, highlighted.snps.gr)
       }
 
-      HiC_loops.track <- GenomicInteractions::InteractionTrack(HiC_loops.obj, name = x)
+      HiC_loops.track <- InteractionTrack(HiC_loops.obj, name = x)
       displayPars(HiC_loops.track) <- dpars.HiC
       HiC_loops.track
     })

@@ -243,7 +243,9 @@ process_finemapping_sumstats <- function(finemapstats,
     finemapstats <- finemapstats %>% dplyr::arrange(desc(pip)) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
   }
 
-  finemapstats.gr <- makeGRangesFromDataFrame(finemapstats, start.field = 'pos', end.field = 'pos', keep.extra.columns = TRUE)
+  finemapstats.gr <- GenomicRanges::makeGRangesFromDataFrame(finemapstats,
+                                                             start.field = 'pos', end.field = 'pos',
+                                                             keep.extra.columns = TRUE)
   finemapstats.gr$chr <- finemapstats$chr
   finemapstats.gr$pos <- finemapstats$pos
   mcols(finemapstats.gr) <- mcols(finemapstats.gr)[,cols.to.keep]
