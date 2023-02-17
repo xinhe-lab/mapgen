@@ -33,16 +33,13 @@ Please install the following dependent R packages:
 `tidyverse`, `data.table`, `ggplot2`, `R.utils`from CRAN,
 as well as `GenomicRanges`, `plyranges`, `rtracklayer` from Bioconductor.
 
-Optional packages: 
+Optional: 
 
-* You will need the R packages: `susieR`, `bigsnpr`, if you want to 
+* Please install: `susieR`, `bigsnpr`, if you want to 
 run finemapping with GWAS summary statistics using SuSiE. 
 * Please install [TORUS](https://github.com/xqwen/torus) software package
 and `processx` R package, if you want to run 
 enrichment analysis using TORUS. 
-* Please install R packages: `Gviz`, `GenomicInteractions` from Bioconductor
-if you want to make genomic track plots (gene locus plots) of 
-functional fine-mapping result.
 
 After installing, check that it loads properly:
 ```{r load-mapgen, eval=FALSE}
