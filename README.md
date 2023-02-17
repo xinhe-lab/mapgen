@@ -19,17 +19,10 @@ You can install the development version of `mapgen` from
 remotes::install_github("kevinlkx/mapgen")
 ```
 
-Please install the following dependent R packages: `tidyverse`,
-`data.table`, `ggplot2`, `R.utils`from CRAN, as well as `GenomicRanges`,
-`plyranges`, `rtracklayer` from Bioconductor.
-
-Optional:
-
-- Please install: `susieR`, `bigsnpr`, if you want to run finemapping
-  with GWAS summary statistics using SuSiE.
+- Please install: `susieR`, if you want to run finemapping with GWAS
+  summary statistics using SuSiE.
 - Please install [TORUS](https://github.com/xqwen/torus) software
-  package and `processx` R package, if you want to run enrichment
-  analysis using TORUS.
+  package, if you want to run enrichment analysis using TORUS.
 
 After installing, check that it loads properly:
 
