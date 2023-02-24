@@ -52,8 +52,23 @@ Main steps:
 5.  Use our novel gene mapping procedure to infer causal genes at each
     locus.
 
+<div class="figure">
+
 <img src="man/figures/workflow.overview.png" alt="Overview of the workflow" width="75%" />
+<p class="caption">
+Overview of the workflow
+</p>
+
+</div>
 
 Please follow the
 [tutorials](https://kevinlkx.github.io/mapgen/articles/index.html) to
 learn how to use the package.
+
+## Reference
+
+Single-cell genomics improves the discovery of risk variants and genes
+of cardiac traits. Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin
+Smith, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin
+He, Sebastian Pott. medRxiv 2022.02.02.22270312; doi:
+<https://doi.org/10.1101/2022.02.02.22270312>
