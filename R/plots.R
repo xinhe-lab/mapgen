@@ -122,7 +122,7 @@ structure_plot <- function (dat, colors, ticks = NULL,
   p <- ggplot(dat,aes_string(x = "sample",y = "prop",
                              color = "category",
                              fill = "category")) +
-    geom_col() +
+    geom_col(position = position_fill(reverse = TRUE)) +
     scale_x_continuous(limits = c(0,max(dat$sample) + 1),
                        breaks = ticks,
                        labels = names(ticks)) +
