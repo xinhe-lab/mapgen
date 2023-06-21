@@ -57,12 +57,11 @@ Main steps:
    using fine-mapped SNPs and its associated cell type information.
    5. Use our novel gene mapping procedure to infer causal genes at each locus. 
 
-```{r workflow.overview, echo=FALSE, fig.cap="Overview of the workflow", out.width = '75%'}
+```{r workflow.overview, echo=FALSE, fig.cap="", out.width = '75%'}
 knitr::include_graphics("man/figures/workflow.overview.png")
 ```
 
-Please follow the [tutorials](https://kevinlkx.github.io/mapgen/articles/index.html) 
-to learn how to use the package. 
+Please follow the [tutorials](https://xinhe-lab.github.io/mapgen/articles/index.html) to use the package.
 
 ## Reference
 

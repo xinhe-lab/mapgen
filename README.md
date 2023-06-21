@@ -52,18 +52,11 @@ Main steps:
 5.  Use our novel gene mapping procedure to infer causal genes at each
     locus.
 
-<div class="figure">
-
-<img src="man/figures/workflow.overview.png" alt="Overview of the workflow" width="75%" />
-<p class="caption">
-Overview of the workflow
-</p>
-
-</div>
+<img src="man/figures/workflow.overview.png" width="75%" />
 
 Please follow the
-[tutorials](https://kevinlkx.github.io/mapgen/articles/index.html) to
-learn how to use the package.
+[tutorials](https://xinhe-lab.github.io/mapgen/articles/index.html) to
+use the package.
 
 ## Reference
 
