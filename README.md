@@ -19,8 +19,9 @@ You can install the development version of `mapgen` from
 remotes::install_github("xinhe-lab/mapgen")
 ```
 
-- Please install `susieR` package, if you want to run finemapping with
-  GWAS summary statistics using SuSiE.
+- Please install [susieR](https://github.com/stephenslab/susieR)
+  package, if you want to run finemapping with GWAS summary statistics
+  using SuSiE.
 - Please install [TORUS](https://github.com/xqwen/torus) software
   package, if you want to run enrichment analysis using TORUS.
 
