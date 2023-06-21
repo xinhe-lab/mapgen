@@ -6,12 +6,12 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-`mapgen` is an R package that performs gene mapping based on
+`Mapgen` is an R package that performs gene mapping based on
 functionally-informed genetic fine-mapping.
 
 ## Installation
 
-You can install the development version of `mapgen` from
+You can install the development version of `Mapgen` from
 [GitHub](https://github.com/xinhe-lab/mapgen) with:
 
 ``` r
@@ -67,8 +67,8 @@ learn how to use the package.
 
 ## Reference
 
-Single-cell genomics improves the discovery of risk variants and genes
-of Atrial Fibrillation. Alan Selewa\*, Kaixuan Luo\*, Michael Wasney,
-Linsin Smith, Xiaotong Sun, Chenwei Tang, Heather Eckart, Ivan
-Moskowitz, Anindita Basu, Xin He, Sebastian Pott. medRxiv
-2022.02.02.22270312; doi: <https://doi.org/10.1101/2022.02.02.22270312>
+Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin Smith, Xiaotong
+Sun, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin
+He, Sebastian Pott. Single-cell genomics improves the discovery of risk
+variants and genes of Atrial Fibrillation. medRxiv 2022.02.02.22270312;
+doi: <https://doi.org/10.1101/2022.02.02.22270312>
