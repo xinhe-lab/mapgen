@@ -16,7 +16,7 @@ You can install the development version of `mapgen` from
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("kevinlkx/mapgen")
+remotes::install_github("xinhe-lab/mapgen")
 ```
 
 - Please install `susieR` package, if you want to run finemapping with
