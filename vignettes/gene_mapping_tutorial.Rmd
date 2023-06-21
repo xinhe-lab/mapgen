@@ -65,7 +65,7 @@ library(mapgen)
 
 Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.
 ```{r load-finemapping-res}
-finemapstats <- readRDS(system.file("extdata", "aFib_Finemapped.tble.rds", package = "mapgen"))
+finemapstats <- readRDS(system.file("extdata", "AF_finemapping_result.rds", package = "mapgen"))
 finemapstats.gr <- process_finemapping_sumstats(finemapstats, 
                                                 snp = 'snp', chr = 'chr', 
                                                 pos = 'pos', pip = 'susie_pip', 
@@ -111,7 +111,7 @@ Add ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021).
 You may skip this if you do not have relevant ABC scores.
 ```{r process_ABC}
 ABC <- data.table::fread(system.file("extdata", "heart_ventricle-ENCODE_ABC.tsv.gz", package = "mapgen"))
-ABC.gr <- process_ABC(ABC, ABC.thresh = 0.015, full.element = TRUE)
+ABC.gr <- process_ABC(ABC, full.element = TRUE)
 ABC.gr <- ABC.gr[ABC.gr$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
 genomic.annots$ABC <- ABC.gr
 ```
@@ -125,7 +125,7 @@ genomic.annots$enhancer_regions <- genomic.annots$OCRs_hg19[genomic.annots$OCRs_
 ```
 
 ```{r enhancer.nearby.promoter.20kb}
-enhancer_nearby_promoter_20kb <- nearby_interactions(genomic.annots$enhancer_regions, genomic.annots$active_promoters, dist_limit = 20000)
+genomic.annots$enhancer_nearby_promoter_20kb <- nearby_interactions(genomic.annots$enhancer_regions, genomic.annots$active_promoters, dist_limit = 20000)
 ```
 
 Run gene mapping
@@ -135,7 +135,7 @@ Run gene mapping using the following settings:
 
 * enhancer.loop.method = "ABC.pcHiC.nearby20kb" (as explained above).
 * intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).
-* c.dist = 50000 (distance weight parameter: 50kb).
+* c.dist = 50000 (distance weight parameter: 50kb by default).
 
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
 gene.mapping.res <- compute_gene_pip(finemapstats.gr, 
