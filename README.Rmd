@@ -66,6 +66,6 @@ to learn how to use the package.
 
 ## Reference
 
-Single-cell genomics improves the discovery of risk variants and genes of cardiac traits.
-Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin Smith, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin He, Sebastian Pott.
+Single-cell genomics improves the discovery of risk variants and genes of Atrial Fibrillation.
+Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin Smith, Xiaotong Sun, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin He, Sebastian Pott.
 medRxiv 2022.02.02.22270312; doi: https://doi.org/10.1101/2022.02.02.22270312
