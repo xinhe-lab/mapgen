@@ -34,22 +34,31 @@ compute_gene_pip <- function(finemapstats.gr,
   enhancer_loops <- list()
   if(grepl('ABC', enhancer.loop.method, ignore.case = T) && !is.null(genomic.annots$ABC)){
     cat('Include ABC scores in enhancer loops ... \n')
+    if(is.null(genomic.annots$ABC)){stop("Please check: ABC not included in genomic.annots!")}
     enhancer_loops$ABC <- genomic.annots$ABC[, c('gene_name')]
   }
   if(grepl('pcHiC', enhancer.loop.method, ignore.case = T) && !is.null(genomic.annots$pcHiC)){
     cat('Include pcHiC in enhancer loops ... \n')
+    if(is.null(genomic.annots$pcHiC)){stop("Please check: pcHiC not included in genomic.annots!")}
     enhancer_loops$pcHiC <- genomic.annots$pcHiC[, c('gene_name')]
   }
   if(grepl('coacc', enhancer.loop.method, ignore.case = T) && !is.null(genomic.annots$coacc)){
     cat('Include coacc in enhancer loops ... \n')
+    if(is.null(genomic.annots$coacc)){stop("Please check: coacc not included in genomic.annots!")}
     enhancer_loops$coacc <- genomic.annots$coacc[, c('gene_name')]
   }
   if(grepl('nearby', enhancer.loop.method, ignore.case = T)){
     if(grepl('nearby20kb', enhancer.loop.method, ignore.case = T)){
       cat('Include enhancers with nearby promoters (20kb) in enhancer loops ... \n')
+      if(is.null(genomic.annots$enhancer_nearby_promoter_20kb)){
+        stop("Please check: enhancer_nearby_promoter_20kb not included in genomic.annots!")
+      }
       enhancer_loops$nearby20kb <- genomic.annots$enhancer_nearby_promoter_20kb[, c('gene_name')]
     }else if(grepl('nearby10kb', enhancer.loop.method, ignore.case = T)){
       cat('Include enhancers with nearby promoters (10kb) in enhancer loops ... \n')
+      if(is.null(genomic.annots$enhancer_nearby_promoter_10kb)){
+        stop("Please check: enhancer_nearby_promoter_10kb not included in genomic.annots!")
+      }
       enhancer_loops$nearby10kb <- genomic.annots$enhancer_nearby_promoter_10kb[, c('gene_name')]
     }
   }
