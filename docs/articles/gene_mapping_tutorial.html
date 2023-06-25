@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
       </span>
     </div>
 
@@ -257,7 +257,8 @@ containing the introns).</li>
 <p>Extract gene-level result table</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gene.pip.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_gene_level_result.html">extract_gene_level_result</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, <span class="va">gene.annots</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Extract gene level result ...</span></span></code></pre>
+<pre><code><span><span class="co">## Extract gene level result ...</span></span>
+<span><span class="co">## Remove 6 genes not included in gene.annots...</span></span></code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.pip.res</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    chr       pos gene_name    gene_pip</span></span>
@@ -303,7 +304,7 @@ containing the introns).</li>
 <p>Make a Manhattan plot of the gene PIPs, and label genes with gene PIP
 &gt; 0.8.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_manhattan_plot.html">gene_manhattan_plot</a></span><span class="op">(</span><span class="va">gene.pip.res</span>, sig.pip <span class="op">=</span> <span class="fl">0.8</span>, title <span class="op">=</span> <span class="st">"AF gene mapping"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_manhattan_plot.html">gene_manhattan_plot</a></span><span class="op">(</span><span class="va">gene.pip.res</span>, sig.pip <span class="op">=</span> <span class="fl">0.8</span>, title <span class="op">=</span> <span class="st">"AF gene mapping"</span>, max.overlaps <span class="op">=</span> <span class="fl">45</span><span class="op">)</span></span></code></pre></div>
 <p><img src="gene_mapping_tutorial_files/figure-html/gene-manhattan-plot-1.png" width="768"></p>
 </div>
   </div>
