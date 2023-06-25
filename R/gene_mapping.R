@@ -203,6 +203,9 @@ extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
   cat('Extract gene level result ...\n')
 
   snp.gene.pip.mat <- snp.gene.pip.mat[!is.na(snp.gene.pip.mat$gene_name),]
+  genes_not_included <- setdiff(snp.gene.pip.mat$gene_name, gene.annots$gene_name)
+  cat('Remove', length(genes_not_included), 'genes not included in gene.annots... \n')
+  snp.gene.pip.mat <- snp.gene.pip.mat %>% filter(!gene_name %in% genes_not_included)
 
   gene.locations <- as.data.frame(gene.annots)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
   gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
