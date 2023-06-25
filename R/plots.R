@@ -8,12 +8,12 @@
 #' @param gene_pip Name of the gene PIP column in the gene finemapping summary statistics data
 #' @param sig.pip Signficant gene PIP (default: 0.8)
 #' @param highlight Highlight genes with gene PIP > sig.pip
-#' @param ylim Truncate gene PIP to ylim value in the plot (default: 1.25).
+#' @param ylim Truncate gene PIP to ylim value in the plot.
 #' @param point.size Size of the points.
 #' @param label.size Size of the labels.
 #' @param font.size Font size of the text.
 #' @param title Title of the plot
-#' @param max.overlaps Exclude text labels that overlap too many things (default: 10).
+#' @param max.overlaps Exclude text labels that overlap too many things.
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @export
@@ -25,11 +25,11 @@ gene_manhattan_plot <- function(gene.pip.res,
                                 gene_pip='gene_pip',
                                 sig.pip = 0.8,
                                 highlight = TRUE,
-                                ylim = 1.25,
+                                ylim = 1.2,
                                 point.size = 2,
                                 label.size = point.size*2,
                                 font.size = 15,
-                                max.overlaps = 10,
+                                max.overlaps = 20,
                                 title = '') {
 
   gene.pip.res <- gene.pip.res %>% dplyr::rename(chr = all_of(chr),
@@ -73,6 +73,9 @@ gene_manhattan_plot <- function(gene.pip.res,
     scale_x_continuous(label = gsub("chr","", axis.df$chr, ignore.case = TRUE), breaks= axis.df$center) +
     scale_y_continuous(expand = c(0, 0), limits = c(0,ylim)) +     # remove space between plot area and x axis
 
+    # Add a dotted line for significant PIP cutoff
+    geom_hline(yintercept=sig.pip, linetype="dashed", color = "red") +
+
     # Add highlighted points
     ggrastr::geom_point_rast(data=subset(df, is_highlight==TRUE), color="orange", size=point.size) +
 
@@ -83,7 +86,8 @@ gene_manhattan_plot <- function(gene.pip.res,
                                min.segment.length = 0,
                                label.size = NA,
                                fill = alpha(c("white"),0),
-                               max.overlaps = max.overlaps) +
+                               max.overlaps = max.overlaps,
+                               fontface = "italic") +
 
     # Custom the theme:
     theme_bw() +
