@@ -6,8 +6,12 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-`mapgen` is an R package that performs gene mapping based on
-functionally-informed genetic fine-mapping.
+Mapgen is a multi-function software that performs the following tasks:
+
+1.  enrichment analysis of functional annotations for a trait of
+    interest.
+2.  functionally-informed genetic fine-mapping.
+3.  gene mapping based on fine-mapping result and genomic annotations.
 
 ## Installation
 
@@ -15,15 +19,9 @@ You can install the development version of `mapgen` from
 [GitHub](https://github.com/xinhe-lab/mapgen) with:
 
 ``` r
-# install.packages("remotes")
+install.packages("remotes")
 remotes::install_github("xinhe-lab/mapgen")
 ```
-
-- Please install [susieR](https://github.com/stephenslab/susieR)
-  package, if you want to run finemapping with GWAS summary statistics
-  using SuSiE.
-- Please install [TORUS](https://github.com/xqwen/torus) software
-  package, if you want to run enrichment analysis using TORUS.
 
 After installing, check that it loads properly:
 
@@ -31,33 +29,58 @@ After installing, check that it loads properly:
 library(mapgen)
 ```
 
-## Overview of the workflow
+## Main steps
 
-**Example workflow from our heart single-cell study:**
+### 1. Data preparation:
 
-We developed an integrated procedure that combines single-cell genomics
-with novel computational approaches to study genetics of complex traits.
+Prepare GWAS summary statistics, functional annotations, as well as LD
+reference panel as input data.
 
-Main steps:
+### 2. Enrichment analysis:
 
-1.  Obtain cell-type-resolved open chromatin regions (OCRs) using
-    scATAC-seq and snRNA-seq.
-2.  Assess the enrichment of genetic signals of a trait of interest in
-    OCRs across all the cell types.
-3.  Perform Bayesian statistical fine mapping on trait-associated loci,
-    using a informative prior that favors likely functional variants
-    located in OCRs of enriched cell types.
-4.  Assign the likely cell type(s) through which the causal variants act
+Assess the enrichment of genetic signals of a trait of interest in
+functional annotations.
+
+\*Please install [TORUS](https://github.com/xqwen/torus) software
+package, if you need to run enrichment analysis.
+
+### 3. Fine-mapping:
+
+Perform Bayesian statistical fine-mapping using SuSiE on
+trait-associated loci, using a informative prior that favors variants
+located in enriched annotations.
+
+\*Please install [susieR](https://github.com/stephenslab/susieR)
+package, if you need to run fine-mapping with GWAS summary statistics
+using SuSiE.
+
+### 4. Gene mapping:
+
+Infer causal genes at each locus based on fine-mapping result and
+genomic annotations, including gene annotations, chromatin loops, etc.
+
+## Example tutorials using data from our AFib study
+
+1.  Data preparation: obtain AFib GWAS data and cell-type-resolved open
+    chromatin regions (OCRs) from scATAC-seq.
+2.  [Enrichment
+    analysis](https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html):
+    estimate the enrichment of AFib signals in OCRs across cell types.
+3.  [Fine-mapping](https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html):
+    Perform fine-mapping on AFib-associated loci, using a informative
+    prior that favors variants located in OCRs of enriched cell types.
+4.  [Partition fine-mapping PIPs by annotation
+    categories](https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html):
+    Assign the likely cell type(s) through which the causal variants act
     in most loci using fine-mapped SNPs and its associated cell type
     information.
-5.  Use our novel gene mapping procedure to infer causal genes at each
-    locus.
+5.  [Gene
+    mapping](https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html):
+    infer causal genes (gene PIPs) at each locus based on AFib
+    fine-mapping result and genomic annotations, including gene
+    annotations, chromatin loops (PC-HiC links, ABC scores), etc.
 
 <img src="man/figures/workflow.overview.png" width="75%" />
-
-Please follow the
-[tutorials](https://xinhe-lab.github.io/mapgen/articles/index.html) to
-use the package.
 
 ## Reference
 
