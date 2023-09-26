@@ -79,38 +79,65 @@
 </h2>
 <!-- badges: start -->
 <!-- badges: end -->
-<p><code>mapgen</code> is an R package that performs gene mapping based on functionally-informed genetic fine-mapping.</p>
+<p>Mapgen is a multi-function software that performs the following tasks:</p>
+<ol style="list-style-type: decimal">
+<li>enrichment analysis of functional annotations for a trait of interest.</li>
+<li>functionally-informed genetic fine-mapping.</li>
+<li>gene mapping based on fine-mapping result and genomic annotations.</li>
+</ol>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of <code>mapgen</code> from <a href="https://github.com/xinhe-lab/mapgen" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"xinhe-lab/mapgen"</span><span class="op">)</span></span></code></pre></div>
-<ul>
-<li>Please install <a href="https://github.com/stephenslab/susieR" class="external-link">susieR</a> package, if you want to run finemapping with GWAS summary statistics using SuSiE.</li>
-<li>Please install <a href="https://github.com/xqwen/torus" class="external-link">TORUS</a> software package, if you want to run enrichment analysis using TORUS.</li>
-</ul>
 <p>After installing, check that it loads properly:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mapgen</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="overview-of-the-workflow">Overview of the workflow<a class="anchor" aria-label="anchor" href="#overview-of-the-workflow"></a>
+<h2 id="main-steps">Main steps<a class="anchor" aria-label="anchor" href="#main-steps"></a>
 </h2>
-<p><strong>Example workflow from our heart single-cell study:</strong></p>
-<p>We developed an integrated procedure that combines single-cell genomics with novel computational approaches to study genetics of complex traits.</p>
-<p>Main steps:</p>
+<div class="section level3">
+<h3 id="id_1-data-preparation">1. Data preparation:<a class="anchor" aria-label="anchor" href="#id_1-data-preparation"></a>
+</h3>
+<p>Prepare GWAS summary statistics, functional annotations, as well as LD reference panel as input data.</p>
+</div>
+<div class="section level3">
+<h3 id="id_2-enrichment-analysis">2. Enrichment analysis:<a class="anchor" aria-label="anchor" href="#id_2-enrichment-analysis"></a>
+</h3>
+<p>Assess the enrichment of genetic signals of a trait of interest in functional annotations.</p>
+<p>*Please install <a href="https://github.com/xqwen/torus" class="external-link">TORUS</a> software package, if you need to run enrichment analysis.</p>
+</div>
+<div class="section level3">
+<h3 id="id_3-fine-mapping">3. Fine-mapping:<a class="anchor" aria-label="anchor" href="#id_3-fine-mapping"></a>
+</h3>
+<p>Perform Bayesian statistical fine-mapping using SuSiE on trait-associated loci, using a informative prior that favors variants located in enriched annotations.</p>
+<p>*Please install <a href="https://github.com/stephenslab/susieR" class="external-link">susieR</a> package, if you need to run fine-mapping with GWAS summary statistics using SuSiE.</p>
+</div>
+<div class="section level3">
+<h3 id="id_4-gene-mapping">4. Gene mapping:<a class="anchor" aria-label="anchor" href="#id_4-gene-mapping"></a>
+</h3>
+<p>Infer causal genes at each locus based on fine-mapping result and genomic annotations, including gene annotations, chromatin loops, etc.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="example-tutorials-using-data-from-our-afib-study">Example tutorials using data from our AFib study<a class="anchor" aria-label="anchor" href="#example-tutorials-using-data-from-our-afib-study"></a>
+</h2>
 <ol style="list-style-type: decimal">
-<li>Obtain cell-type-resolved open chromatin regions (OCRs) using scATAC-seq and snRNA-seq.</li>
-<li>Assess the enrichment of genetic signals of a trait of interest in OCRs across all the cell types.</li>
-<li>Perform Bayesian statistical fine mapping on trait-associated loci, using a informative prior that favors likely functional variants located in OCRs of enriched cell types.</li>
-<li>Assign the likely cell type(s) through which the causal variants act in most loci using fine-mapped SNPs and its associated cell type information.</li>
-<li>Use our novel gene mapping procedure to infer causal genes at each locus.</li>
+<li>Data preparation: obtain AFib GWAS data and cell-type-resolved open chromatin regions (OCRs) from scATAC-seq.</li>
+<li>
+<a href="https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html">Enrichment analysis</a>: estimate the enrichment of AFib signals in OCRs across cell types.</li>
+<li>
+<a href="https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html">Fine-mapping</a>: Perform fine-mapping on AFib-associated loci, using a informative prior that favors variants located in OCRs of enriched cell types.</li>
+<li>
+<a href="https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>: Assign the likely cell type(s) through which the causal variants act in most loci using fine-mapped SNPs and its associated cell type information.</li>
+<li>
+<a href="https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html">Gene mapping</a>: infer causal genes (gene PIPs) at each locus based on AFib fine-mapping result and genomic annotations, including gene annotations, chromatin loops (PC-HiC links, ABC scores), etc.</li>
 </ol>
 <p><img src="reference/figures/workflow.overview.png" width="75%"></p>
-<p>Please follow the <a href="https://xinhe-lab.github.io/mapgen/articles/index.html">tutorials</a> to use the package.</p>
 </div>
 <div class="section level2">
 <h2 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
@@ -160,7 +187,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
