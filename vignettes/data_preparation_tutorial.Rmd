@@ -1,0 +1,89 @@
+---
+title: "Tutorial for data preparation"
+author: Kaixuan Luo
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+In this tutorial, we prepare input data for the analysis.
+
+Load the packages. 
+```{r load-package}
+library(mapgen)
+```
+
+## Reference genotype panel
+
+If you need to run fine-mapping, you would need to prepare a `bigSNP` object 
+for the reference genotype panel, which will be used for computing LD matrices.
+You can skip this if you only want to run enrichment analysis or gene mapping 
+with precomputed fine-mapping result.
+
+We provided a `bigSNP` object of the reference genotype panel for 
+the 1000 Genome (1KG) European population. Otherwise, you could obtain 
+your own reference genotypes in PLINK format (bed/bim/fam) 
+and use `readBed()` from the `bigsnpr` package to create the `.rds` file.
+
+You need to install the `bigsnpr` package, and use `snp_attach` to load `.rds` file.
+```{r, eval=FALSE, message=FALSE}
+library(bigsnpr)
+bigSNP.file <- '~/Dropbox/projects_dropbox/gene-fine-mapping/bigsnpr/EUR_variable_1kg.rds'
+bigSNP <- bigsnpr::snp_attach(rdsfile = bigSNP.file)
+```
+
+## Reference LD blocks
+
+We provided the LD blocks from 1000 Genome (1KG) European population (in hg19). 
+
+Load a data frame named `LD_Blocks` with four columns of 
+chromosome, start and end positions of the LD blocks (in hg19), and locus ID.
+```{r load-LD-blocks}
+LD_Blocks <- readRDS(system.file("extdata", "EUR_LD_Blocks.rds", package="mapgen"))
+```
+
+## GWAS summary statistics
+
+First we run `process_gwas_sumstats()` to load and process the summary statistics.
+The summary statistics file could be in either tab or comma delimited.
+We need the following columns in the summary statistics:  
+
+* chromosome
+* position (base pair position *note: the LD reference data included in the package are in hg19!*)  
+* beta (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))  
+* standard error (SE)  
+* reference allele
+* association/effect allele
+* SNP ID (rsID, or chr:position:a1:a2)
+* p-value
+
+Load a small example GWAS dataset included in the package:
+```{r}
+# Loading GWAS summary statistics
+gwas.file <- system.file("extdata", "test_sumstats.txt.gz", package="mapgen")
+sumstats <- vroom::vroom(gwas.file, col_names = TRUE, show_col_types = FALSE)
+as.data.frame(sumstats[1:3,] )
+```
+
+Cleans GWAS summary statistics and adds information from bigSNP and LD_Blocks.
+You can skip bigSNP and LD_Blocks if you only need to run enrichment analysis.
+```{r process-gwas}
+gwas <- process_gwas_sumstats(sumstats, 
+                              chr='chr', 
+                              pos='position_b37', 
+                              beta='bcac_onco2_beta', 
+                              se='bcac_onco2_se',
+                              a0='a0', 
+                              a1='a1', 
+                              snp='phase3_1kg_id', 
+                              pval='bcac_onco2_P1df_Wald',
+                              LD_Blocks=LD_Blocks,
+                              bigSNP = bigSNP)
+```
+
+Check that the output is cleaned and has appropriate columns:
+```{r print-gwas}
+head(gwas, 3)
+```

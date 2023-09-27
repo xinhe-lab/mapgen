@@ -4,12 +4,12 @@
 \alias{annotate_snps_binary}
 \title{Assigns SNPs with annotations based on overlap}
 \usage{
-annotate_snps_binary(gwas, annotations, keep.annot.only = TRUE)
+annotate_snps_binary(sumstats, annotations, keep.annot.only = TRUE)
 }
 \arguments{
-\item{gwas}{a data frame or tibble of GWAS summary statistics}
+\item{sumstats}{A data frame of GWAS summary statistics}
 
-\item{annotations}{annotation BED files}
+\item{annotations}{Paths to annotation BED files}
 
 \item{keep.annot.only}{Logical. If TRUE, only returns the
 snp and annotation columns}

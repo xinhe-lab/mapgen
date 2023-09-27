@@ -2,15 +2,15 @@
 % Please edit documentation in R/gwas.R
 \name{assign_locus_snp}
 \alias{assign_locus_snp}
-\title{Assigns each SNP to one ld-block}
+\title{Assigns each SNP to one LD block}
 \usage{
-assign_locus_snp(cleaned.sumstats, ld)
+assign_locus_snp(cleaned.sumstats, LD_Blocks)
 }
 \arguments{
-\item{cleaned.sumstats}{Cleaned summary statistics}
+\item{cleaned.sumstats}{A data frame of GWAS summary statistics.}
 
-\item{ld}{LD blocks}
+\item{LD_Blocks}{A data frame of LD blocks}
 }
 \description{
-Assigns each SNP to one ld-block
+Assigns each SNP to one LD block
 }

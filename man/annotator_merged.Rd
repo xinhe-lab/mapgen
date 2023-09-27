@@ -4,12 +4,12 @@
 \alias{annotator_merged}
 \title{Annotations for causal SNPs (apply these after fine-mapping!)}
 \usage{
-annotator_merged(gwas, annotations)
+annotator_merged(sumstats, annotations)
 }
 \arguments{
-\item{gwas}{a data frame or tibble of GWAS summary statistics}
+\item{sumstats}{A data frame of GWAS summary statistics}
 
-\item{annotations}{annotation BED files}
+\item{annotations}{Paths to annotation BED files}
 }
 \description{
 Annotations for causal SNPs (apply these after fine-mapping!)

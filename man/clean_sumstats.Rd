@@ -17,7 +17,7 @@ clean_sumstats(
 )
 }
 \arguments{
-\item{sumstats}{a tibble or data frame containing raw summary statistics.}
+\item{sumstats}{A data frame of GWAS summary statistics.}
 
 \item{cols.to.keep}{columns to keep.
 It is required to have 8 columns in the exact order of:
