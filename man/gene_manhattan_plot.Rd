@@ -12,11 +12,11 @@ gene_manhattan_plot(
   gene_pip = "gene_pip",
   sig.pip = 0.8,
   highlight = TRUE,
-  ylim = 1.25,
+  ylim = 1.2,
   point.size = 2,
   label.size = point.size * 2,
   font.size = 15,
-  max.overlaps = 10,
+  max.overlaps = 20,
   title = ""
 )
 }
@@ -35,7 +35,7 @@ gene_manhattan_plot(
 
 \item{highlight}{Highlight genes with gene PIP > sig.pip}
 
-\item{ylim}{Truncate gene PIP to ylim value in the plot (default: 1.25).}
+\item{ylim}{Truncate gene PIP to ylim value in the plot.}
 
 \item{point.size}{Size of the points.}
 
@@ -43,7 +43,7 @@ gene_manhattan_plot(
 
 \item{font.size}{Font size of the text.}
 
-\item{max.overlaps}{Exclude text labels that overlap too many things (default: 10).}
+\item{max.overlaps}{Exclude text labels that overlap too many things.}
 
 \item{title}{Title of the plot}
 }
