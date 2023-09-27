@@ -78,7 +78,7 @@ run_finemapping <- function(sumstats,
 
 }
 
-#' @title Run fine-mapping with SuSiE using summary statistics
+#' @title Run fine-mapping with SuSiE using summary statistics (susie_rss)
 #' @param sumstats summary statistics
 #' @param R p x p correlation (LD) matrix
 #' @param bigSNP bigSNP object
@@ -92,7 +92,7 @@ run_finemapping <- function(sumstats,
 #' we recommend setting estimate_residual_variance = TRUE.
 #' @param verbose If verbose = TRUE, print progress,
 #' and a summary of the optimization settings from susie.
-#' @return finemapping results
+#' @return susie_rss output
 #' @export
 run_susie_rss <- function(sumstats,
                           bigSNP,
@@ -264,3 +264,33 @@ process_finemapping_sumstats <- function(finemapstats,
   return(finemapstats.gr)
 
 }
+
+
+#' @title Annotations for causal SNPs (apply these after fine-mapping!)
+#' @param sumstats A data frame of GWAS summary statistics
+#' @param annotations Paths to annotation BED files
+#' @importFrom magrittr %>%
+#' @export
+annotator_merged <- function(sumstats, annotations){
+
+  snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)
+  snpRanges <- plyranges::mutate(snpRanges, snp=sumstats$snp)
+  sumstats['annots'] <- ''
+
+  for(f in annotations){
+
+    curr <- rtracklayer::import(f, format='bed')
+    snpRangesIn <- IRanges::subsetByOverlaps(snpRanges, annot.gr)
+    snpsIn <- unique(snpRangesIn$snp)
+
+    if(length(snpsIn)>0){
+      curr <- sumstats %>% pull(annots)
+      curr <- curr[sumstats$snp %in% snpsIn]
+      delims <- rep(';', length(curr))
+      delims[which(curr == '')] <- ''
+      sumstats[sumstats$snp %in% snpsIn,"annots"] <- paste0(curr,delims,gsub(pattern = '.bed',replacement = '', x = basename(f)))
+    }
+  }
+  return(sumstats)
+}
+

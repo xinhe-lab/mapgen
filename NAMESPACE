@@ -2,7 +2,7 @@
 
 export(annotate_snps_binary)
 export(annotator_merged)
-export(assign_locus_snp)
+export(assign_snp_locus)
 export(block_view_summary)
 export(clean_sumstats)
 export(compile_structure_plot_data)

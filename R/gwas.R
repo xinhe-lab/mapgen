@@ -39,7 +39,7 @@ process_gwas_sumstats <- function(sumstats,
     cat('LD_Blocks not provided. Skipped assigning SNPs to LD blocks. \n')
   }else{
     cat('Assigning GWAS SNPs to LD blocks...\n')
-    cleaned.sumstats <- assign_locus_snp(cleaned.sumstats, LD_Blocks)
+    cleaned.sumstats <- assign_snp_locus(cleaned.sumstats, LD_Blocks)
   }
 
   if(is.null(bigSNP)){
@@ -123,7 +123,7 @@ clean_sumstats <- function(sumstats,
 #' @param cleaned.sumstats A data frame of GWAS summary statistics.
 #' @param LD_Blocks A data frame of LD blocks
 #' @export
-assign_locus_snp <- function(cleaned.sumstats, LD_Blocks){
+assign_snp_locus <- function(cleaned.sumstats, LD_Blocks){
 
   ldRanges <- make_ranges(LD_Blocks$X1, LD_Blocks$X2, LD_Blocks$X3)
   ldRanges <- plyranges::mutate(ldRanges, locus=LD_Blocks$X4)
@@ -139,65 +139,6 @@ assign_locus_snp <- function(cleaned.sumstats, LD_Blocks){
   cleaned.annot.sumstats <- dplyr::inner_join(cleaned.sumstats, snp.ld.block, 'snp')
 
   return(cleaned.annot.sumstats)
-}
-
-
-#' @title Assigns SNPs with annotations based on overlap
-#' @param sumstats A data frame of GWAS summary statistics
-#' @param annotations Paths to annotation BED files
-#' @param keep.annot.only Logical. If TRUE, only returns the
-#' snp and annotation columns
-#' @return if \code{keep.annot.only=TRUE}, returns
-#' a data frame or tibble of snp and annotations. Otherwise, returns
-#' a data frame or tibble of GWAS summary statistics and annotations.
-#' @export
-annotate_snps_binary <- function(sumstats, annotations, keep.annot.only=TRUE){
-
-  snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)
-  snpRanges <- plyranges::mutate(snpRanges, snp=sumstats$snp)
-
-  for(f in annotations){
-    name <- paste0(basename(f),'_d')
-    cat(sprintf('Annotating SNPs with %s ...\n', basename(f)))
-    annot.gr <- rtracklayer::import(f, format='bed')
-    snpRangesIn <- IRanges::subsetByOverlaps(snpRanges, annot.gr)
-    snpsIn <- unique(snpRangesIn$snp)
-    sumstats <- dplyr::mutate(sumstats, !!name := ifelse(snp %in% snpsIn,1,0))
-  }
-
-  if(keep.annot.only){
-    sumstats <- sumstats[,c('snp', paste0(basename(annotations), '_d'))]
-  }
-
-  return(sumstats)
-}
-
-#' @title Annotations for causal SNPs (apply these after fine-mapping!)
-#' @param sumstats A data frame of GWAS summary statistics
-#' @param annotations Paths to annotation BED files
-#' @importFrom magrittr %>%
-#' @export
-annotator_merged <- function(sumstats, annotations){
-
-  snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)
-  snpRanges <- plyranges::mutate(snpRanges, snp=sumstats$snp)
-  sumstats['annots'] <- ''
-
-  for(f in annotations){
-
-    curr <- rtracklayer::import(f, format='bed')
-    snpRangesIn <- IRanges::subsetByOverlaps(snpRanges, annot.gr)
-    snpsIn <- unique(snpRangesIn$snp)
-
-    if(length(snpsIn)>0){
-      curr <- sumstats %>% pull(annots)
-      curr <- curr[sumstats$snp %in% snpsIn]
-      delims <- rep(';', length(curr))
-      delims[which(curr == '')] <- ''
-      sumstats[sumstats$snp %in% snpsIn,"annots"] <- paste0(curr,delims,gsub(pattern = '.bed',replacement = '', x = basename(f)))
-    }
-  }
-  return(sumstats)
 }
 
 #' @title Match GWAS with bigSNP reference panel.

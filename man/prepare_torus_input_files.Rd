@@ -13,14 +13,12 @@ prepare_torus_input_files(
 )
 }
 \arguments{
-\item{sumstats}{cleaned summary statistics}
+\item{sumstats}{A data frame of GWAS summary statistics,
+with required columns: "snp", "chr", "pos", "locus" and "zscore".}
 
-\item{annotation_bed_files}{annotation files in BED format.
-The bed file must have at least these three columns: chr, start, end.
-Chromosomes should be numeric (no "chr")
-and should be in hg19/b37 format.
-You will get wrong results if you use hg38 or other
-(The reference panel we used is in hg19).}
+\item{annotation_bed_files}{Path to annotation files in BED format.
+The bed file must have at least three columns: "chr", "start", "end".
+Chromosomes should be numeric (no "chr").}
 
 \item{torus_input_dir}{Directory to save TORUS input files.}
 
