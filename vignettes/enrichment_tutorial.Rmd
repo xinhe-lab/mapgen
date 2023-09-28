@@ -61,8 +61,7 @@ torus.prior <- torus.result$snp_prior
 ```
 
 TORUS also gives us the uncertainty of whether each locus contains a causal variant or not. 
-You can set `option = "fdr"` to get the probability of each locus 
-containing a causal signal. 
+You can set `option = "fdr"` to get the FDR associated with each locus.
 ```{r run-torus-fdr}
 torus.fdr <- run_torus(torus.files$torus_annot_file, 
                        torus.files$torus_zscore_file,

@@ -1,0 +1,79 @@
+---
+title: "Tutorial for fine-mapping with functional priors"
+author: Kaixuan Luo, Alan Selewa
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+In this tutorial, we perform fine-mapping (using SuSiE) with 
+functional priors computed from the enrichment analysis using `TORUS`.
+
+Please see the [data preparation tutorial][data-preparation-tutorial] about 
+preparing GWAS summary statistics. 
+
+Following the [enrichment analysis tutorial][enrichment-tutorial], 
+we can obtain SNP-level priors using `run_torus()` with `option = "est-prior"`.
+```{r run-torus-est-prior}
+torus.result <- run_torus(torus.files$torus_annot_file, 
+                          torus.files$torus_zscore_file,
+                          option = "est-prior",
+                          torus_path = "torus") # set the path to 'torus' executable.
+torus.prior <- torus.result$snp_prior
+```
+
+Now, we can add the SNP-level priors to our summary statistics. 
+```{r add-torus-priors}
+gwas.sumstats <- prepare_susie_data_with_torus_result(sumstats = gwas.sumstats, 
+                                                      torus_prior = torus.prior)
+```
+
+We now have a new column `torus_prior`.
+```{r}
+gwas.sumstats[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior')]
+```
+
+We could limit loci with GWAS p-value cutoff (e.g. 5e-8), 
+or if you want to limit loci with FDR cutoff, you can use the 
+FDR associated with each locus obtained from running `run_torus()` 
+with `option = "fdr"`. 
+
+We can then perform fine-mapping using SuSiE, 
+you will need the `susieR` package for the steps below. 
+
+To use SNP-level priors computed from `TORUS`, we use `run_finemapping()` 
+with `priortype = 'torus'`.
+```{r run-susie-torus-prior}
+susie.finemap.res <- run_finemapping(sumstats = gwas.sumstats, 
+                                     bigSNP = bigSNP, 
+                                     priortype = 'torus', 
+                                     L = 1)
+```
+
+We can also run fine-mapping using uniform prior (without SNP-level priors)
+with `priortype = 'uniform'`. (You don't need to run `TORUS` if you run 
+fine-mapping using uniform prior.)
+
+Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most 
+one causal variant per SNP. This is conservative to avoid potential inflation 
+of signals due to mismatch between GWAS and the LD reference.
+
+`susie.finemap.res` is a list of `SuSiE` results, one for each LD block. 
+
+We can merge GWAS summary statistics with SuSiE result using `merge_susie_sumstats()`
+```{r}
+finemap.sumstats <- merge_susie_sumstats(susie_results = susie.finemap.res, 
+                                         sumstats = gwas.sumstats)
+```
+
+We now have a new column called `susie_pip` which is the probability of a SNP 
+being causal estimated using `SuSiE`.
+
+```{r}
+finemap.sumstats[,c('chr','pos','beta','se','snp','pval','zscore','torus_prior','susie_pip')]
+```
+
+[data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
+[enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
