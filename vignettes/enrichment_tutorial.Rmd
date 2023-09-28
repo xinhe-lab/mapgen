@@ -1,0 +1,74 @@
+---
+title: "Tutorial for enrichment analysis"
+author: Kaixuan Luo, Alan Selewa
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+In this tutorial, we perform enrichment analysis (using TORUS) using GWAS 
+summary statistics and functional annotations.
+
+Load the packages. 
+```{r load-package}
+library(mapgen)
+```
+
+Please see the [data preparation tutorial][data-preparation-tutorial] about 
+preparing GWAS summary statistics. The result from the enrichment analysis 
+will be used in the [fine-mapping tutorial][finemapping-tutorial].
+
+## Enrichment analysis
+
+Next, we perform enrichment analysis using the software `TORUS`, 
+which requires annotation files in `.bed` format. 
+
+Use the `prepare_torus_input_files()` function, which takes the GWAS summary 
+statistics, and annotation files (in `.bed` format). 
+
+The annotation files should be in `.bed` format, and 
+contain the columns "chr", "start", "end". 
+Chromosomes should be just the numbers (no "chr"). 
+
+```{r prepare-torus-files}
+annotations_dir <- system.file("extdata", "test_bed_dir/", package="mapgen")
+annotation_bed_files <- list.files(path = annotations_dir, pattern = "*.bed", full.names = TRUE)
+
+# annotation_bed_files: Path to the annotation (.bed) files.
+torus.files <- prepare_torus_input_files(gwas, annotation_bed_files, torus_input_dir = "./torus_input")
+```
+
+Now that the appropriate files have been generated, 
+let's perform the enrichment analysis using `TORUS`. 
+
+`run_torus()` with `option = "est-prior"` returns a list with: 
+enrichment estimates (log odds ratio) and 95% confidence intervals for each annotation category, 
+as well as SNP-level priors (which could be used as priors in fine-mapping).
+
+If you only want to estimate enrichment but do not need SNP-level priors, 
+you can set `option = "est"` to save time computing the priors.
+
+```{r run-torus-est-prior}
+torus.result <- run_torus(torus.files$torus_annot_file, 
+                          torus.files$torus_zscore_file,
+                          option = "est-prior",
+                          torus_path = "torus") # set the path to 'torus' executable.
+
+torus.enrich <- torus.result$enrich
+torus.prior <- torus.result$snp_prior
+```
+
+TORUS also gives us the uncertainty of whether each locus contains a causal variant or not. 
+You can set `option = "fdr"` to get the probability of each locus 
+containing a causal signal. 
+```{r run-torus-fdr}
+torus.fdr <- run_torus(torus.files$torus_annot_file, 
+                       torus.files$torus_zscore_file,
+                       option = "fdr",
+                       torus_path = "torus")$fdr
+```
+
+[data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
+[finemapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
