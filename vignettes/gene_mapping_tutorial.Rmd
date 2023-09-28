@@ -1,6 +1,6 @@
 ---
 title: "Gene mapping tutorial"
-author: Kaixuan Luo, Alan Selewa
+author: Kaixuan Luo
 output: html_document
 ---
 
@@ -49,10 +49,9 @@ with functional annotation data, and computes gene-level PIPs
 
 **Required input data**:
 
-* Genetic fine-mapping summary statistics.
-* Gene annotations (exons, introns, UTRs, etc.).
-* Functional annotation data, including: pcHiC links, ABC scores, 
-open chromatin regions (OCRs), enhancer regions (histone ChIP-seq peaks), etc. 
+* Fine-mapping summary statistics.
+* Gene annotations, exons, introns, UTRs, etc.
+* Functional annotation data, including: PC-HiC, ABC scores, open chromatin regions (OCRs), etc. 
 
 Load R packages
 ```{r load-packages, message=FALSE, warning=FALSE}
@@ -66,83 +65,87 @@ library(mapgen)
 Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.
 ```{r load-finemapping-res}
 finemapstats <- readRDS(system.file("extdata", "AF_finemapping_result.rds", package = "mapgen"))
-finemapstats.gr <- process_finemapping_sumstats(finemapstats, 
-                                                snp = 'snp', chr = 'chr', 
-                                                pos = 'pos', pip = 'susie_pip', 
-                                                pval = 'pval', zscore = 'zscore', 
-                                                cs = 'CS', locus = 'locus',  
-                                                pip.thresh = 1e-5)
-head(finemapstats.gr)
+
+# filter SNPs and rename columns
+finemapstats <- process_finemapping_sumstats(finemapstats, 
+                                             snp = 'snp', chr = 'chr', 
+                                             pos = 'pos', pip = 'susie_pip', 
+                                             pval = 'pval', zscore = 'zscore', 
+                                             cs = 'CS', locus = 'locus',  
+                                             pip.thresh = 1e-5)
+
+# For simplicity, only keep the following columns in finemapping result
+cols.to.keep <- c('snp','chr','pos', 'pip', 'pval', 'zscore', 'cs', 'locus')
+finemapstats <- finemapstats[, cols.to.keep]
+head(finemapstats, 3)
 ```
 
-Load genomic annotations (hg19) and gene information.
+Load gene annotations (hg19)
 ```{r load-annotations}
 genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "mapgen"))
+# gene annotations
 gene.annots <- genomic.annots$genes
 ```
 
-Load OCRs 
+Load open chromatin regions (OCRs) 
 ```{r load-OCRs}
-genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
+genomic.annots$OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 ```
 
-Define active promoters using OCRs. 
-```{r active.promoters}
-genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, genomic.annots$OCRs_hg19, minoverlap = 100)
+We defined active promoters as promoters overlapping with OCRs (overlap at least 100 bp). 
+```{r active-promoters}
+genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, 
+                                                             genomic.annots$OCRs, 
+                                                             minoverlap = 100)
 ```
 
 Define enhancer loops: 
 
-Add Promoter-capture HiC (PCHi-C) data from iPSC derived cardiomyocytes (CMs).
+We used promoter-capture HiC (PC-HiC) data from cardiomyocytes (CMs).
 ```{r load-pcHiC}
-genomic.annots$pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "mapgen"))
+pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "mapgen"))
 ```
+You can use your own PC-HiC data using process_pcHiC(). 
+You may skip this if you do not have relevant PC-HiC data.
 
-You can use your own pcHiC data as follows, 
-or skip this if you do not have relevant PCHi-C data.
-```{r load-pcHiC-2, eval=FALSE}
-evapcHiC <- data.table::fread(pcHiC.file)
-pcHiC.gr <- process_pcHiC(pcHiC)
-pcHiC.gr <- pcHiC.gr[pcHiC.gr$gene_name %in% gene.annots$gene_name,] # restrict to protein coding genes
-genomic.annots$pcHiC <- pcHiC.gr
-```
-
-Add ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
+We used ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
 You may skip this if you do not have relevant ABC scores.
 ```{r process_ABC}
 ABC <- data.table::fread(system.file("extdata", "heart_ventricle-ENCODE_ABC.tsv.gz", package = "mapgen"))
-ABC.gr <- process_ABC(ABC, full.element = TRUE)
-ABC.gr <- ABC.gr[ABC.gr$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
-genomic.annots$ABC <- ABC.gr
+# process_ABC() process a data frame of ABC scores and converts to a GRanges object.
+ABC <- process_ABC(ABC, full.element = TRUE)
+ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
 ```
 
-Considering the fact that Hi-C and PC-HiC may miss contacts between close regions
+Enhancer regions
+```{r enhancer-regions}
+genomic.annots$enhancer_regions <- genomic.annots$OCRs[genomic.annots$OCRs$peakType!="Promoter",]
+```
+
+Considering the fact that PC-HiC and HiC loops may miss contacts between close regions
 due to technical reasons, 
-we also consider enhancer regions (the OCRs in this case) within 20 kb of active promoters as “enhancer loops”. 
-
-```{r load-enhancers}
-genomic.annots$enhancer_regions <- genomic.annots$OCRs_hg19[genomic.annots$OCRs_hg19$peakType!="Promoter",]
+we also consider enhancer regions (based on OCRs) within 20 kb of active promoters. 
+```{r nearby-20kb}
+nearby20kb <- nearby_interactions(genomic.annots$enhancer_regions,
+                                                          genomic.annots$active_promoters, 
+                                                          max.dist = 20000)
 ```
 
-```{r enhancer.nearby.promoter.20kb}
-genomic.annots$enhancer_nearby_promoter_20kb <- nearby_interactions(genomic.annots$enhancer_regions, genomic.annots$active_promoters, dist_limit = 20000)
+Include ABC, PC-HiC and nearby interactions (20kb) in the enhancer loops
+```{r}
+genomic.annots$enhancer_loops <- list(ABC = ABC, pcHiC = pcHiC, nearby20kb = nearby20kb)
 ```
 
 Run gene mapping
 ===================
 
-Run gene mapping using the following settings: 
+Parameter settings: 
 
-* enhancer.loop.method = "ABC.pcHiC.nearby20kb" (as explained above).
 * intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).
-* c.dist = 50000 (distance weight parameter: 50kb by default).
+* d0 = 50000 (distance weight parameter: 50kb by default).
 
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
-gene.mapping.res <- compute_gene_pip(finemapstats.gr, 
-                                     genomic.annots,
-                                     enhancer.loop.method = "ABC.pcHiC.nearby20kb",
-                                     intron.mode = FALSE,
-                                     c.dist = 50000)
+gene.mapping.res <- compute_gene_pip(finemapstats, genomic.annots, intron.mode = FALSE, d0 = 50000)
 head(gene.mapping.res)
 ```
 
@@ -158,19 +161,8 @@ gene.cs.df <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh 
 head(gene.cs.df)
 ```
 
-Find the nearest gene for the top SNP in each locus
-```{r nearest-genes}
-finemapstats.gr <- finemapstats.gr[order(abs(finemapstats.gr$zscore), decreasing = TRUE), ]
-topsnps.gr <- finemapstats.gr[!duplicated(finemapstats.gr$locus), ]
-  
-nearest_genes.df <- find_nearest_genes(topsnps.gr, gene.annots, dist.to = "tss",
-                                      cols.to.keep = c('locus','snp','chr','pos','nearest_gene'))
-head(nearest_genes.df)
-```
-
-
 Make a Manhattan plot of the gene PIPs, and label genes with gene PIP > 0.8.
 ```{r gene-manhattan-plot, fig.width=8, fig.height=5, warning=FALSE}
-gene_manhattan_plot(gene.pip.res, sig.pip = 0.8, title = "AF gene mapping", max.overlaps = 45)
+gene_manhattan_plot(gene.pip.res, sig.pip = 0.8)
 ```
 
