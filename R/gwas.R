@@ -125,15 +125,15 @@ clean_sumstats <- function(sumstats,
 #' @export
 assign_snp_locus <- function(cleaned.sumstats, LD_Blocks){
 
-  ldRanges <- make_ranges(LD_Blocks$X1, LD_Blocks$X2, LD_Blocks$X3)
-  ldRanges <- plyranges::mutate(ldRanges, locus=LD_Blocks$X4)
+  ld.gr <- make_ranges(LD_Blocks$X1, LD_Blocks$X2, LD_Blocks$X3)
+  ld.gr <- plyranges::mutate(ld.gr, locus=LD_Blocks$X4)
 
-  snpRanges <- make_ranges(seqname = cleaned.sumstats$chr,
+  snp.gr <- make_ranges(seqname = cleaned.sumstats$chr,
                            start = cleaned.sumstats$pos,
                            end = cleaned.sumstats$pos)
-  snpRanges <- plyranges::mutate(snpRanges, snp=cleaned.sumstats$snp)
+  snp.gr <- plyranges::mutate(snp.gr, snp=cleaned.sumstats$snp)
 
-  snp.ld.overlap <- plyranges::join_overlap_inner(snpRanges, ldRanges)
+  snp.ld.overlap <- plyranges::join_overlap_inner(snp.gr, ld.gr)
   snp.ld.block <- tibble::as_tibble(snp.ld.overlap@elementMetadata)
   snp.ld.block <- snp.ld.block[!duplicated(snp.ld.block$snp), ] # some SNPs are in multiple LD blocks due to edge of LD blocks
   cleaned.annot.sumstats <- dplyr::inner_join(cleaned.sumstats, snp.ld.block, 'snp')

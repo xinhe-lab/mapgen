@@ -1,24 +1,24 @@
 
-#' @title Prepare SuSiE summary statistics with TORUS prior probabilities
-#' @description Adds TORUS SNP level prior probabilities to the summary statistics
-#' @param sumstats a tibble or data frame containing raw summary statistics
-#' @param torus_prior a tibble containing SNP level priors
-#' (result from run_torus with \code{option=\dQuote{est-prior}})
-#' @param torus_fdr a tibble containing the FDR of each region
-#' (result from run_torus with \code{option=\dQuote{fdr}}).
+#' @title Prepare SuSiE summary statistics with TORUS SNP-level priors
+#' @description Adds TORUS SNP-level priors to GWAS summary statistics
+#' @param sumstats A data frame containing GWAS summary statistics
+#' @param torus_prior A data frame containing SNP level priors
+#' (result from \code{run_torus()} with \code{option=\dQuote{est-prior}})
+#' @param torus_fdr A data frame containing the FDR of each region
+#' (result from \code{run_torus()} with \code{option=\dQuote{fdr}}).
 #' Optional, if available, only keep the loci with Torus FDR < fdr_thresh.
 #' @param fdr_thresh FDR cutoff (default: 0.1)
-#' @return tibble of summary statistics updated with TORUS prior probabilities
+#' @return A data frame of GWAS summary statistics with TORUS prior probabilities
 #' @export
-prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fdr, fdr_thresh=0.1){
+prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fdr=NULL, fdr_thresh=0.1){
 
-  if(!missing(torus_fdr)){
-    # keep loci at fdr_thresh FDR (10% by default)
-    chunks <- torus_fdr$region_id[torus_fdr$fdr < fdr_thresh]
-    sumstats <- sumstats[sumstats$locus %in% chunks, ]
+  if(!is.null(torus_fdr)){
+    # Select loci by fdr_thresh
+    selected.loci <- torus_fdr$region_id[torus_fdr$fdr < fdr_thresh]
+    sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
   }
 
-  # Add Torus SNP-level prior probabilities
+  # Add SNP-level prior probabilities
   sumstats <- dplyr::inner_join(sumstats, torus_prior, by='snp')
 
   return(sumstats)
@@ -185,8 +185,7 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 #' @param zscore Name of the z-score column in the summary statistics data frame
 #' @param cs Name of the CS column in the summary statistics data frame
 #' @param locus Name of the locus column in the summary statistics data frame
-#' @param cols.to.keep columns to keep in the returned data frame
-#' @param pip.thresh PIP threshold (default = 0).
+#' @param pip.thresh Select SNPs by PIP threshold (default = 0, no filtering).
 #' @param filterCS If TRUE, limiting to SNPs within credible sets.
 #' @param maxL Maximum number of credible sets (default = 10).
 #' @importFrom magrittr %>%
@@ -204,8 +203,7 @@ process_finemapping_sumstats <- function(finemapstats,
                                          locus = 'locus',
                                          pip.thresh = 0,
                                          filterCS = FALSE,
-                                         maxL = 10,
-                                         cols.to.keep = c('snp','chr','pos', 'pip', 'pval', 'zscore','cs', 'locus')){
+                                         maxL = 10){
 
   cat('Processing fine-mapping summary statistics ...\n')
   finemapstats <- finemapstats %>% dplyr::rename(snp = all_of(snp),
@@ -239,58 +237,29 @@ process_finemapping_sumstats <- function(finemapstats,
 
   # Remove SNPs with multiple PIPs
   if(any(duplicated(paste(finemapstats$chr, finemapstats$pos)))){
-    cat('Remove SNPs with multiple PIPs...\n')
     finemapstats <- finemapstats %>% dplyr::arrange(desc(pip)) %>% dplyr::distinct(chr, pos, .keep_all = TRUE)
   }
 
   finemapstats.gr <- GenomicRanges::makeGRangesFromDataFrame(finemapstats,
                                                              start.field = 'pos', end.field = 'pos',
                                                              keep.extra.columns = TRUE)
-  finemapstats.gr$chr <- finemapstats$chr
-  finemapstats.gr$pos <- finemapstats$pos
-  mcols(finemapstats.gr) <- mcols(finemapstats.gr)[,cols.to.keep]
+
+  finemapstats.gr <- plyranges::mutate(finemapstats.gr,
+                                       chr=finemapstats$chr, pos = finemapstats$pos)
+
   GenomeInfoDb::seqlevelsStyle(finemapstats.gr) <- 'UCSC'
 
   if( pip.thresh > 0 ) {
-    cat('Filter SNPs with PIP threshold of', pip.thresh, '\n')
+    cat('Select SNPs with PIP >', pip.thresh, '\n')
     finemapstats.gr <- finemapstats.gr[finemapstats.gr$pip > pip.thresh, ]
   }
 
   if( filterCS ) {
-    cat('Filter SNPs in credible sets \n')
+    cat('Select SNPs within credible sets. \n')
     finemapstats.gr <- finemapstats.gr[finemapstats.gr$cs >= 1 & finemapstats.gr$cs <= maxL, ]
   }
 
   return(finemapstats.gr)
 
-}
-
-
-#' @title Annotations for causal SNPs (apply these after fine-mapping!)
-#' @param sumstats A data frame of GWAS summary statistics
-#' @param annotations Paths to annotation BED files
-#' @importFrom magrittr %>%
-#' @export
-annotator_merged <- function(sumstats, annotations){
-
-  snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)
-  snpRanges <- plyranges::mutate(snpRanges, snp=sumstats$snp)
-  sumstats['annots'] <- ''
-
-  for(f in annotations){
-
-    curr <- rtracklayer::import(f, format='bed')
-    snpRangesIn <- IRanges::subsetByOverlaps(snpRanges, annot.gr)
-    snpsIn <- unique(snpRangesIn$snp)
-
-    if(length(snpsIn)>0){
-      curr <- sumstats %>% pull(annots)
-      curr <- curr[sumstats$snp %in% snpsIn]
-      delims <- rep(';', length(curr))
-      delims[which(curr == '')] <- ''
-      sumstats[sumstats$snp %in% snpsIn,"annots"] <- paste0(curr,delims,gsub(pattern = '.bed',replacement = '', x = basename(f)))
-    }
-  }
-  return(sumstats)
 }
 

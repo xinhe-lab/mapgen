@@ -2,21 +2,20 @@
 % Please edit documentation in R/annots.R
 \name{nearby_interactions}
 \alias{nearby_interactions}
-\title{Get nearby interactions for enhancer regions near active promoters}
+\title{Get nearby interactions for enhancer regions near promoters}
 \usage{
-nearby_interactions(
-  enhancer_regions.gr,
-  active_promoters.gr,
-  dist_limit = 20000
-)
+nearby_interactions(enhancers, promoters, max.dist = 20000)
 }
 \arguments{
-\item{enhancer_regions.gr}{GRanges object of enhancer regions}
+\item{enhancers}{A GRanges object of enhancer regions}
 
-\item{active_promoters.gr}{GRanges object of active promoters}
+\item{promoters}{A GRanges object of promoters}
 
-\item{dist_limit}{Distance limit (default: 20kb)}
+\item{max.dist}{Max distance betweeen enhancer regions and promoters (default: 20kb)}
+}
+\value{
+A GRanges object of nearby interactions
 }
 \description{
-Get nearby interactions for enhancer regions near active promoters
+Get nearby interactions for enhancer regions near promoters
 }

@@ -1,13 +1,13 @@
 
-#' @title Process pcHiC data and save as a GRanges object
+#' @title Process PC-HiC data and save as a GRanges object
 #'
-#' @param pcHiC a data frame of pcHiC data, with columns named "Promoter" and
+#' @param pcHiC A data frame of PC-HiC data, with columns named "Promoter" and
 #' "Interacting_fragment". Interacting_fragment should contains
 #' chr, start and end positions of the fragments interacting with promoters
 #' e.g. "chr.start.end" or "chr:start-end".
 #' @importFrom magrittr %>%
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
-#' @return a GRanges object with processed pcHiC links, with genomic coordinates
+#' @return A GRanges object with processed PC-HiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
 process_pcHiC <- function(pcHiC){
@@ -86,12 +86,57 @@ process_narrowpeaks <- function(peak.file){
   return(peaks.gr)
 }
 
+
+#' @title Annotations for causal SNPs (apply these after fine-mapping!)
+#' @param sumstats A data frame of GWAS summary statistics
+#' @param annotations Paths to annotation BED files
+#' @importFrom magrittr %>%
+#' @export
+annotator_merged <- function(sumstats, annotations){
+
+  snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)
+  snpRanges <- plyranges::mutate(snpRanges, snp=sumstats$snp)
+  sumstats['annots'] <- ''
+
+  for(f in annotations){
+
+    curr <- rtracklayer::import(f, format='bed')
+    snpRangesIn <- IRanges::subsetByOverlaps(snpRanges, annot.gr)
+    snpsIn <- unique(snpRangesIn$snp)
+
+    if(length(snpsIn)>0){
+      curr <- sumstats %>% pull(annots)
+      curr <- curr[sumstats$snp %in% snpsIn]
+      delims <- rep(';', length(curr))
+      delims[which(curr == '')] <- ''
+      sumstats[sumstats$snp %in% snpsIn,"annots"] <- paste0(curr,delims,gsub(pattern = '.bed',replacement = '', x = basename(f)))
+    }
+  }
+  return(sumstats)
+}
+
 # helper function to make a GRanges object
 make_ranges <- function(seqname, start, end){
   return(GenomicRanges::GRanges(seqnames = seqname,
                                 ranges = IRanges::IRanges(start = start, end = end)))
 }
 
+# get TSS positions from promoters or gene annotations.
+get_tss <- function(gr, type = c('promoter', 'gene')){
+  type <- match.arg(type)
+
+  if(type == 'gene'){
+    tss <- GenomicRanges::start(GenomicRanges::resize(gr, width = 1))
+  }else if(type == 'promoter'){
+    tss <- integer(length(gr))
+    plus_strand <- which(as.character(GenomicRanges::strand(gr)) == '+')
+    minus_strand <- which(as.character(GenomicRanges::strand(gr)) == '-')
+    tss[plus_strand] <- GenomicRanges::end(gr)[plus_strand]
+    tss[minus_strand] <- GenomicRanges::start(gr)[minus_strand]
+  }
+
+  return(tss)
+}
 
 # get LD (r^2) between each SNP and the top SNP in sumstats
 get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){

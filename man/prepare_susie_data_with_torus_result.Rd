@@ -2,30 +2,30 @@
 % Please edit documentation in R/finemapping.R
 \name{prepare_susie_data_with_torus_result}
 \alias{prepare_susie_data_with_torus_result}
-\title{Prepare SuSiE summary statistics with TORUS prior probabilities}
+\title{Prepare SuSiE summary statistics with TORUS SNP-level priors}
 \usage{
 prepare_susie_data_with_torus_result(
   sumstats,
   torus_prior,
-  torus_fdr,
+  torus_fdr = NULL,
   fdr_thresh = 0.1
 )
 }
 \arguments{
-\item{sumstats}{a tibble or data frame containing raw summary statistics}
+\item{sumstats}{A data frame containing GWAS summary statistics}
 
-\item{torus_prior}{a tibble containing SNP level priors
-(result from run_torus with \code{option=\dQuote{est-prior}})}
+\item{torus_prior}{A data frame containing SNP level priors
+(result from \code{run_torus()} with \code{option=\dQuote{est-prior}})}
 
-\item{torus_fdr}{a tibble containing the FDR of each region
-(result from run_torus with \code{option=\dQuote{fdr}}).
+\item{torus_fdr}{A data frame containing the FDR of each region
+(result from \code{run_torus()} with \code{option=\dQuote{fdr}}).
 Optional, if available, only keep the loci with Torus FDR < fdr_thresh.}
 
 \item{fdr_thresh}{FDR cutoff (default: 0.1)}
 }
 \value{
-tibble of summary statistics updated with TORUS prior probabilities
+A data frame of GWAS summary statistics with TORUS prior probabilities
 }
 \description{
-Adds TORUS SNP level prior probabilities to the summary statistics
+Adds TORUS SNP-level priors to GWAS summary statistics
 }

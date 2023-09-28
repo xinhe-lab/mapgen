@@ -99,15 +99,16 @@ substract_exons <- function( genes.gr, exons.gr ) {
   }
 }
 
-#' @title Get nearby interactions for enhancer regions near active promoters
+#' @title Get nearby interactions for enhancer regions near promoters
 #'
-#' @param enhancer_regions.gr GRanges object of enhancer regions
-#' @param active_promoters.gr GRanges object of active promoters
-#' @param dist_limit Distance limit (default: 20kb)
+#' @param enhancers A GRanges object of enhancer regions
+#' @param promoters A GRanges object of promoters
+#' @param max.dist Max distance betweeen enhancer regions and promoters (default: 20kb)
+#' @return A GRanges object of nearby interactions
 #' @export
-nearby_interactions <- function(enhancer_regions.gr, active_promoters.gr, dist_limit = 20000){
-  overlaps <- GenomicRanges::findOverlaps(enhancer_regions.gr, active_promoters.gr, maxgap = dist_limit, ignore.strand = TRUE)
-  enhancer_nearby_promoter <- enhancer_regions.gr[queryHits(overlaps),]
-  enhancer_nearby_promoter$gene_name <- active_promoters.gr$gene_name[subjectHits(overlaps)]
-  return(enhancer_nearby_promoter)
+nearby_interactions <- function(enhancers, promoters, max.dist = 20000){
+  nearby_interactions.gr <- plyranges::join_overlap_inner(enhancers,
+                                                          promoters,
+                                                          maxgap = max.dist)
+  return(nearby_interactions.gr)
 }

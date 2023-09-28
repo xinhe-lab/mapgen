@@ -12,7 +12,7 @@ extract_gene_level_result(snp.gene.pip.mat, gene.annots)
 \item{gene.annots}{a GRanges object of gene annotations}
 }
 \value{
-a data frame of gene-level view of gene mapping result
+A data frame of gene-level view of gene mapping result
 }
 \description{
 Extract gene-level result from SNP-level gene mapping result

@@ -5,16 +5,16 @@
 \title{Find the nearest genes for top SNPs in each locus.}
 \usage{
 find_nearest_genes(
-  top.snps.gr,
-  genes.gr,
+  top.snps,
+  genes,
   dist.to = c("genebody", "tss"),
   cols.to.keep = c("snp", "chr", "pos", "nearest_gene")
 )
 }
 \arguments{
-\item{top.snps.gr}{a GRanges object of the GWAS summary statistics for the top SNPs}
+\item{top.snps}{A GRanges object of the GWAS summary statistics for the top SNPs}
 
-\item{genes.gr}{a GRanges object of gene information}
+\item{genes}{A GRanges object of gene information}
 
 \item{dist.to}{Find nearest genes by distance to gene body or TSS}
 

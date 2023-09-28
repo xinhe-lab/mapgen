@@ -2,20 +2,20 @@
 % Please edit documentation in R/utils.R
 \name{process_pcHiC}
 \alias{process_pcHiC}
-\title{Process pcHiC data and save as a GRanges object}
+\title{Process PC-HiC data and save as a GRanges object}
 \usage{
 process_pcHiC(pcHiC)
 }
 \arguments{
-\item{pcHiC}{a data frame of pcHiC data, with columns named "Promoter" and
+\item{pcHiC}{A data frame of PC-HiC data, with columns named "Promoter" and
 "Interacting_fragment". Interacting_fragment should contains
 chr, start and end positions of the fragments interacting with promoters
 e.g. "chr.start.end" or "chr:start-end".}
 }
 \value{
-a GRanges object with processed pcHiC links, with genomic coordinates
+A GRanges object with processed PC-HiC links, with genomic coordinates
 of the interacting regions and gene names (promoters).
 }
 \description{
-Process pcHiC data and save as a GRanges object
+Process PC-HiC data and save as a GRanges object
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/finemapping.R
 \name{run_susie_rss}
 \alias{run_susie_rss}
-\title{Run fine-mapping with SuSiE using summary statistics}
+\title{Run fine-mapping with SuSiE using summary statistics (susie_rss)}
 \usage{
 run_susie_rss(
   sumstats,
@@ -38,8 +38,8 @@ we recommend setting estimate_residual_variance = TRUE.}
 and a summary of the optimization settings from susie.}
 }
 \value{
-finemapping results
+susie_rss output
 }
 \description{
-Run fine-mapping with SuSiE using summary statistics
+Run fine-mapping with SuSiE using summary statistics (susie_rss)
 }
