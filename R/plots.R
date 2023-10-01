@@ -17,7 +17,6 @@
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @export
-#'
 gene_manhattan_plot <- function(gene.pip.res,
                                 chr='chr',
                                 pos='pos',
@@ -108,21 +107,30 @@ gene_manhattan_plot <- function(gene.pip.res,
 
 }
 
-
-
-#' @title structure plot
-#' @description this function is adapted from the 'fastTopics' package
+#' @title Make a structure plot
+#' @description Makeing a structure plot.
+#' This function is adapted from the 'fastTopics' package
 #' https://stephenslab.github.io/fastTopics/
-#' @param dat a data frame obtained from @rdname compile_structure_plot_data
+#' @param mat matrix of input data
+#' @param categories annotation categories
 #' @param colors Colors of the structure plot categories
 #' @param ticks Labels of x-axis
 #' @param font.size Font size of structure plot
 #' @param highlight Highlight a sample
 #' @import ggplot2
 #' @export
-#'
-structure_plot <- function (dat, colors, ticks = NULL,
-                            font.size = 9, highlight = NULL){
+make_structure_plot <- function (mat, categories, colors, ticks = NULL,
+                                 font.size = 9, highlight = NULL){
+
+  mat <- na.omit(as.matrix(mat))
+  n <- nrow(mat)
+  k <- length(categories)
+  dat <- data.frame(sample   = rep(1:n,times = k),
+                    locus    = rep(rownames(mat),times = k),
+                    category = rep(categories,each = n),
+                    prop     = c(mat[,categories]))
+  dat$category <- factor(dat$category, levels = categories)
+
   p <- ggplot(dat,aes_string(x = "sample",y = "prop",
                              color = "category",
                              fill = "category")) +
@@ -136,35 +144,14 @@ structure_plot <- function (dat, colors, ticks = NULL,
     cowplot::theme_cowplot(font.size) +
     theme(axis.line   = element_blank(),
           axis.ticks  = element_blank(),
-          axis.text.x = element_text(angle = 45,hjust = 1))
+          axis.text.x = element_text(angle = 45, hjust = 1))
 
   if(!is.null(highlight)){
-    p <- p + geom_text(aes(label=highlight), y = 1.005, angle = 0, size=3, color = "black")
+    p <- p + geom_text(aes(label=highlight), y = 1.005,
+                       angle = 0, size=3, color = "black")
   }
   return(p)
 }
-
-#' @title Compile input data for making structure plot
-#' @description this function is adapted from the 'fastTopics' package
-#' https://stephenslab.github.io/fastTopics/
-#'
-#' @param mat matrix of input data
-#' @param categories annotation categories
-#' @return a data frame for making structure plot
-#' @export
-#'
-compile_structure_plot_data <- function (mat, categories) {
-  mat <- na.omit(as.matrix(mat))
-  n <- nrow(mat)
-  k <- length(categories)
-  dat <- data.frame(sample   = rep(1:n,times = k),
-                    locus    = rep(rownames(mat),times = k),
-                    category = rep(categories,each = n),
-                    prop     = c(mat[,categories]))
-  dat$category <- factor(dat$category, levels = categories)
-  return(dat)
-}
-
 
 #' @title Make gene track plot
 #'
@@ -203,7 +190,6 @@ compile_structure_plot_data <- function (mat, categories) {
 #' @import GenomicRanges
 #' @importFrom GenomeInfoDb seqlevelsStyle
 #' @importFrom magrittr %>%
-#'
 #' @export
 finemapping_annot_trackplot <- function(finemapstats,
                                         region,

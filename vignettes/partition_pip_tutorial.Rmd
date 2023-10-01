@@ -48,12 +48,12 @@ genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", p
 
 Load all OCRs (hg19).
 ```{r load-all-OCRs}
-genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
+genomic.annots$OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 ```
 
 Create a list of the annotations, with priority in the order of OCRs, UTRS, Exons, and Introns.
 ```{r create-annots.list}
-annots.list <- list(OCRs = genomic.annots$OCRs_hg19,
+annots.list <- list(OCRs = genomic.annots$OCRs,
                     UTRs = genomic.annots$UTRs,
                     Exons = genomic.annots$exons,
                     Introns = genomic.annots$introns)
@@ -89,8 +89,7 @@ The structure plot function was adapted from the [fastTopics](https://stephensla
 ```{r structure-plot-annots, fig.width=10, fig.height=2.5}
 categories <- c("OCRs", "UTRs", "Exons", "Introns", "others")
 colors <- c(OCRs = "#E18727FF", UTRs = "#238b45", Exons =  "#bee6af", Introns = "#B09C85FF", others = "#aaaaaa")
-dat <- compile_structure_plot_data(prop.pip.mat, categories = categories)
-structure_plot(dat, colors = colors)
+make_structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```
 
 We can further partition PIPs into disjoint OCRs for different cell types.
@@ -128,6 +127,5 @@ categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid",
                 "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
 colors <- c("#b22222", "#8DD3C7", "#BEBADA", "#FB8072", 
             "#80B1D3", "#B3DE69", "royalblue", "#003C86")
-dat <- compile_structure_plot_data(prop.pip.mat, categories = categories)
-structure_plot(dat, colors = colors)
+make_structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```
