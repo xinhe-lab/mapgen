@@ -33,19 +33,19 @@ process_pcHiC <- function(pcHiC){
 
 #' @title Process ABC scores and save as a GRanges object
 #'
-#' @param ABC a data frame of ABC scores from Nasser et al. Nature 2021 paper
-#' @param ABC.thresh Significance threshold of ABC scores
+#' @param ABC A data frame of ABC scores from Nasser et al. Nature 2021 paper
+#' @param ABC.thresh Threshold of ABC scores
 #' (default = 0.015, as in Nasser et al. Nature 2021 paper).
 #' @param full.element Logical; if TRUE, use full length of ABC elements
 #' extracted from the "name" column. Otherwise, use the original (narrow)
 #' regions provided in the ABC scores data.
-#' @param flank  Flanking regions around ABC elements (default = 0).
+#' @param expand  Expand the ABC regions around ABC elements (default = 0).
 #' @importFrom magrittr %>%
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0){
+process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, expand = 0){
 
   if(full.element){
     ABC <- ABC %>%
@@ -59,9 +59,9 @@ process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0
     dplyr::rename(gene_name = TargetGene) %>%
     dplyr::filter(ABC.Score >= ABC.thresh)
 
-  if(flank > 0){
-    ABC$start <- ABC$start - flank
-    ABC$end <- ABC$end + flank
+  if(expand > 0){
+    ABC$start <- ABC$start - expand
+    ABC$end <- ABC$end + expand
   }
 
   ABC.gr <- makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
