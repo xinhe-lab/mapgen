@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -41,7 +41,13 @@
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/xinhe-lab/mapgen/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -51,7 +57,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Process fine-mapping summary statistics data</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/finemapping.R" class="external-link"><code>R/finemapping.R</code></a></small>
     <div class="hidden name"><code>process_finemapping_sumstats.Rd</code></div>
     </div>
 
@@ -72,8 +78,7 @@
 <span>  locus <span class="op">=</span> <span class="st">"locus"</span>,</span>
 <span>  pip.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  filterCS <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  maxL <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  cols.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snp"</span>, <span class="st">"chr"</span>, <span class="st">"pos"</span>, <span class="st">"pip"</span>, <span class="st">"pval"</span>, <span class="st">"zscore"</span>, <span class="st">"cs"</span>, <span class="st">"locus"</span><span class="op">)</span></span>
+<span>  maxL <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -116,7 +121,7 @@
 
 
 <dt>pip.thresh</dt>
-<dd><p>PIP threshold (default = 0).</p></dd>
+<dd><p>Select SNPs by PIP threshold (default = 0, no filtering).</p></dd>
 
 
 <dt>filterCS</dt>
@@ -125,10 +130,6 @@
 
 <dt>maxL</dt>
 <dd><p>Maximum number of credible sets (default = 10).</p></dd>
-
-
-<dt>cols.to.keep</dt>
-<dd><p>columns to keep in the returned data frame</p></dd>
 
 </dl></div>
     <div id="value">
@@ -146,7 +147,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Sebastian Pott, Xin He.</p>
+  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Xin He.</p>
 </div>
 
 <div class="pkgdown">

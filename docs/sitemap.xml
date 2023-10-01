@@ -10,7 +10,16 @@
     <loc>https://xinhe-lab.github.io/mapgen/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/articles/enrichment_tutorial.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html</loc>
@@ -37,6 +46,9 @@
     <loc>https://xinhe-lab.github.io/mapgen/reference/assign_locus_snp.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/assign_snp_locus.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/block_view_summary.html</loc>
   </url>
   <url>
@@ -44,6 +56,9 @@
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/compile_structure_plot_data.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/compute_distance_weight.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/compute_gene_pip.html</loc>
@@ -77,6 +92,9 @@
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/make_genomic_annots.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/match_gwas_bigsnp.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/merge_bigsnp_gwas.html</loc>

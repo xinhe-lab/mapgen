@@ -18,7 +18,7 @@ z-score file and annotation file."><!-- mathjax --><script src="https://cdnjs.cl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -42,7 +42,13 @@ z-score file and annotation file."><!-- mathjax --><script src="https://cdnjs.cl
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/xinhe-lab/mapgen/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -52,7 +58,7 @@ z-score file and annotation file."><!-- mathjax --><script src="https://cdnjs.cl
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Prepare TORUS input files</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/torus.R" class="external-link"><code>R/torus.R</code></a></small>
     <div class="hidden name"><code>prepare_torus_input_files.Rd</code></div>
     </div>
 
@@ -74,16 +80,14 @@ z-score file and annotation file.</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sumstats</dt>
-<dd><p>cleaned summary statistics</p></dd>
+<dd><p>A data frame of GWAS summary statistics,
+with required columns: "snp", "chr", "pos", "locus" and "zscore".</p></dd>
 
 
 <dt>annotation_bed_files</dt>
-<dd><p>annotation files in BED format.
-The bed file must have at least these three columns: chr, start, end.
-Chromosomes should be numeric (no "chr")
-and should be in hg19/b37 format.
-You will get wrong results if you use hg38 or other
-(The reference panel we used is in hg19).</p></dd>
+<dd><p>Path to annotation files in BED format.
+The bed file must have at least three columns: "chr", "start", "end".
+Chromosomes should be numeric (no "chr").</p></dd>
 
 
 <dt>torus_input_dir</dt>
@@ -120,7 +124,7 @@ You will get wrong results if you use hg38 or other
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Sebastian Pott, Xin He.</p>
+  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Xin He.</p>
 </div>
 
 <div class="pkgdown">

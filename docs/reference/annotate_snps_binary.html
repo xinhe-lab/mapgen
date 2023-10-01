@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -41,7 +41,13 @@
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/xinhe-lab/mapgen/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -51,7 +57,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Assigns SNPs with annotations based on overlap</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/torus.R" class="external-link"><code>R/torus.R</code></a></small>
     <div class="hidden name"><code>annotate_snps_binary.Rd</code></div>
     </div>
 
@@ -60,17 +66,17 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">annotate_snps_binary</span><span class="op">(</span><span class="va">gwas</span>, <span class="va">annotations</span>, keep.annot.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">annotate_snps_binary</span><span class="op">(</span><span class="va">sumstats</span>, <span class="va">annotations</span>, keep.annot.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>gwas</dt>
-<dd><p>a data frame or tibble of GWAS summary statistics</p></dd>
+    <dl><dt>sumstats</dt>
+<dd><p>A data frame of GWAS summary statistics</p></dd>
 
 
 <dt>annotations</dt>
-<dd><p>annotation BED files</p></dd>
+<dd><p>Paths to annotation BED files</p></dd>
 
 
 <dt>keep.annot.only</dt>
@@ -95,7 +101,7 @@ a data frame or tibble of GWAS summary statistics and annotations.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Sebastian Pott, Xin He.</p>
+  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Xin He.</p>
 </div>
 
 <div class="pkgdown">

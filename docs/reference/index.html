@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -41,7 +41,13 @@
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/xinhe-lab/mapgen/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -66,9 +72,9 @@
         </td>
         <td><p>Annotations for causal SNPs (apply these after fine-mapping!)</p></td>
       </tr><tr><td>
-          <p><code><a href="assign_locus_snp.html">assign_locus_snp()</a></code> </p>
+          <p><code><a href="assign_snp_locus.html">assign_snp_locus()</a></code> </p>
         </td>
-        <td><p>Assigns each SNP to one ld-block</p></td>
+        <td><p>Assigns each SNP to one LD block</p></td>
       </tr><tr><td>
           <p><code><a href="block_view_summary.html">block_view_summary()</a></code> </p>
         </td>
@@ -81,6 +87,10 @@
           <p><code><a href="compile_structure_plot_data.html">compile_structure_plot_data()</a></code> </p>
         </td>
         <td><p>Compile input data for making structure plot</p></td>
+      </tr><tr><td>
+          <p><code><a href="compute_distance_weight.html">compute_distance_weight()</a></code> </p>
+        </td>
+        <td><p>Find genes around SNPs and assign weights based on distance</p></td>
       </tr><tr><td>
           <p><code><a href="compute_gene_pip.html">compute_gene_pip()</a></code> </p>
         </td>
@@ -97,10 +107,6 @@
           <p><code><a href="finemapping_annot_trackplot.html">finemapping_annot_trackplot()</a></code> </p>
         </td>
         <td><p>Make gene track plot</p></td>
-      </tr><tr><td>
-          <p><code><a href="gene_by_distance.html">gene_by_distance()</a></code> </p>
-        </td>
-        <td><p>Find all genes (promoters) within 1MB of the SNPs and assign weights based on distance</p></td>
       </tr><tr><td>
           <p><code><a href="gene_cs.html">gene_cs()</a></code> </p>
         </td>
@@ -122,9 +128,9 @@
         </td>
         <td><p>Make genomic annotations from a GTF file</p></td>
       </tr><tr><td>
-          <p><code><a href="merge_bigsnp_gwas.html">merge_bigsnp_gwas()</a></code> </p>
+          <p><code><a href="match_gwas_bigsnp.html">match_gwas_bigsnp()</a></code> </p>
         </td>
-        <td><p>Match GWAS SNPs with reference panel from the bigSNP object.</p></td>
+        <td><p>Match GWAS with bigSNP reference panel.</p></td>
       </tr><tr><td>
           <p><code><a href="merge_susie_sumstats.html">merge_susie_sumstats()</a></code> </p>
         </td>
@@ -132,7 +138,7 @@
       </tr><tr><td>
           <p><code><a href="nearby_interactions.html">nearby_interactions()</a></code> </p>
         </td>
-        <td><p>Get nearby interactions for enhancer regions near active promoters</p></td>
+        <td><p>Get nearby interactions for enhancer regions near promoters</p></td>
       </tr><tr><td>
           <p><code><a href="partition_pip_annots.html">partition_pip_annots()</a></code> </p>
         </td>
@@ -144,7 +150,7 @@
       </tr><tr><td>
           <p><code><a href="prepare_susie_data_with_torus_result.html">prepare_susie_data_with_torus_result()</a></code> </p>
         </td>
-        <td><p>Prepare SuSiE summary statistics with TORUS prior probabilities</p></td>
+        <td><p>Prepare SuSiE summary statistics with TORUS SNP-level priors</p></td>
       </tr><tr><td>
           <p><code><a href="prepare_torus_input_files.html">prepare_torus_input_files()</a></code> </p>
         </td>
@@ -168,7 +174,7 @@
       </tr><tr><td>
           <p><code><a href="process_pcHiC.html">process_pcHiC()</a></code> </p>
         </td>
-        <td><p>Process pcHiC data and save as a GRanges object</p></td>
+        <td><p>Process PC-HiC data and save as a GRanges object</p></td>
       </tr><tr><td>
           <p><code><a href="run_finemapping.html">run_finemapping()</a></code> </p>
         </td>
@@ -176,7 +182,7 @@
       </tr><tr><td>
           <p><code><a href="run_susie_rss.html">run_susie_rss()</a></code> </p>
         </td>
-        <td><p>Run fine-mapping with SuSiE using summary statistics</p></td>
+        <td><p>Run fine-mapping with SuSiE using summary statistics (susie_rss)</p></td>
       </tr><tr><td>
           <p><code><a href="run_torus.html">run_torus()</a></code> </p>
         </td>
@@ -207,7 +213,7 @@ assign SNPs to annotations with the priority of the earlier category</p></td>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Sebastian Pott, Xin He.</p>
+  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Xin He.</p>
 </div>
 
 <div class="pkgdown">

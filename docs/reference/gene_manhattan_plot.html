@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
       </span>
     </div>
 
@@ -41,7 +41,13 @@
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/xinhe-lab/mapgen/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -51,7 +57,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Make gene manhattan plot</h1>
-    
+    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/plots.R" class="external-link"><code>R/plots.R</code></a></small>
     <div class="hidden name"><code>gene_manhattan_plot.Rd</code></div>
     </div>
 
@@ -68,11 +74,11 @@
 <span>  gene_pip <span class="op">=</span> <span class="st">"gene_pip"</span>,</span>
 <span>  sig.pip <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  highlight <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  ylim <span class="op">=</span> <span class="fl">1.25</span>,</span>
+<span>  ylim <span class="op">=</span> <span class="fl">1.2</span>,</span>
 <span>  point.size <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  label.size <span class="op">=</span> <span class="va">point.size</span> <span class="op">*</span> <span class="fl">2</span>,</span>
 <span>  font.size <span class="op">=</span> <span class="fl">15</span>,</span>
-<span>  max.overlaps <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  max.overlaps <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">""</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -108,7 +114,7 @@
 
 
 <dt>ylim</dt>
-<dd><p>Truncate gene PIP to ylim value in the plot (default: 1.25).</p></dd>
+<dd><p>Truncate gene PIP to ylim value in the plot.</p></dd>
 
 
 <dt>point.size</dt>
@@ -124,7 +130,7 @@
 
 
 <dt>max.overlaps</dt>
-<dd><p>Exclude text labels that overlap too many things (default: 10).</p></dd>
+<dd><p>Exclude text labels that overlap too many things.</p></dd>
 
 
 <dt>title</dt>
@@ -140,7 +146,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Sebastian Pott, Xin He.</p>
+  <p></p><p>Developed by Kaixuan Luo, Alan Selewa, Xin He.</p>
 </div>
 
 <div class="pkgdown">
