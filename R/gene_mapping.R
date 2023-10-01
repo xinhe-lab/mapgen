@@ -123,7 +123,7 @@ compute_gene_pip <- function(finemapstats,
       dplyr::distinct(gene_name, snp, category, .keep_all = T)
   })
 
-  weights.mat <- Reduce(bind_rows, mat.list)
+  weights.mat <- Reduce(dplyr::bind_rows, mat.list)
 
   # Assign weight = 1 for high confidence categories.
   high_confidence_categories <- c(names(exons_active_promoters_assignment),
@@ -161,40 +161,40 @@ compute_gene_pip <- function(finemapstats,
     dplyr::select(snp, gene_name, frac_pip, gene_pip) %>%
     dplyr::ungroup()
 
-  snp.gene.pip.mat <- suppressMessages(normalized.weights.mat %>% dplyr::left_join(., gene.pip.mat))
-  snp.gene.pip.mat <- snp.gene.pip.mat[!is.na(snp.gene.pip.mat$gene_name),]
+  gene.mapping.res <- suppressMessages(normalized.weights.mat %>% dplyr::left_join(., gene.pip.mat))
+  gene.mapping.res <- gene.mapping.res[!is.na(gene.mapping.res$gene_name),]
 
-  snp.gene.pip.mat <- snp.gene.pip.mat %>%
+  gene.mapping.res <- gene.mapping.res %>%
     dplyr::select(all_of(cols.to.keep)) %>%
     as.data.frame()
 
-  return(snp.gene.pip.mat)
+  return(gene.mapping.res)
 }
 
 
 #' @title Extract gene-level result from SNP-level gene mapping result
 #'
-#' @param snp.gene.pip.mat A data frame of SNP-level gene mapping result
+#' @param gene.mapping.res A data frame of SNP-level gene mapping result
 #' @param gene.annots a GRanges object of gene annotations
 #' @importFrom magrittr %>%
 #' @return A data frame of gene-level view of gene mapping result
 #' @export
-extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
+extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
   cat('Extract gene level result ...\n')
 
-  snp.gene.pip.mat <- snp.gene.pip.mat[!is.na(snp.gene.pip.mat$gene_name),]
-  genes_not_included <- setdiff(snp.gene.pip.mat$gene_name, gene.annots$gene_name)
+  gene.mapping.res <- gene.mapping.res[!is.na(gene.mapping.res$gene_name),]
+  genes_not_included <- setdiff(gene.mapping.res$gene_name, gene.annots$gene_name)
   cat('Remove', length(genes_not_included), 'genes not included in gene.annots... \n')
-  snp.gene.pip.mat <- snp.gene.pip.mat %>% filter(!gene_name %in% genes_not_included)
+  gene.mapping.res <- gene.mapping.res %>% dplyr::filter(!gene_name %in% genes_not_included)
 
   gene.locations <- as.data.frame(gene.annots)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
   gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
 
-  m <- match(snp.gene.pip.mat$gene_name, gene.locations$gene_name)
-  snp.gene.pip.mat$gene_chr <- gene.locations[m, 'seqnames']
-  snp.gene.pip.mat$gene_pos <- gene.locations[m, 'tss']
+  m <- match(gene.mapping.res$gene_name, gene.locations$gene_name)
+  gene.mapping.res$gene_chr <- gene.locations[m, 'seqnames']
+  gene.mapping.res$gene_pos <- gene.locations[m, 'tss']
 
-  gene.pip.res <- snp.gene.pip.mat[, c('gene_chr', 'gene_pos', 'gene_name', 'gene_pip')] %>%
+  gene.pip.res <- gene.mapping.res[, c('gene_chr', 'gene_pos', 'gene_name', 'gene_pip')] %>%
     dplyr::distinct(gene_name, .keep_all = TRUE) %>%
     dplyr::rename(chr = gene_chr, pos = gene_pos) %>%
     as.data.frame()
@@ -203,9 +203,9 @@ extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
 
 }
 
-#' @title Get credible gene sets from SNP level gene mapping table
+#' @title Get credible gene sets from SNP-level gene mapping table
 #'
-#' @param snp.gene.pip.mat A data frame of SNP level gene mapping table
+#' @param gene.mapping.res A data frame of SNP-level gene mapping table
 #' @param by.locus Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
 #' If FALSE, get credible gene sets based on gene PIP.
 #' @param gene.cs.percent.thresh percentage threshold for credible gene sets
@@ -220,12 +220,12 @@ extract_gene_level_result <- function(snp.gene.pip.mat, gene.annots) {
 #' Locus-level gene PIP only includes SNPs within a locus, so this value may be lower than the gene PIP.
 #' top_gene_pip:  gene PIP of the top gene.
 #' @export
-gene_cs <- function(snp.gene.pip.mat,
+gene_cs <- function(gene.mapping.res,
                     by.locus = TRUE,
                     gene.cs.percent.thresh = 0.8){
 
   # Get locus level gene PIP
-  locus.gene.pip.df <- get_locus_level_gene_pip(snp.gene.pip.mat)
+  locus.gene.pip.df <- get_locus_level_gene_pip(gene.mapping.res)
 
   # check to make sure gene PIP is equal to the sum of gene-locus PIP
   for(gene in unique(locus.gene.pip.df$gene_name)){
@@ -301,13 +301,13 @@ compute_distance_weight <- function(snp.ranges, gene.ranges,
 
 #' @title Gene view summary table
 #'
-#' @param genemapping_res data frame of gene mapping result
+#' @param gene.mapping.res A data frame of gene mapping result
 #' @param gene.pip.thresh Filter genes with gene PIP cutoff (default: 0.1)
 #' @importFrom magrittr %>%
 #' @export
 #'
-gene_view_summary <- function(genemapping_res, gene.pip.thresh = 0.1){
-  gene.view.df <- genemapping_res %>%
+gene_view_summary <- function(gene.mapping.res, gene.pip.thresh = 0.1){
+  gene.view.df <- gene.mapping.res %>%
     dplyr::mutate(fractional_PIP = pip * frac_pip) %>%
     dplyr::select(gene_name, gene_pip, fractional_PIP) %>%
     dplyr::group_by(gene_name) %>%
@@ -319,7 +319,7 @@ gene_view_summary <- function(genemapping_res, gene.pip.thresh = 0.1){
 
 #' @title SNP view summary table
 #'
-#' @param genemapping_res A data frame of gene mapping result
+#' @param gene.mapping.res A data frame of gene mapping result
 #' @param gene.annots A data frame of gene annotations
 #' @param finemapstats A GRange object of fine mapping result
 #' @param fractional.PIP.thresh Filter SNPs with fractional PIP cutoff (default: 0.02)
@@ -327,8 +327,8 @@ gene_view_summary <- function(genemapping_res, gene.pip.thresh = 0.1){
 #' @importFrom tibble as_tibble
 #' @export
 #'
-snp_view_summary <- function(genemapping_res, gene.annots, finemapstats, fractional.PIP.thresh = 0.02){
-  high.conf.snp.df <- genemapping_res %>% dplyr::filter(fractional_PIP >= fractional.PIP.thresh)
+snp_view_summary <- function(gene.mapping.res, gene.annots, finemapstats, fractional.PIP.thresh = 0.02){
+  high.conf.snp.df <- gene.mapping.res %>% dplyr::filter(fractional_PIP >= fractional.PIP.thresh)
 
   snp.gene <- high.conf.snp.df %>% dplyr::select(snp, pos, gene_name)
 
@@ -366,16 +366,16 @@ snp_view_summary <- function(genemapping_res, gene.annots, finemapstats, fractio
 
 #' @title LD block view summary table
 #'
-#' @param genemapping_res data frame of gene mapping result
+#' @param gene.mapping.res A data frame of gene mapping result
 #' @param finemapstats GRange object of fine mapping result
 #' @importFrom magrittr %>%
 #' @importFrom tibble as_tibble
 #' @export
 #'
-block_view_summary <- function(genemapping_res, finemapstats){
+block_view_summary <- function(gene.mapping.res, finemapstats){
 
   # Gene CS based on locus level gene PIP
-  gene.cs.l <- gene_cs(genemapping_res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
+  gene.cs.l <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
   gene.cs.df <- gene.cs.l$gene.cs.df
   gene.cumsum.df <- gene.cs.l$gene.cumsum.df
   locus.gene.pip.df <- gene.cs.l$locus.gene.pip.df
@@ -403,14 +403,14 @@ block_view_summary <- function(genemapping_res, finemapstats){
 
 #' @title Get locus level gene PIP
 #'
-#' @param snp.gene.pip.mat A data frame of SNP-level gene mapping result
+#' @param gene.mapping.res A data frame of SNP-level gene mapping result
 #' @importFrom magrittr %>%
 #' @export
 #'
-get_locus_level_gene_pip <- function(snp.gene.pip.mat){
+get_locus_level_gene_pip <- function(gene.mapping.res){
 
   # For each locus - gene pair, sum over the fractional PIPs for SNPs in the locus and linked to the gene
-  snp.locus.gene.pip.mat <- snp.gene.pip.mat %>%
+  snp.locus.gene.pip.mat <- gene.mapping.res %>%
     dplyr::group_by(locus, gene_name) %>%
     dplyr::mutate(locus_gene_pip = sum(pip * frac_pip)) %>% dplyr::ungroup()
 

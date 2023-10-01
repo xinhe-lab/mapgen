@@ -4,10 +4,10 @@
 \alias{extract_gene_level_result}
 \title{Extract gene-level result from SNP-level gene mapping result}
 \usage{
-extract_gene_level_result(snp.gene.pip.mat, gene.annots)
+extract_gene_level_result(gene.mapping.res, gene.annots)
 }
 \arguments{
-\item{snp.gene.pip.mat}{A data frame of SNP-level gene mapping result}
+\item{gene.mapping.res}{A data frame of SNP-level gene mapping result}
 
 \item{gene.annots}{a GRanges object of gene annotations}
 }

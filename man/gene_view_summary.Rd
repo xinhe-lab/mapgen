@@ -4,10 +4,10 @@
 \alias{gene_view_summary}
 \title{Gene view summary table}
 \usage{
-gene_view_summary(genemapping_res, gene.pip.thresh = 0.1)
+gene_view_summary(gene.mapping.res, gene.pip.thresh = 0.1)
 }
 \arguments{
-\item{genemapping_res}{data frame of gene mapping result}
+\item{gene.mapping.res}{A data frame of gene mapping result}
 
 \item{gene.pip.thresh}{Filter genes with gene PIP cutoff (default: 0.1)}
 }

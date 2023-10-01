@@ -5,14 +5,14 @@
 \title{SNP view summary table}
 \usage{
 snp_view_summary(
-  genemapping_res,
+  gene.mapping.res,
   gene.annots,
   finemapstats,
   fractional.PIP.thresh = 0.02
 )
 }
 \arguments{
-\item{genemapping_res}{A data frame of gene mapping result}
+\item{gene.mapping.res}{A data frame of gene mapping result}
 
 \item{gene.annots}{A data frame of gene annotations}
 
