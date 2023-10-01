@@ -37,7 +37,8 @@ annotations_dir <- system.file("extdata", "test_bed_dir/", package="mapgen")
 annotation_bed_files <- list.files(path = annotations_dir, pattern = "*.bed", full.names = TRUE)
 
 # annotation_bed_files: Path to the annotation (.bed) files.
-torus.files <- prepare_torus_input_files(gwas, annotation_bed_files, torus_input_dir = "./torus_input")
+gwas.sumstats <- readRDS(system.file("extdata", "test_processed_sumstats.rds", package="mapgen"))
+torus.files <- prepare_torus_input_files(gwas.sumstats, annotation_bed_files, torus_input_dir = "./torus_input")
 ```
 
 Now that the appropriate files have been generated, 
@@ -47,9 +48,6 @@ let's perform the enrichment analysis using `TORUS`.
 enrichment estimates (log odds ratio) and 95% confidence intervals for each annotation category, 
 as well as SNP-level priors (which could be used as priors in fine-mapping).
 
-If you only want to estimate enrichment but do not need SNP-level priors, 
-you can set `option = "est"` to save time computing the priors.
-
 ```{r run-torus-est-prior}
 torus.result <- run_torus(torus.files$torus_annot_file, 
                           torus.files$torus_zscore_file,
@@ -58,6 +56,18 @@ torus.result <- run_torus(torus.files$torus_annot_file,
 
 torus.enrich <- torus.result$enrich
 torus.prior <- torus.result$snp_prior
+```
+
+If you only want to estimate enrichment but do not need SNP-level priors, 
+you can set `option = "est"` to save time computing the priors.
+
+```{r run-torus-est}
+torus.result <- run_torus(torus.files$torus_annot_file, 
+                          torus.files$torus_zscore_file,
+                          option = "est",
+                          torus_path = "torus") # set the path to 'torus' executable.
+
+torus.enrich <- torus.result$enrich
 ```
 
 TORUS also gives us the uncertainty of whether each locus contains a causal variant or not. 

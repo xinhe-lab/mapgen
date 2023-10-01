@@ -89,20 +89,12 @@ gwas.sumstats <- process_gwas_sumstats(sumstats,
 ```
 
 You can skip bigSNP and/or LD_Blocks if you only need to run enrichment analysis.
-```{r process-gwas-sumstats-2}
-gwas.sumstats <- process_gwas_sumstats(sumstats, 
-                                       chr='chr', 
-                                       pos='position_b37', 
-                                       beta='bcac_onco2_beta', 
-                                       se='bcac_onco2_se',
-                                       a0='a0', 
-                                       a1='a1', 
-                                       snp='phase3_1kg_id', 
-                                       pval='bcac_onco2_P1df_Wald',
-                                       LD_Blocks=LD_Blocks)
-```
 
 Check that the output is cleaned and has appropriate columns:
+```{r include=FALSE}
+gwas.sumstats <- readRDS(system.file("extdata", "test_processed_sumstats.rds", package="mapgen"))
+```
+
 ```{r print-gwas-sumstats}
 head(gwas.sumstats, 3)
 ```

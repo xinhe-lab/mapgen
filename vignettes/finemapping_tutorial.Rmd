@@ -16,11 +16,7 @@ preparing GWAS summary statistics.
 
 Following the [enrichment analysis tutorial][enrichment-tutorial], 
 we can obtain SNP-level priors using `run_torus()` with `option = "est-prior"`.
-```{r run-torus-est-prior}
-torus.result <- run_torus(torus.files$torus_annot_file, 
-                          torus.files$torus_zscore_file,
-                          option = "est-prior",
-                          torus_path = "torus") # set the path to 'torus' executable.
+```{r get-torus-prior}
 torus.prior <- torus.result$snp_prior
 ```
 
