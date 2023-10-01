@@ -16,8 +16,13 @@ preparing GWAS summary statistics.
 
 Following the [enrichment analysis tutorial][enrichment-tutorial], 
 we can obtain SNP-level priors using `run_torus()` with `option = "est-prior"`.
+```{r}
+gwas.sumstats <- readRDS(system.file('extdata', 'test.processed.sumstats.rds', package='mapgen'))
+torus.res <- readRDS(system.file('extdata', 'test.torus.res.rds', package='mapgen'))
+```
+
 ```{r get-torus-prior}
-torus.prior <- torus.result$snp_prior
+torus.prior <- torus.res$snp_prior
 ```
 
 Now, we can add the SNP-level priors to our summary statistics. 
@@ -41,7 +46,7 @@ you will need the `susieR` package for the steps below.
 
 To use SNP-level priors computed from `TORUS`, we use `run_finemapping()` 
 with `priortype = 'torus'`.
-```{r run-susie-torus-prior}
+```{r run-susie-torus-prior, message=FALSE}
 susie.finemap.res <- run_finemapping(sumstats = gwas.sumstats, 
                                      bigSNP = bigSNP, 
                                      priortype = 'torus', 
@@ -56,9 +61,9 @@ Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most
 one causal variant per SNP. This is conservative to avoid potential inflation 
 of signals due to mismatch between GWAS and the LD reference.
 
-`susie.finemap.res` is a list of `SuSiE` results, one for each LD block. 
+`susie.finemap.res` is a list of `SuSiE` results, one for each locus. 
 
-We can merge GWAS summary statistics with SuSiE result using `merge_susie_sumstats()`
+We can merge GWAS summary statistics with SuSiE result:
 ```{r}
 finemap.sumstats <- merge_susie_sumstats(susie_results = susie.finemap.res, 
                                          sumstats = gwas.sumstats)

@@ -51,11 +51,11 @@ head(LD_Blocks, 3)
 The GWAS summary statistics file could be in either tab or comma delimited. 
 You could read it using the `vroom` package.
 
-Let's load a small example GWAS dataset (`test_sumstats.txt.gz`) included in the package.
+Let's load a small example GWAS dataset (`test.sumstats.txt.gz`) included in the package.
 ```{r load-gwas-sumstats}
 # Loading GWAS summary statistics
 library(vroom)
-gwas.file <- system.file("extdata", "test_sumstats.txt.gz", package="mapgen")
+gwas.file <- system.file('extdata', 'test.sumstats.txt.gz', package='mapgen')
 sumstats <- vroom::vroom(gwas.file, col_names = TRUE, show_col_types = FALSE)
 as.data.frame(sumstats[1:3,] )
 ```
@@ -92,7 +92,7 @@ You can skip bigSNP and/or LD_Blocks if you only need to run enrichment analysis
 
 Check that the output is cleaned and has appropriate columns:
 ```{r include=FALSE}
-gwas.sumstats <- readRDS(system.file("extdata", "test_processed_sumstats.rds", package="mapgen"))
+gwas.sumstats <- readRDS(system.file('extdata', 'test.processed.sumstats.rds', package='mapgen'))
 ```
 
 ```{r print-gwas-sumstats}
