@@ -55,9 +55,8 @@ with functional annotation data, and computes gene-level PIPs
 
 Load R packages
 ```{r load-packages, message=FALSE, warning=FALSE}
-suppressMessages(library(data.table))
-suppressMessages(library(tidyverse))
-suppressMessages(library(GenomicRanges))
+library(tidyverse)
+library(GenomicRanges)
 library(ggplot2)
 library(mapgen)
 ```
@@ -111,7 +110,7 @@ You may skip this if you do not have relevant PC-HiC data.
 We used ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
 You may skip this if you do not have relevant ABC scores.
 ```{r process_ABC}
-ABC <- data.table::fread(system.file("extdata", "heart_ventricle-ENCODE_ABC.tsv.gz", package = "mapgen"))
+ABC <- readRDS(system.file("extdata", "ABC.heart.ventricle.ENCODE.rds", package = "mapgen"))
 # process_ABC() process a data frame of ABC scores and converts to a GRanges object.
 ABC <- process_ABC(ABC, full.element = TRUE)
 ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
