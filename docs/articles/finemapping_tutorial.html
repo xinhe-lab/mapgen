@@ -123,15 +123,19 @@
 <span>                                                      torus_prior <span class="op">=</span> <span class="va">torus.prior</span><span class="op">)</span></span></code></pre></div>
 <p>We see we have a new column called torus_prior.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gwas.sumstats</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 6</span></span></span>
-<span><span class="co">##     chr   pos snp                    pval zscore torus_prior</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>     1 <span style="text-decoration: underline;">13</span>110 1:13110:G:A           0.522 -<span style="color: #BB0000;">0.639</span>  0.000<span style="text-decoration: underline;">002</span>00</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>     1 <span style="text-decoration: underline;">13</span>116 rs201725126:13116:T:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>     1 <span style="text-decoration: underline;">13</span>118 rs200579949:13118:A:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span>     1 <span style="text-decoration: underline;">13</span>550 1:13550:G:A           0.241  1.17   0.000<span style="text-decoration: underline;">015</span>1 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span>     1 <span style="text-decoration: underline;">14</span>604 1:14604:A:G           0.233  1.19   0.000<span style="text-decoration: underline;">015</span>1</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">gwas.sumstats</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   chr   pos a0 a1     beta      se                   snp    pval     zscore</span></span>
+<span><span class="co">## 1   1 13110  A  G -0.02066 0.03231           1:13110:G:A 0.52245 -0.6394305</span></span>
+<span><span class="co">## 2   1 13116  G  T -0.01255 0.01895 rs201725126:13116:T:G 0.50772 -0.6622691</span></span>
+<span><span class="co">## 3   1 13118  G  A -0.01255 0.01895 rs200579949:13118:A:G 0.50772 -0.6622691</span></span>
+<span><span class="co">## 4   1 13550  A  G  0.13184 0.11236           1:13550:G:A 0.24066  1.1733713</span></span>
+<span><span class="co">## 5   1 14604  G  A  0.02221 0.01863           1:14604:A:G 0.23333  1.1921632</span></span>
+<span><span class="co">##   locus og_index bigSNP_index torus_prior</span></span>
+<span><span class="co">## 1     1        3            4  2.0005e-06</span></span>
+<span><span class="co">## 2     1        4            5  1.5111e-05</span></span>
+<span><span class="co">## 3     1        5            6  1.5111e-05</span></span>
+<span><span class="co">## 4     1        7           11  1.5111e-05</span></span>
+<span><span class="co">## 5     1       10           14  1.5111e-05</span></span></code></pre>
 <p>We could limit loci with GWAS p-value cutoff (e.g. 5e-8), or if you want to limit loci with FDR cutoff, you can use the FDR associated with each locus obtained from running <code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "fdr"</code>.</p>
 </div>
 <div class="section level2">
@@ -156,15 +160,19 @@
 <span>                                         sumstats <span class="op">=</span> <span class="va">gwas.sumstats</span><span class="op">)</span></span></code></pre></div>
 <p>We now have a new column called <code>susie_pip</code> which is the probability of a SNP being causal estimated using <code>SuSiE</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">finemap.sumstats</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span>,<span class="st">'susie_pip'</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 7</span></span></span>
-<span><span class="co">##     chr   pos snp                    pval zscore torus_prior susie_pip</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span>     1 <span style="text-decoration: underline;">13</span>110 1:13110:G:A           0.522 -<span style="color: #BB0000;">0.639</span>  0.000<span style="text-decoration: underline;">002</span>00         0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span>     1 <span style="text-decoration: underline;">13</span>116 rs201725126:13116:T:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span>     1 <span style="text-decoration: underline;">13</span>118 rs200579949:13118:A:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">4</span>     1 <span style="text-decoration: underline;">13</span>550 1:13550:G:A           0.241  1.17   0.000<span style="text-decoration: underline;">015</span>1          0</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">5</span>     1 <span style="text-decoration: underline;">14</span>604 1:14604:A:G           0.233  1.19   0.000<span style="text-decoration: underline;">015</span>1          0</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">finemap.sumstats</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##   chr   pos a0 a1     beta      se                   snp    pval     zscore</span></span>
+<span><span class="co">## 1   1 13110  A  G -0.02066 0.03231           1:13110:G:A 0.52245 -0.6394305</span></span>
+<span><span class="co">## 2   1 13116  G  T -0.01255 0.01895 rs201725126:13116:T:G 0.50772 -0.6622691</span></span>
+<span><span class="co">## 3   1 13118  G  A -0.01255 0.01895 rs200579949:13118:A:G 0.50772 -0.6622691</span></span>
+<span><span class="co">## 4   1 13550  A  G  0.13184 0.11236           1:13550:G:A 0.24066  1.1733713</span></span>
+<span><span class="co">## 5   1 14604  G  A  0.02221 0.01863           1:14604:A:G 0.23333  1.1921632</span></span>
+<span><span class="co">##   locus og_index bigSNP_index torus_prior susie_pip CS</span></span>
+<span><span class="co">## 1     1        3            4  2.0005e-06         0  0</span></span>
+<span><span class="co">## 2     1        4            5  1.5111e-05         0  0</span></span>
+<span><span class="co">## 3     1        5            6  1.5111e-05         0  0</span></span>
+<span><span class="co">## 4     1        7           11  1.5111e-05         0  0</span></span>
+<span><span class="co">## 5     1       10           14  1.5111e-05         0  0</span></span></code></pre>
 </div>
   </div>
 

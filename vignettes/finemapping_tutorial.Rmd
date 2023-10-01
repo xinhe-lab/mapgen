@@ -46,7 +46,7 @@ gwas.sumstats <- prepare_susie_data_with_torus_result(sumstats = gwas.sumstats,
 
 We see we have a new column called torus_prior.
 ```{r}
-gwas.sumstats[1:5,c('chr','pos','snp','pval','zscore','torus_prior')]
+as.data.frame(gwas.sumstats[1:5,])
 ```
 
 We could limit loci with GWAS p-value cutoff (e.g. 5e-8), 
@@ -96,7 +96,7 @@ finemap.sumstats <- readRDS(system.file('extdata', 'test.finemap.sumstats.rds', 
 ```
 
 ```{r}
-finemap.sumstats[1:5,c('chr','pos', 'snp','pval','zscore','torus_prior','susie_pip')]
+as.data.frame(finemap.sumstats[1:5,])
 ```
 
 [data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
