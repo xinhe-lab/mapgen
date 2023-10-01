@@ -4,14 +4,7 @@
 \alias{make_structure_plot}
 \title{Make a structure plot}
 \usage{
-make_structure_plot(
-  mat,
-  categories,
-  colors,
-  ticks = NULL,
-  font.size = 9,
-  highlight = NULL
-)
+make_structure_plot(mat, categories, colors, ticks = NULL, highlight = NULL)
 }
 \arguments{
 \item{mat}{matrix of input data}
@@ -21,8 +14,6 @@ make_structure_plot(
 \item{colors}{Colors of the structure plot categories}
 
 \item{ticks}{Labels of x-axis}
-
-\item{font.size}{Font size of structure plot}
 
 \item{highlight}{Highlight a sample}
 }

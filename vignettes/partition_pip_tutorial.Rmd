@@ -23,9 +23,6 @@ and cell-type specific open chromatin regions (OCRs).
 
 Load R packages
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(GenomicRanges)
-library(ggplot2)
 library(mapgen)
 ```
 

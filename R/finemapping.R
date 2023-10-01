@@ -78,74 +78,6 @@ run_finemapping <- function(sumstats,
 
 }
 
-#' @title Run fine-mapping with SuSiE using summary statistics (susie_rss)
-#' @param sumstats summary statistics
-#' @param R p x p correlation (LD) matrix
-#' @param bigSNP bigSNP object
-#' @param n The sample size
-#' @param L Number of causal signals
-#' @param useprior Logical, if TRUE, use the \code{torus_prior} column
-#' in \code{sumstats} as prior.
-#' @param estimate_residual_variance The default is FALSE,
-#' the residual variance is fixed to 1 or variance of y.
-#' If the in-sample LD matrix is provided,
-#' we recommend setting estimate_residual_variance = TRUE.
-#' @param verbose If verbose = TRUE, print progress,
-#' and a summary of the optimization settings from susie.
-#' @return susie_rss output
-#' @export
-run_susie_rss <- function(sumstats,
-                          bigSNP,
-                          R,
-                          n,
-                          L=1,
-                          useprior=FALSE,
-                          estimate_residual_variance=FALSE,
-                          verbose=FALSE){
-
-  if(nrow(sumstats) == 0){
-    stop("No data in sumstats. Please check...\n")
-  }
-
-  z <- sumstats$zscore
-
-  if(missing(R)){
-    # compute R using reference panel in bigSNP object
-    if(missing(bigSNP)){
-      stop("Please provide R matrix or bigSNP object!")
-    }
-    if(verbose){
-      cat("Computing R from bigSNP genotype matrix...\n")
-    }
-    X <- bigSNP$genotypes[, sumstats$bigSNP_index]
-    X <- scale(X, center = T, scale = T)
-    R <- cor(X)
-  }
-
-  if(useprior){
-    prior_weights <- sumstats$torus_prior
-  }else{
-    prior_weights <- NULL
-  }
-
-  if(verbose){
-    cat(sprintf('Run susie_rss with n=%d, L=%d, useprior=%s, estimate_residual_variance=%s...\n',
-                n, L, useprior, estimate_residual_variance))
-  }else{
-    cat(sprintf('Run susie_rss...\n'))
-  }
-
-  res <- susieR::susie_rss(z = z,
-                           R = R,
-                           n = n,
-                           L = L,
-                           prior_weights = prior_weights,
-                           estimate_residual_variance = estimate_residual_variance,
-                           verbose = verbose)
-  return(res)
-
-}
-
 #' @title merges SuSiE results with original summary statistics data frame
 #' @description  merges SuSiE results with original summary statistics data frame
 #' This function assumes L = 1. ONLY ONE CREDIBLE SET PER LOCUS!
@@ -263,3 +195,56 @@ process_finemapping_sumstats <- function(finemapstats,
 
 }
 
+
+# Run fine-mapping with SuSiE using summary statistics (susie_rss)
+run_susie_rss <- function(sumstats,
+                          bigSNP,
+                          R,
+                          n,
+                          L=1,
+                          useprior=FALSE,
+                          estimate_residual_variance=FALSE,
+                          verbose=FALSE){
+
+  if(nrow(sumstats) == 0){
+    stop("No data in sumstats. Please check...\n")
+  }
+
+  z <- sumstats$zscore
+
+  if(missing(R)){
+    # compute R using reference panel in bigSNP object
+    if(missing(bigSNP)){
+      stop("Please provide R matrix or bigSNP object!")
+    }
+    if(verbose){
+      cat("Computing R from bigSNP genotype matrix...\n")
+    }
+    X <- bigSNP$genotypes[, sumstats$bigSNP_index]
+    X <- scale(X, center = T, scale = T)
+    R <- cor(X)
+  }
+
+  if(useprior){
+    prior_weights <- sumstats$torus_prior
+  }else{
+    prior_weights <- NULL
+  }
+
+  if(verbose){
+    cat(sprintf('Run susie_rss with n=%d, L=%d, useprior=%s, estimate_residual_variance=%s...\n',
+                n, L, useprior, estimate_residual_variance))
+  }else{
+    cat(sprintf('Run susie_rss...\n'))
+  }
+
+  res <- susieR::susie_rss(z = z,
+                           R = R,
+                           n = n,
+                           L = L,
+                           prior_weights = prior_weights,
+                           estimate_residual_variance = estimate_residual_variance,
+                           verbose = verbose)
+  return(res)
+
+}

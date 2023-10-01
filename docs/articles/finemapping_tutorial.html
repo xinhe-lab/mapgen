@@ -137,9 +137,12 @@
 <div class="section level2">
 <h2 id="fine-mapping">Fine-mapping<a class="anchor" aria-label="anchor" href="#fine-mapping"></a>
 </h2>
-<p>We can then perform fine-mapping using SuSiE, you will need the <code>susieR</code> package for the steps below.</p>
-<p>To use SNP-level priors computed from <code>TORUS</code>, we use <code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> with <code>priortype = 'torus'</code>.</p>
+<p>We can then perform fine-mapping using SuSiE, you will need the <code>susieR</code> and <code>bigsnpr</code> packages for the steps below.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stephenslab/susieR" class="external-link">susieR</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span></span></code></pre></div>
+<p>To use SNP-level priors computed from <code>TORUS</code>, we use <code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> with <code>priortype = 'torus'</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">susie.finemap.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas.sumstats</span>, </span>
 <span>                                     bigSNP <span class="op">=</span> <span class="va">bigSNP</span>, </span>
 <span>                                     priortype <span class="op">=</span> <span class="st">'torus'</span>, </span>
@@ -148,11 +151,11 @@
 <p>Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most one causal variant per SNP. This is conservative to avoid potential inflation of signals due to mismatch between GWAS and the LD reference.</p>
 <p><code>susie.finemap.res</code> is a list of <code>SuSiE</code> results, one for each locus.</p>
 <p>We can merge GWAS summary statistics with SuSiE result:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">finemap.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span>susie_results <span class="op">=</span> <span class="va">susie.finemap.res</span>, </span>
 <span>                                         sumstats <span class="op">=</span> <span class="va">gwas.sumstats</span><span class="op">)</span></span></code></pre></div>
 <p>We now have a new column called <code>susie_pip</code> which is the probability of a SNP being causal estimated using <code>SuSiE</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">finemap.sumstats</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span>,<span class="st">'susie_pip'</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 7</span></span></span>
 <span><span class="co">##     chr   pos snp                    pval zscore torus_prior susie_pip</span></span>

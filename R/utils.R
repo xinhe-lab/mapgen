@@ -70,13 +70,7 @@ process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, expand = 
   return(ABC.gr)
 }
 
-#' @title Load ENCODE narrow peak data and convert to a GRanges object
-#'
-#' @param peak.file ENCODE narrow peak file
-#' @importFrom GenomicRanges makeGRangesFromDataFrame
-#' @return a GRanges object for the peaks
-#' @export
-#'
+# Load ENCODE narrow peak data and convert to a GRanges object
 process_narrowpeaks <- function(peak.file){
   if( !file.exists(peak.file) ){stop('narrowpeak file is not availble!')}
   peaks <- data.table::fread(peak.file)
@@ -87,10 +81,7 @@ process_narrowpeaks <- function(peak.file){
 }
 
 
-#' @title Annotations for causal SNPs
-#' @param sumstats A data frame of GWAS summary statistics
-#' @param annotations Paths to annotation BED files
-#' @importFrom magrittr %>%
+# Annotations for causal SNPs
 annotator_merged <- function(sumstats, annotations){
 
   snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)

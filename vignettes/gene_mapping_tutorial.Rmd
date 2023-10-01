@@ -55,9 +55,6 @@ with functional annotation data, and computes gene-level PIPs
 
 Load R packages
 ```{r load-packages, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(GenomicRanges)
-library(ggplot2)
 library(mapgen)
 ```
 

@@ -7,7 +7,6 @@
 #' @importFrom magrittr %>%
 #' @importFrom tibble as_tibble
 #' @export
-#'
 make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
 
   my.gtf <- rtracklayer::import(con = gtf.file, format = 'gtf')

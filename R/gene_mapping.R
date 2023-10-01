@@ -272,33 +272,6 @@ gene_cs <- function(gene.mapping.res,
   return(gene.cs.df)
 }
 
-#' @title Find genes around SNPs and assign weights based on distance
-#'
-#' @param snp.ranges A GRanges object with the SNP locations.
-#' @param gene.ranges A GRanges object with the gene or promoter locations.
-#' @param d0 A scaling parameter used for computing weight based on SNP-gene distance.
-#' Weight = exp(-dist/d0). Default = 50000 (50kb).
-#' @param maxgap Max distance to find genes around SNPs. Default = 1e6 (1Mb)
-#' @param type Are the gene.ranges promoters or gene locations?
-#' @return A GRanges object with SNP to gene distance and weights calculated based on distance.
-compute_distance_weight <- function(snp.ranges, gene.ranges,
-                                    d0 = 50000, maxgap = 1e6,
-                                    type = c('promoter', 'gene')){
-
-  if(is.null(gene.ranges$tss)){
-    gene.ranges$tss <- get_tss(gene.ranges, type = type)
-  }
-
-  snp.ranges$pos <- GenomicRanges::start(snp.ranges)
-
-  res <- plyranges::join_overlap_inner(gene.ranges, snp.ranges, maxgap = maxgap)
-  res$distance <- abs(res$pos - res$tss)
-  res$weight <- exp(-res$distance / as.numeric(d0))
-
-  return(res)
-}
-
-
 #' @title Gene view summary table
 #'
 #' @param gene.mapping.res A data frame of gene mapping result
@@ -475,3 +448,21 @@ find_nearest_genes <- function(top.snps,
   return(as.data.frame(top.snps)[,cols.to.keep])
 }
 
+
+# Find genes around SNPs and assign weights based on distance
+compute_distance_weight <- function(snp.ranges, gene.ranges,
+                                    d0 = 50000, maxgap = 1e6,
+                                    type = c('promoter', 'gene')){
+
+  if(is.null(gene.ranges$tss)){
+    gene.ranges$tss <- get_tss(gene.ranges, type = type)
+  }
+
+  snp.ranges$pos <- GenomicRanges::start(snp.ranges)
+
+  res <- plyranges::join_overlap_inner(gene.ranges, snp.ranges, maxgap = maxgap)
+  res$distance <- abs(res$pos - res$tss)
+  res$weight <- exp(-res$distance / as.numeric(d0))
+
+  return(res)
+}

@@ -57,7 +57,11 @@ with `option = "fdr"`.
 ## Fine-mapping
 
 We can then perform fine-mapping using SuSiE, 
-you will need the `susieR` package for the steps below. 
+you will need the `susieR` and `bigsnpr` packages for the steps below. 
+```{r, message=FALSE}
+library(susieR)
+library(bigsnpr)
+```
 
 To use SNP-level priors computed from `TORUS`, we use `run_finemapping()` 
 with `priortype = 'torus'`.
