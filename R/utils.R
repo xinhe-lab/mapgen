@@ -87,11 +87,10 @@ process_narrowpeaks <- function(peak.file){
 }
 
 
-#' @title Annotations for causal SNPs (apply these after fine-mapping!)
+#' @title Annotations for causal SNPs
 #' @param sumstats A data frame of GWAS summary statistics
 #' @param annotations Paths to annotation BED files
 #' @importFrom magrittr %>%
-#' @export
 annotator_merged <- function(sumstats, annotations){
 
   snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)
@@ -105,7 +104,7 @@ annotator_merged <- function(sumstats, annotations){
     snpsIn <- unique(snpRangesIn$snp)
 
     if(length(snpsIn)>0){
-      curr <- sumstats %>% pull(annots)
+      curr <- sumstats %>% dplyr::pull(annots)
       curr <- curr[sumstats$snp %in% snpsIn]
       delims <- rep(';', length(curr))
       delims[which(curr == '')] <- ''

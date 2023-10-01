@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{annotator_merged}
 \alias{annotator_merged}
-\title{Annotations for causal SNPs (apply these after fine-mapping!)}
+\title{Annotations for causal SNPs}
 \usage{
 annotator_merged(sumstats, annotations)
 }
@@ -12,5 +12,5 @@ annotator_merged(sumstats, annotations)
 \item{annotations}{Paths to annotation BED files}
 }
 \description{
-Annotations for causal SNPs (apply these after fine-mapping!)
+Annotations for causal SNPs
 }
