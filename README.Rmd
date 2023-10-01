@@ -78,8 +78,8 @@ medRxiv 2022.02.02.22270312; doi: https://doi.org/10.1101/2022.02.02.22270312
 [mapgen-github]: https://github.com/xinhe-lab/mapgen
 [tutorials]: https://xinhe-lab.github.io/mapgen/articles/index.html
 [data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
-[enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
-[finemapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
+[enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_tutorial.html
+[finemapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html
 [gene-mapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html
 [partition-pip-tutorial]: https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html
 

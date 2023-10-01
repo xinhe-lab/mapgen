@@ -35,7 +35,7 @@ library(mapgen)
 
 Prepare input data: GWAS summary statistics, LD reference panel, etc.
 
-### 2. [Enrichment analysis](https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html)
+### 2. [Enrichment analysis](https://xinhe-lab.github.io/mapgen/articles/enrichment_tutorial.html)
 
 Assess the enrichment of genetic signals of a trait of interest in
 functional annotations using `TORUS`.
@@ -43,7 +43,7 @@ functional annotations using `TORUS`.
 \*Please install [TORUS](https://github.com/xqwen/torus) software
 package, if you need to run enrichment analysis.
 
-### 3. [Fine-mapping](https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html)
+### 3. [Fine-mapping](https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html)
 
 Perform Bayesian statistical fine-mapping using `SuSiE` on
 trait-associated loci, using a informative prior that favors variants
