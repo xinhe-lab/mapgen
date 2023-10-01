@@ -5,7 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment = "#")
+knitr::opts_chunk$set(echo = TRUE, eval=TRUE, comment = "#")
 ```
 
 Partitioning PIPs by cell types and annotation categories
@@ -30,13 +30,13 @@ library(mapgen)
 
 Load fine-mapping summary statistics.
 ```{r load-finemapping-res}
-finemapstats <- readRDS(system.file("extdata", "AF_finemapping_result.rds", package = "mapgen"))
-finemapstats.gr <- process_finemapping_sumstats(finemapstats, 
-                                                snp = 'snp', chr = 'chr', 
-                                                pos = 'pos', pip = 'susie_pip', 
-                                                pval = 'pval', zscore = 'zscore', 
-                                                cs = 'CS', locus = 'locus',  
-                                                pip.thresh = 1e-5)
+finemapstats <- readRDS(system.file("extdata", "AF.finemapping.result.rds", package = "mapgen"))
+finemapstats <- process_finemapping_sumstats(finemapstats, 
+                                             snp = 'snp', chr = 'chr', 
+                                             pos = 'pos', pip = 'susie_pip', 
+                                             pval = 'pval', zscore = 'zscore', 
+                                             cs = 'CS', locus = 'locus',  
+                                             pip.thresh = 1e-5)
 ```
 
 We can partition PIPs into different functional annotation categories.
@@ -63,18 +63,18 @@ Sum PIPs within annotation categories.
 Unlike partition_pip_regions(), it is OK to have overlapping annotations here. 
 If a SNP is in multiple annotation categories, it will be assigned to the first ordered category.
 ```{r sum-pip-annots}
-sum_pip_res <- partition_pip_annots(finemapstats.gr, annots.list)
+sum.pip.res <- partition_pip_annots(finemapstats, annots.list)
 ```
 
 Sum of PIPs in each annotation category:
 ```{r}
-sum.pips <- sum_pip_res$sum.pips
+sum.pips <- sum.pip.res$sum.pips
 head(sum.pips)
 ```
 
 Number of SNPs included in each annotation category:
 ```{r}
-n.snps <- sum_pip_res$n.snps
+n.snps <- sum.pip.res$n.snps
 head(n.snps)
 ```
 
@@ -85,7 +85,6 @@ prop.pip.mat <- sum.pips/rowSums(sum.pips)
 ```
 
 We can make a structure plot to show the proportion of PIPs in each annotation category.
-The structure plot function was adapted from the [fastTopics](https://stephenslab.github.io/fastTopics/) R package.
 ```{r structure-plot-annots, fig.width=10, fig.height=2.5}
 categories <- c("OCRs", "UTRs", "Exons", "Introns", "others")
 colors <- c(OCRs = "#E18727FF", UTRs = "#238b45", Exons =  "#bee6af", Introns = "#B09C85FF", others = "#aaaaaa")
@@ -97,17 +96,17 @@ We can further partition PIPs into disjoint OCRs for different cell types.
 Load cell type OCR peaks. 
 This is a list of GRanges objects containing disjoint OCRs for different cell types. 
 ```{r load-disjoint-OCRs}
-disjoint_OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "mapgen"))
+disjoint.OCRs <- readRDS(system.file("extdata", "disjoint.OCRs.hg19.grlist.rds", package = "mapgen"))
 ```
 
 Sum PIPs within cell-type specific OCRs.
 ```{r sum-pip-disjoint-OCRs}
-sum_pip_res <- partition_pip_regions(finemapstats.gr, disjoint_OCRs)
+sum.pip.res <- partition_pip_regions(finemapstats, disjoint.OCRs)
 ```
 
 Sum of PIPs in each cell type OCR category:
 ```{r}
-sum.pips <- sum_pip_res$sum.pips
+sum.pips <- sum.pip.res$sum.pips
 head(sum.pips)
 ```
 

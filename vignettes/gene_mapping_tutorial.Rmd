@@ -63,8 +63,7 @@ library(mapgen)
 
 Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.
 ```{r load-finemapping-res}
-finemapstats <- readRDS(system.file("extdata", "AF_finemapping_result.rds", package = "mapgen"))
-
+finemapstats <- readRDS(system.file("extdata", "AF.finemapping.result.rds", package = "mapgen"))
 # filter SNPs and rename columns
 finemapstats <- process_finemapping_sumstats(finemapstats, 
                                              snp = 'snp', chr = 'chr', 
