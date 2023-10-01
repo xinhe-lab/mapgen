@@ -210,6 +210,11 @@ run_susie_rss <- function(sumstats,
     stop("No data in sumstats. Please check...\n")
   }
 
+  if(is.null(sumstats$zscore)){
+    cat("'zscore' not found in sumstats. Computing z-scores using beta and se ...\n")
+    sumstats$zscore <- sumstats$beta / sumstats$se
+  }
+
   z <- sumstats$zscore
 
   if(missing(R)){
