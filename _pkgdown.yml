@@ -13,8 +13,12 @@ navbar:
     articles:
       text: Tutorials
       menu:
-      - text: Functional enrichment and fine-mapping
-        href: articles/enrichment_finemapping_tutorial.html
+      - text: Data preparation
+        href: articles/data_preparation_tutorial.html
+      - text: Enrichment analysis
+        href: articles/enrichment_tutorial.html
+      - text: Functional fine-mapping
+        href: articles/finemapping_tutorial.html
       - text: Partition fine-mapping PIPs by annotation categories
         href: articles/partition_pip_tutorial.html
       - text: Gene mapping
