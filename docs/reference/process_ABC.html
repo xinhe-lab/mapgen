@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -72,17 +72,17 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_ABC</span><span class="op">(</span><span class="va">ABC</span>, ABC.thresh <span class="op">=</span> <span class="fl">0.015</span>, full.element <span class="op">=</span> <span class="cn">FALSE</span>, flank <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_ABC</span><span class="op">(</span><span class="va">ABC</span>, ABC.thresh <span class="op">=</span> <span class="fl">0.015</span>, full.element <span class="op">=</span> <span class="cn">FALSE</span>, expand <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>ABC</dt>
-<dd><p>a data frame of ABC scores from Nasser et al. Nature 2021 paper</p></dd>
+<dd><p>A data frame of ABC scores from Nasser et al. Nature 2021 paper</p></dd>
 
 
 <dt>ABC.thresh</dt>
-<dd><p>Significance threshold of ABC scores
+<dd><p>Threshold of ABC scores
 (default = 0.015, as in Nasser et al. Nature 2021 paper).</p></dd>
 
 
@@ -92,8 +92,8 @@ extracted from the "name" column. Otherwise, use the original (narrow)
 regions provided in the ABC scores data.</p></dd>
 
 
-<dt>flank</dt>
-<dd><p>Flanking regions around ABC elements (default = 0).</p></dd>
+<dt>expand</dt>
+<dd><p>Expand the ABC regions around ABC elements (default = 0).</p></dd>
 
 </dl></div>
     <div id="value">

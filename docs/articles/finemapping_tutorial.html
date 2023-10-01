@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -99,44 +99,77 @@
     
     
 <p>In this tutorial, we perform fine-mapping (using SuSiE) with functional priors computed from the enrichment analysis using <code>TORUS</code>.</p>
-<p>Please see the <a href="https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html">data preparation tutorial</a> about preparing GWAS summary statistics.</p>
-<p>Following the <a href="https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html">enrichment analysis tutorial</a>, we can obtain SNP-level priors using <code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "est-prior"</code>.</p>
+<p>Load the packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">torus.result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_torus.html">run_torus</a></span><span class="op">(</span><span class="va">torus.files</span><span class="op">$</span><span class="va">torus_annot_file</span>, </span>
-<span>                          <span class="va">torus.files</span><span class="op">$</span><span class="va">torus_zscore_file</span>,</span>
-<span>                          option <span class="op">=</span> <span class="st">"est-prior"</span>,</span>
-<span>                          torus_path <span class="op">=</span> <span class="st">"torus"</span><span class="op">)</span> <span class="co"># set the path to 'torus' executable.</span></span>
-<span><span class="va">torus.prior</span> <span class="op">&lt;-</span> <span class="va">torus.result</span><span class="op">$</span><span class="va">snp_prior</span></span></code></pre></div>
-<p>Now, we can add the SNP-level priors to our summary statistics.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xinhe-lab/mapgen" class="external-link">mapgen</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="input-data">Input data<a class="anchor" aria-label="anchor" href="#input-data"></a>
+</h2>
+<p>Please see the <a href="https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html">data preparation tutorial</a> about preparing GWAS summary statistics.</p>
+<p>We need a <code>bigSNP</code> object for the reference genotype panel, which will be used for computing LD matrices. See the <a href="https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html">data preparation tutorial</a> for details.</p>
+</div>
+<div class="section level2">
+<h2 id="snp-level-priors">SNP-level priors<a class="anchor" aria-label="anchor" href="#snp-level-priors"></a>
+</h2>
+<p>Following the <a href="https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html">enrichment analysis tutorial</a>, we can obtain SNP-level priors using <code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "est-prior"</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gwas.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'test.processed.sumstats.rds'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">torus.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'test.torus.res.rds'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">torus.prior</span> <span class="op">&lt;-</span> <span class="va">torus.res</span><span class="op">$</span><span class="va">snp_prior</span></span></code></pre></div>
+<p>Now, we can add the SNP-level priors to our summary statistics.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gwas.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_susie_data_with_torus_result.html">prepare_susie_data_with_torus_result</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas.sumstats</span>, </span>
 <span>                                                      torus_prior <span class="op">=</span> <span class="va">torus.prior</span><span class="op">)</span></span></code></pre></div>
-<p>We now have a new column <code>torus_prior</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gwas.sumstats</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<p>We see we have a new column called torus_prior.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gwas.sumstats</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 6</span></span></span>
+<span><span class="co">##     chr   pos snp                    pval zscore torus_prior</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>     1 <span style="text-decoration: underline;">13</span>110 1:13110:G:A           0.522 -<span style="color: #BB0000;">0.639</span>  0.000<span style="text-decoration: underline;">002</span>00</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>     1 <span style="text-decoration: underline;">13</span>116 rs201725126:13116:T:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>     1 <span style="text-decoration: underline;">13</span>118 rs200579949:13118:A:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>     1 <span style="text-decoration: underline;">13</span>550 1:13550:G:A           0.241  1.17   0.000<span style="text-decoration: underline;">015</span>1 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>     1 <span style="text-decoration: underline;">14</span>604 1:14604:A:G           0.233  1.19   0.000<span style="text-decoration: underline;">015</span>1</span></span></code></pre>
 <p>We could limit loci with GWAS p-value cutoff (e.g. 5e-8), or if you want to limit loci with FDR cutoff, you can use the FDR associated with each locus obtained from running <code><a href="../reference/run_torus.html">run_torus()</a></code> with <code>option = "fdr"</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="fine-mapping">Fine-mapping<a class="anchor" aria-label="anchor" href="#fine-mapping"></a>
+</h2>
 <p>We can then perform fine-mapping using SuSiE, you will need the <code>susieR</code> package for the steps below.</p>
 <p>To use SNP-level priors computed from <code>TORUS</code>, we use <code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> with <code>priortype = 'torus'</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">susie.finemap.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas.sumstats</span>, </span>
 <span>                                     bigSNP <span class="op">=</span> <span class="va">bigSNP</span>, </span>
 <span>                                     priortype <span class="op">=</span> <span class="st">'torus'</span>, </span>
 <span>                                     L <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p>We can also run fine-mapping using uniform prior (without SNP-level priors) with <code>priortype = 'uniform'</code>. (You don’t need to run <code>TORUS</code> if you run fine-mapping using uniform prior.)</p>
+<p>You can also run fine-mapping using uniform prior (without SNP-level priors) with <code>priortype = 'uniform'</code>. (You don’t need to run <code>TORUS</code> if you run fine-mapping using uniform prior.)</p>
 <p>Note that we ran SuSiE with L = 1 here, meaning we assumed there is at most one causal variant per SNP. This is conservative to avoid potential inflation of signals due to mismatch between GWAS and the LD reference.</p>
-<p><code>susie.finemap.res</code> is a list of <code>SuSiE</code> results, one for each LD block.</p>
-<p>We can merge GWAS summary statistics with SuSiE result using <code><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats()</a></code></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><code>susie.finemap.res</code> is a list of <code>SuSiE</code> results, one for each locus.</p>
+<p>We can merge GWAS summary statistics with SuSiE result:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">finemap.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span>susie_results <span class="op">=</span> <span class="va">susie.finemap.res</span>, </span>
 <span>                                         sumstats <span class="op">=</span> <span class="va">gwas.sumstats</span><span class="op">)</span></span></code></pre></div>
 <p>We now have a new column called <code>susie_pip</code> which is the probability of a SNP being causal estimated using <code>SuSiE</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">finemap.sumstats</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>,<span class="st">'beta'</span>,<span class="st">'se'</span>,<span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span>,<span class="st">'susie_pip'</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">finemap.sumstats</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'chr'</span>,<span class="st">'pos'</span>, <span class="st">'snp'</span>,<span class="st">'pval'</span>,<span class="st">'zscore'</span>,<span class="st">'torus_prior'</span>,<span class="st">'susie_pip'</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 5 × 7</span></span></span>
+<span><span class="co">##     chr   pos snp                    pval zscore torus_prior susie_pip</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>     1 <span style="text-decoration: underline;">13</span>110 1:13110:G:A           0.522 -<span style="color: #BB0000;">0.639</span>  0.000<span style="text-decoration: underline;">002</span>00         0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>     1 <span style="text-decoration: underline;">13</span>116 rs201725126:13116:T:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1          0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span>     1 <span style="text-decoration: underline;">13</span>118 rs200579949:13118:A:G 0.508 -<span style="color: #BB0000;">0.662</span>  0.000<span style="text-decoration: underline;">015</span>1          0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">4</span>     1 <span style="text-decoration: underline;">13</span>550 1:13550:G:A           0.241  1.17   0.000<span style="text-decoration: underline;">015</span>1          0</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">5</span>     1 <span style="text-decoration: underline;">14</span>604 1:14604:A:G           0.233  1.19   0.000<span style="text-decoration: underline;">015</span>1          0</span></span></code></pre>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 
