@@ -1,5 +1,8 @@
+.gitignore
+Mapgen.Rproj
 .Rproj.user
 .Rhistory
 .Rdata
+.Ruserdata
 .httr-oauth
 .DS_Store
