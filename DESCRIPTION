@@ -16,14 +16,11 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     tidyverse,
-    dplyr,
-    tidyr,
-    tibble,
     R.utils,
-    ggplot2,
     GenomicRanges,
     plyranges,
     rtracklayer,
+    ggplot2,
     ggrepel,
     ggrastr,
     processx
