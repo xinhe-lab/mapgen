@@ -29,13 +29,10 @@ Suggests:
     susieR,
     bigsnpr,
     data.table,
-    vroom,
     AnnotationDbi,
     org.Hs.eg.db,
     Gviz,
-    GenomicInteractions,
-    knitr,
-    rmarkdown
+    GenomicInteractions
 Remotes: PhanstielLab/bedtoolsr
 biocViews: Software, Finemapping, GeneMapping, GWAS, SingleCell
 Roxygen: list(markdown = TRUE)
