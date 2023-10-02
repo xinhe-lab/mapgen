@@ -86,7 +86,7 @@ We can make a structure plot to show the proportion of PIPs in each annotation c
 ```{r structure-plot-annots, fig.width=10, fig.height=2.5}
 categories <- c("OCRs", "UTRs", "Exons", "Introns", "others")
 colors <- c(OCRs = "#E18727FF", UTRs = "#238b45", Exons =  "#bee6af", Introns = "#B09C85FF", others = "#aaaaaa")
-make_structure_plot(prop.pip.mat, categories = categories, colors = colors)
+structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```
 
 We can further partition PIPs into disjoint OCRs for different cell types.
