@@ -9,7 +9,7 @@
 #' @param torus_input_dir Directory to save TORUS input files.
 #' @param torus_annot_file Annotation file name (without path).
 #' @param torus_zscore_file z-score file name (without path).
-#' @return a list containing paths to the z-score file and annotation file.
+#' @return A list containing paths to the z-score file and annotation file.
 #' @export
 #' @examples
 #' \dontrun{
@@ -68,8 +68,7 @@ prepare_torus_input_files <- function(sumstats,
 #' the estimated enrichment estimates for each locus;
 #' or \dQuote{fdr}, perform Bayesian FDR control, and output the result.
 #' @param torus_path Path to \code{torus} executable.
-#' @importFrom tibble as_tibble
-#' @return a list of enrichment results, SNP-level prior probabilities,
+#' @return A list of enrichment results, SNP-level prior probabilities,
 #' and/or FDR result.
 #' Enrichment result contains the point estimate (MLE) of the log odds ratio,
 #' as well as 95% confidence interval for the corresponding point estimate.
@@ -114,7 +113,7 @@ run_torus <- function(torus_annot_file,
                     '-est')
     cat('Estimating enrichments...\n')
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd=TRUE, echo=TRUE)
-    enrich <- as_tibble(read.table(file = textConnection(res$stdout),skip=1,header=F,stringsAsFactors = F))
+    enrich <- read.table(file = textConnection(res$stdout),skip=1,header=FALSE,stringsAsFactors = FALSE)
     colnames(enrich) <- c("term", "estimate", "low", "high")
     torus.res$enrich <- enrich
 
@@ -126,7 +125,7 @@ run_torus <- function(torus_annot_file,
                     '-dump_prior', 'prior')
     cat('Estimating enrichments and computing SNP-level priors...\n')
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd=TRUE, echo=TRUE)
-    enrich <- as_tibble(read.table(file = textConnection(res$stdout),skip=1,header=FALSE,stringsAsFactors=FALSE))
+    enrich <- read.table(file = textConnection(res$stdout),skip=1,header=FALSE,stringsAsFactors=FALSE)
     colnames(enrich) <- c("term", "estimate", "low", "high")
     torus.res$enrich <- enrich
 
@@ -145,10 +144,9 @@ run_torus <- function(torus_annot_file,
                     '-qtl')
     cat('Performing Bayesian FDR control...\n')
     res <- processx::run(command = torus_path, args = torus_args, echo_cmd = TRUE, echo = TRUE)
-    torus_fdr <- as_tibble(read.table(file = textConnection(res$stdout), header=TRUE, stringsAsFactors=FALSE))
+    torus_fdr <- read.table(file = textConnection(res$stdout), header=TRUE, stringsAsFactors=FALSE)
     colnames(torus_fdr) <- c("rej","region_id","fdr","decision")
     torus.res$fdr <- torus_fdr
-
   }
 
   return(torus.res)
@@ -159,10 +157,10 @@ run_torus <- function(torus_annot_file,
 #' @param sumstats A data frame of GWAS summary statistics
 #' @param annotations Paths to annotation BED files
 #' @param keep.annot.only Logical. If TRUE, only returns the
-#' snp and annotation columns
+#' SNP and annotation columns
 #' @return if \code{keep.annot.only=TRUE}, returns
-#' a data frame or tibble of snp and annotations. Otherwise, returns
-#' a data frame or tibble of GWAS summary statistics and annotations.
+#' a data frame of SNPs and annotations. Otherwise, returns
+#' a data frame of GWAS summary statistics and annotations.
 #' @export
 annotate_snps_binary <- function(sumstats, annotations, keep.annot.only=TRUE){
 

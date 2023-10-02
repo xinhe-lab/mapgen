@@ -7,9 +7,8 @@
 #' @param d0 A scaling parameter used for computing weight based on SNP-gene distance.
 #' Weight = exp(-dist/d0). Default = 50000 (50kb).
 #' @param cols.to.keep columns to keep in the SNP gene weights
-#' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
 #' @import GenomicRanges
+#' @import tidyverse
 #' @return A data frame of SNP-level view of gene mapping result
 #' @export
 compute_gene_pip <- function(finemapstats,
@@ -176,7 +175,8 @@ compute_gene_pip <- function(finemapstats,
 #'
 #' @param gene.mapping.res A data frame of SNP-level gene mapping result
 #' @param gene.annots a GRanges object of gene annotations
-#' @importFrom magrittr %>%
+#' @import GenomicRanges
+#' @import tidyverse
 #' @return A data frame of gene-level view of gene mapping result
 #' @export
 extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
@@ -188,7 +188,7 @@ extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
   gene.mapping.res <- gene.mapping.res %>% dplyr::filter(!gene_name %in% genes_not_included)
 
   gene.locations <- as.data.frame(gene.annots)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
-  gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
+  gene.locations$tss <- start(resize(gene.annots, width = 1))
 
   m <- match(gene.mapping.res$gene_name, gene.locations$gene_name)
   gene.mapping.res$gene_chr <- gene.locations[m, 'seqnames']
@@ -209,7 +209,7 @@ extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
 #' @param by.locus Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
 #' If FALSE, get credible gene sets based on gene PIP.
 #' @param gene.cs.percent.thresh percentage threshold for credible gene sets
-#' @importFrom magrittr %>%
+#' @import tidyverse
 #' @return a data frame of credible gene set result.
 #' Columns:
 #' gene_cs: credible gene sets,
@@ -220,9 +220,9 @@ extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
 #' Locus-level gene PIP only includes SNPs within a locus, so this value may be lower than the gene PIP.
 #' top_gene_pip:  gene PIP of the top gene.
 #' @export
-gene_cs <- function(gene.mapping.res,
-                    by.locus = TRUE,
-                    gene.cs.percent.thresh = 0.8){
+get_gene_cs <- function(gene.mapping.res,
+                        by.locus = TRUE,
+                        gene.cs.percent.thresh = 0.8){
 
   # Get locus level gene PIP
   locus.gene.pip.df <- get_locus_level_gene_pip(gene.mapping.res)
@@ -276,7 +276,8 @@ gene_cs <- function(gene.mapping.res,
 #'
 #' @param gene.mapping.res A data frame of gene mapping result
 #' @param gene.pip.thresh Filter genes with gene PIP cutoff (default: 0.1)
-#' @importFrom magrittr %>%
+#' @import tidyverse
+#' @return A data frame of gene view summary of gene mapping result
 #' @export
 #'
 gene_view_summary <- function(gene.mapping.res, gene.pip.thresh = 0.1){
@@ -296,8 +297,8 @@ gene_view_summary <- function(gene.mapping.res, gene.pip.thresh = 0.1){
 #' @param gene.annots A data frame of gene annotations
 #' @param finemapstats A GRange object of fine mapping result
 #' @param fractional.PIP.thresh Filter SNPs with fractional PIP cutoff (default: 0.02)
-#' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
+#' @import tidyverse
+#' @return A data frame of SNP view summary of gene mapping result
 #' @export
 #'
 snp_view_summary <- function(gene.mapping.res, gene.annots, finemapstats, fractional.PIP.thresh = 0.02){
@@ -341,8 +342,8 @@ snp_view_summary <- function(gene.mapping.res, gene.annots, finemapstats, fracti
 #'
 #' @param gene.mapping.res A data frame of gene mapping result
 #' @param finemapstats GRange object of fine mapping result
-#' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
+#' @import tidyverse
+#' @return A data frame of LD block view summary of gene mapping result
 #' @export
 #'
 block_view_summary <- function(gene.mapping.res, finemapstats){
@@ -377,7 +378,8 @@ block_view_summary <- function(gene.mapping.res, finemapstats){
 #' @title Get locus level gene PIP
 #'
 #' @param gene.mapping.res A data frame of SNP-level gene mapping result
-#' @importFrom magrittr %>%
+#' @import tidyverse
+#' @return A data frame of locus level gene PIP result
 #' @export
 #'
 get_locus_level_gene_pip <- function(gene.mapping.res){
@@ -385,14 +387,15 @@ get_locus_level_gene_pip <- function(gene.mapping.res){
   # For each locus - gene pair, sum over the fractional PIPs for SNPs in the locus and linked to the gene
   snp.locus.gene.pip.mat <- gene.mapping.res %>%
     dplyr::group_by(locus, gene_name) %>%
-    dplyr::mutate(locus_gene_pip = sum(pip * frac_pip)) %>% dplyr::ungroup()
+    dplyr::mutate(locus_gene_pip = sum(pip * frac_pip)) %>%
+    dplyr::ungroup()
 
   # simplify to get locus, gene_name, locus_gene_pip, and gene_pip
   locus.gene.pip.df <- snp.locus.gene.pip.mat %>%
     dplyr::select(locus, gene_name, gene_pip, locus_gene_pip) %>%
-    dplyr::distinct(locus, gene_name, .keep_all=TRUE) %>% as.data.frame()
+    dplyr::distinct(locus, gene_name, .keep_all=TRUE) %>%
+    as.data.frame()
 
-  locus.gene.pip.df <- as.data.frame(locus.gene.pip.df)
   return(locus.gene.pip.df)
 }
 
@@ -403,14 +406,15 @@ get_locus_level_gene_pip <- function(gene.mapping.res){
 #' @param genes A GRanges object of gene information
 #' @param dist.to Find nearest genes by distance to gene body or TSS
 #' @param cols.to.keep columns to keep in the result
-#' @importFrom magrittr %>%
+#' @import GenomicRanges
+#' @import tidyverse
 #' @return a data frame with SNP location and nearest gene.
 #' @export
 #'
 find_nearest_genes <- function(top.snps,
                                genes,
                                dist.to = c('genebody', 'tss'),
-                               cols.to.keep = c('snp','chr','pos', 'nearest_gene')){
+                               cols.to.keep = c('snp','chr','pos','nearest_gene')){
 
   dist.to <- match.arg(dist.to)
 
@@ -439,10 +443,10 @@ find_nearest_genes <- function(top.snps,
     snp.nearest.gene.df <- snp.nearest.gene.hits %>%
       dplyr::select(snp, gene_name) %>%
       dplyr::group_by(snp) %>%
-      dplyr::summarise(nearestGene = paste(gene_name, collapse = ','))
+      dplyr::summarise(nearest_gene = paste(gene_name, collapse = ','))
 
-    snp.nearest.gene.df$nearestGene <- as.character(snp.nearest.gene.df$nearestGene)
-    top.snps$nearest_gene <- snp.nearest.gene.df$nearestGene[match(top.snps$snp, snp.nearest.gene.df$snp)]
+    snp.nearest.gene.df$nearest_gene <- as.character(snp.nearest.gene.df$nearest_gene)
+    top.snps$nearest_gene <- snp.nearest.gene.df$nearest_gene[match(top.snps$snp, snp.nearest.gene.df$snp)]
   }
 
   return(as.data.frame(top.snps)[,cols.to.keep])
@@ -465,4 +469,19 @@ compute_distance_weight <- function(snp.ranges, gene.ranges,
   res$weight <- exp(-res$distance / as.numeric(d0))
 
   return(res)
+}
+
+
+#' @title Get nearby interactions for enhancer regions near promoters
+#'
+#' @param enhancers A GRanges object of enhancer regions
+#' @param promoters A GRanges object of promoters
+#' @param max.dist Max distance betweeen enhancer regions and promoters (default: 20kb)
+#' @return A GRanges object of nearby interactions
+#' @export
+get_nearby_interactions <- function(enhancers, promoters, max.dist = 20000){
+  nearby.interactions <- plyranges::join_overlap_inner(enhancers,
+                                                       promoters,
+                                                       maxgap = max.dist)
+  return(nearby.interactions)
 }

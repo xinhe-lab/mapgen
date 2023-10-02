@@ -20,6 +20,9 @@ snp_view_summary(
 
 \item{fractional.PIP.thresh}{Filter SNPs with fractional PIP cutoff (default: 0.02)}
 }
+\value{
+A data frame of SNP view summary of gene mapping result
+}
 \description{
 SNP view summary table
 }

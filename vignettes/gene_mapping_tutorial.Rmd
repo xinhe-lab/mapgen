@@ -121,9 +121,9 @@ Considering the fact that PC-HiC and HiC loops may miss contacts between close r
 due to technical reasons, 
 we also consider enhancer regions (based on OCRs) within 20 kb of active promoters. 
 ```{r nearby-20kb}
-nearby20kb <- nearby_interactions(genomic.annots$enhancer_regions,
-                                                          genomic.annots$active_promoters, 
-                                                          max.dist = 20000)
+nearby20kb <- get_nearby_interactions(genomic.annots$enhancer_regions,
+                                      genomic.annots$active_promoters, 
+                                      max.dist = 20000)
 ```
 
 Include ABC, PC-HiC and nearby interactions (20kb) in the enhancer loops
@@ -152,7 +152,7 @@ head(gene.pip.res)
 
 Obtain 80% credible gene sets
 ```{r gene-cs}
-gene.cs.df <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
+gene.cs.df <- get_gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
 head(gene.cs.df)
 ```
 

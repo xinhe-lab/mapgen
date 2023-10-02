@@ -36,8 +36,7 @@ Suggests:
     knitr,
     rmarkdown
 Remotes: PhanstielLab/bedtoolsr
-biocViews: Software, Ernichment, Finemapping, GeneMapping, GWAS, scATAC-seq, 
-    SingleCell, FunctionalGenomics
+biocViews: Software, Finemapping, GeneMapping, GWAS, SingleCell
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

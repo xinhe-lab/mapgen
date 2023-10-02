@@ -4,16 +4,16 @@
 \alias{partition_pip_regions}
 \title{Partition PIPs into disjoint functional annotation regions}
 \usage{
-partition_pip_regions(finemapstats.gr, annots.list)
+partition_pip_regions(finemapstats, annots.list)
 }
 \arguments{
-\item{finemapstats.gr}{a GRanges object of fine mapping summary statistics}
+\item{finemapstats}{A GRanges object of fine-mapping summary statistics}
 
-\item{annots.list}{a list of GRanges objects of disjoint functional annotations.
+\item{annots.list}{A list of GRanges objects of disjoint functional annotations.
 Note: the annotation regions need to be disjoint!}
 }
 \value{
-a list with a data frame with the sum of PIPs and
+A list with a data frame with the sum of PIPs and
 a data frame with the number of SNPs included for each annotation category.
 }
 \description{

@@ -124,5 +124,5 @@ categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid",
                 "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
 colors <- c("#b22222", "#8DD3C7", "#BEBADA", "#FB8072", 
             "#80B1D3", "#B3DE69", "royalblue", "#003C86")
-make_structure_plot(prop.pip.mat, categories = categories, colors = colors)
+structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```

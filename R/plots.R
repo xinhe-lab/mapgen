@@ -15,7 +15,7 @@
 #' @param title Title of the plot
 #' @param max.overlaps Exclude text labels that overlap too many things.
 #' @import ggplot2
-#' @importFrom magrittr %>%
+#' @import tidyverse
 #' @export
 gene_manhattan_plot <- function(gene.pip.res,
                                 chr='chr',
@@ -118,7 +118,7 @@ gene_manhattan_plot <- function(gene.pip.res,
 #' @param highlight Highlight a sample
 #' @import ggplot2
 #' @export
-make_structure_plot <- function (mat, categories, colors, ticks = NULL, highlight = NULL){
+structure_plot <- function (mat, categories, colors, ticks = NULL, highlight = NULL){
 
   mat <- na.omit(as.matrix(mat))
   n <- nrow(mat)
@@ -150,7 +150,7 @@ make_structure_plot <- function (mat, categories, colors, ticks = NULL, highligh
   return(p)
 }
 
-#' @title Make gene track plot
+#' @title Make gene track plot using Gviz
 #'
 #' @param finemapstats A GRanges object or data frame of finemapping summary statistics
 #' @param region A GRanges object or data frame for the genomic range to plot
@@ -165,10 +165,10 @@ make_structure_plot <- function (mat, categories, colors, ticks = NULL, highligh
 #' @param filter_protein_coding_genes If TRUE, only shows protein coding gene
 #' @param countsdata A list of counts data
 #' @param peaks A list of peaks
-#' @param HiC_loops A list of HiC loops, e.g. PC-HiC, ABC, etc.
-#' @param filter_HiCloops_genes If TRUE, only shows HiC loops connected to
+#' @param loops A list of chromatin loops, e.g. PC-HiC, ABC, etc.
+#' @param filter_loop_genes If TRUE, only shows HiC loops connected to
 #' the gene(s)
-#' @param filter_HiCloops_snps If TRUE, only shows HiC loops connected to
+#' @param filter_loop_snps If TRUE, only shows HiC loops connected to
 #' the SNP(s)
 #' @param data_colors Colors for the `countsdata` tracks
 #' @param data_ylim ylim range for the `countsdata` tracks
@@ -181,12 +181,8 @@ make_structure_plot <- function (mat, categories, colors, ticks = NULL, highligh
 #' @param track.sizes Sizes of the tracks
 #' @param rotation.title Rotation of the track titles
 #' @param verbose if TRUE, print detail messages for plotting
-#'
-#' @importFrom Gviz DataTrack GenomeAxisTrack GeneRegionTrack HighlightTrack plotTracks
-#' @importFrom GenomicInteractions GenomicInteractions InteractionTrack
 #' @import GenomicRanges
-#' @importFrom GenomeInfoDb seqlevelsStyle
-#' @importFrom magrittr %>%
+#' @import tidyverse
 #' @export
 finemapping_annot_trackplot <- function(finemapstats,
                                         region,
@@ -198,9 +194,9 @@ finemapping_annot_trackplot <- function(finemapstats,
                                         filter_protein_coding_genes = TRUE,
                                         countsdata,
                                         peaks,
-                                        HiC_loops,
-                                        filter_HiCloops_genes = NULL,
-                                        filter_HiCloops_snps = NULL,
+                                        loops,
+                                        filter_loop_genes = NULL,
+                                        filter_loop_snps = NULL,
                                         data_colors = seq_along(countsdata),
                                         data_ylim = c(0,1),
                                         color_pip_by = c("locus", "cs", "none"),
@@ -251,7 +247,7 @@ finemapping_annot_trackplot <- function(finemapstats,
 
     ld_colors <- c("black","blue","green","orange","red")
     names(ld_colors) <- c("0-0.1","0.1-0.25","0.25-0.75","0.75-0.9","0.9-1")
-    pval.track <- DataTrack(range = pval.gr,
+    pval.track <- Gviz::DataTrack(range = pval.gr,
                             genome = genome,
                             groups = avail_ld_groups,
                             col = ld_colors[avail_ld_groups],
@@ -265,7 +261,7 @@ finemapping_annot_trackplot <- function(finemapstats,
     pval.gr <- makeGRangesFromDataFrame(pval.df, keep.extra.columns = T)
     seqlevelsStyle(pval.gr) <- "UCSC"
 
-    pval.track <- DataTrack(range = pval.gr,
+    pval.track <- Gviz::DataTrack(range = pval.gr,
                             genome = genome,
                             name = "-log10 P",
                             col = "black",
@@ -279,7 +275,7 @@ finemapping_annot_trackplot <- function(finemapstats,
                      # rotation.title = rotation.title,
                      frame = TRUE,
                      cex.axis = 0.6)
-  displayPars(pval.track) <- dpars.pval
+  Gviz::displayPars(pval.track) <- dpars.pval
 
   # PIP track
   if(color_pip_by == "locus"){
@@ -306,7 +302,7 @@ finemapping_annot_trackplot <- function(finemapstats,
     avail_pip_groups <- NULL
   }
 
-  pip.track <- DataTrack(range = pip.gr,
+  pip.track <- Gviz::DataTrack(range = pip.gr,
                          genome = genome,
                          groups = avail_pip_groups,
                          name = "PIP",
@@ -319,7 +315,7 @@ finemapping_annot_trackplot <- function(finemapstats,
                     # rotation.title = rotation.title,
                     frame = TRUE,
                     cex.axis = 0.6)
-  displayPars(pip.track) <- dpars.pip
+  Gviz::displayPars(pip.track) <- dpars.pip
 
   # Data tracks
   if(!missing(countsdata) && (length(countsdata) > 0)){
@@ -338,7 +334,7 @@ finemapping_annot_trackplot <- function(finemapstats,
       i <- which(names(countsdata) == x)
       seqlevelsStyle(countsdata.gr) <- "UCSC"
       seqlevels(countsdata.gr, pruning.mode = "coarse") <- paste0("chr",1:22)
-      countsdata.track <- DataTrack(range = countsdata.gr,
+      countsdata.track <- Gviz::DataTrack(range = countsdata.gr,
                                     type = 'h',
                                     genome = genome,
                                     col = data_colors[i],
@@ -346,7 +342,7 @@ finemapping_annot_trackplot <- function(finemapstats,
                                     showAxis=FALSE,
                                     ylim = data_ylim)
 
-      displayPars(countsdata.track) <- dpars.data
+      Gviz::displayPars(countsdata.track) <- dpars.data
       countsdata.track
     })
   }else{
@@ -370,22 +366,22 @@ finemapping_annot_trackplot <- function(finemapstats,
       seqlevels(peaks.gr, pruning.mode = "coarse") <- paste0("chr",1:22)
       peaks.gr$score <- 1
       peaks.gr <- peaks.gr[countOverlaps(peaks.gr, region) > 0]
-      peaks.track <- DataTrack(range = peaks.gr,
+      peaks.track <- Gviz::DataTrack(range = peaks.gr,
                                type = "h",
                                genome = genome,
                                name = x,
                                col = "navy", showAxis=F,
                                ylim = c(0,1))
-      displayPars(peaks.track) <- dpars.peaks
+      Gviz::displayPars(peaks.track) <- dpars.peaks
       peaks.track
     })
   }else{
     peaks.tracks <- NULL
   }
 
-  # HiC loops tracks
-  if(!missing(HiC_loops) && (length(HiC_loops) > 0)){
-    dpars.HiC <- list(col.interactions = "black",
+  # loops tracks
+  if(!missing(loops) && (length(loops) > 0)){
+    dpars.loops <- list(col.interactions = "black",
                       col.anchors.fill = "blue",
                       col.anchors.line = "black",
                       interaction.dimension = "width",
@@ -405,39 +401,39 @@ finemapping_annot_trackplot <- function(finemapstats,
     gene.annots$chr <- as.character(seqnames(gene.annots))
     gene.annots$tss <- start(resize(gene.annots, width = 1))
 
-    HiC_loops.tracks <- lapply(names(HiC_loops), function(x){
+    loops.tracks <- lapply(names(loops), function(x){
       if(verbose){ cat("Adding", x, "track...\n") }
-      HiC_loops.gr <- HiC_loops[[x]]
+      loops.gr <- loops[[x]]
       if(filter_protein_coding_genes){
-        HiC_loops.gr <- HiC_loops.gr[HiC_loops.gr$gene_name %in% gene.annots$gene_name]
+        loops.gr <- loops.gr[loops.gr$gene_name %in% gene.annots$gene_name]
       }
 
-      HiC_promoters.gr <- GRanges(seqnames = HiC_loops.gr$promoter_chr,
-                                  ranges = IRanges(start = HiC_loops.gr$promoter_start, end = HiC_loops.gr$promoter_end),
-                                  score = HiC_loops.gr$score,
-                                  gene = HiC_loops.gr$gene_name)
-      HiC_enhancers.gr <- GRanges(seqnames = seqnames(HiC_loops.gr),
-                                  ranges = IRanges(start = start(HiC_loops.gr), end = end(HiC_loops.gr)))
-      HiC_loops.obj <- GenomicInteractions(anchor1 = HiC_promoters.gr, anchor2 = HiC_enhancers.gr)
-      HiC_loops.obj$counts <- round(HiC_loops.obj$anchor1.score)
+      loops_promoters.gr <- GRanges(seqnames = loops.gr$promoter_chr,
+                                  ranges = IRanges(start = loops.gr$promoter_start, end = loops.gr$promoter_end),
+                                  score = loops.gr$score,
+                                  gene = loops.gr$gene_name)
+      loops_enhancers.gr <- GRanges(seqnames = seqnames(loops.gr),
+                                  ranges = IRanges(start = start(loops.gr), end = end(loops.gr)))
+      loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = loops_promoters.gr, anchor2 = loops_enhancers.gr)
+      loops.obj$counts <- round(loops.obj$anchor1.score)
 
-      if(!is.null(filter_HiCloops_genes)){
-        cat("Only shows", x, "links to", paste(filter_HiCloops_genes, collapse = ","), "\n")
-        HiC_loops.obj <- HiC_loops.obj[which(HiC_loops.obj$anchor1.gene %in% filter_HiCloops_genes),]
+      if(!is.null(filter_loop_genes)){
+        cat("Only shows", x, "links to", paste(filter_loop_genes, collapse = ","), "\n")
+        loops.obj <- loops.obj[which(loops.obj$anchor1.gene %in% filter_loop_genes),]
       }
 
-      if(!is.null(filter_HiCloops_snps)){
-        cat("Only shows", x, "links to", paste(filter_HiCloops_snps, collapse = ","), "\n")
-        highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter_HiCloops_snps]
-        HiC_loops.obj <- subsetByOverlaps(HiC_loops.obj, highlighted.snps.gr)
+      if(!is.null(filter_loop_snps)){
+        cat("Only shows", x, "links to", paste(filter_loop_snps, collapse = ","), "\n")
+        highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter_loop_snps]
+        loops.obj <- subsetByOverlaps(loops.obj, highlighted.snps.gr)
       }
 
-      HiC_loops.track <- InteractionTrack(HiC_loops.obj, name = x)
-      displayPars(HiC_loops.track) <- dpars.HiC
-      HiC_loops.track
+      loops.track <- GenomicInteractions::InteractionTrack(loops.obj, name = x)
+      Gviz::displayPars(loops.track) <- dpars.loop
+      loops.track
     })
   }else{
-    HiC_loops.tracks <- NULL
+    loops.tracks <- NULL
   }
 
   # gene track
@@ -458,14 +454,14 @@ finemapping_annot_trackplot <- function(finemapstats,
   }
 
   # axis track
-  axisTrack <- GenomeAxisTrack()
+  axisTrack <- Gviz::GenomeAxisTrack()
 
   # List all tracks
   list.of.tracks <- c(pval.track,
                       pip.track,
                       countsdata.tracks,
                       peaks.tracks,
-                      HiC_loops.tracks,
+                      loops.tracks,
                       gene.track,
                       axisTrack)
 
@@ -475,7 +471,7 @@ finemapping_annot_trackplot <- function(finemapstats,
                      0.6,
                      rep(0.3, length(countsdata.tracks)),
                      rep(0.2, length(peaks.tracks)),
-                     rep(0.6, length(HiC_loops.tracks)),
+                     rep(0.6, length(loops.tracks)),
                      0.5,
                      0.4)
   }
@@ -492,7 +488,7 @@ finemapping_annot_trackplot <- function(finemapstats,
     cat("Highlight SNPs:", highlight_snps[which(highlight_snps %in% curr_finemapstats$snp)], "\n")
 
     if(length(highlight_pos) == 1){
-      list.of.tracks <- HighlightTrack(trackList = list.of.tracks,
+      list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
                                        start = c(highlight_pos-500), width = 1000,
                                        chromosome = as.character(seqnames(region)),
                                        col = highlight_colors)
@@ -502,14 +498,14 @@ finemapping_annot_trackplot <- function(finemapstats,
       if(length(highlight_colors) > 1){
         highlight_colors <- highlight_colors[which(highlight_snps %in% curr_finemapstats$snp)]
       }
-      list.of.tracks <- HighlightTrack(trackList = list.of.tracks,
+      list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
                                        start = highlight_pos, width = 1,
                                        chromosome = as.character(seqnames(region)),
                                        col = highlight_colors)
     }
   }
 
-  plotTracks(list.of.tracks,
+  Gviz::plotTracks(list.of.tracks,
              chromosome = as.character(seqnames(region)),
              transcriptAnnotation = "symbol",
              collapseTranscripts= "longest",
@@ -534,23 +530,23 @@ make_genetrack_obj <- function(curr.locus.gr,
   if(genetrack_db == "txdb"){
     # use supplied txdb if available.
     cat("Making gene track object using gene annotations in txdb ...\n")
-    grtrack <- GeneRegionTrack(range = txdb,
+    grtrack <- Gviz::GeneRegionTrack(range = txdb,
                                genome = genome,
                                chromosome = as.character(seqnames(curr.locus.gr)),
                                start = start(curr.locus.gr),
                                end = end(curr.locus.gr),
                                name = track_name)
 
-    symbol(grtrack) <- mapIds(org.Hs.eg.db::org.Hs.eg.db,
+    symbol(grtrack) <- AnnotationDbi::mapIds(org.Hs.eg.db::org.Hs.eg.db,
                               keys=sub("\\.\\d.*$", "", gene(grtrack)),
                               keytype=keytype, column="SYMBOL")
-    # symbol(grtrack) <- ifelse(is.na(symbol(grtrack)), gene(grtrack), symbol(grtrack))
+
     symbol(grtrack) <- ifelse(is.na(symbol(grtrack)), "", symbol(grtrack))
 
   }else if(genetrack_db == "gene.annots"){
     # use supplied gene.annots if available.
     cat("Making gene track object using gene annotations in gene.annots ...\n")
-    grtrack <- GeneRegionTrack(range = gene.annots,
+    grtrack <- Gviz::GeneRegionTrack(range = gene.annots,
                                genome = genome,
                                chromosome = as.character(seqnames(curr.locus.gr)),
                                start = start(curr.locus.gr),
@@ -571,7 +567,7 @@ make_genetrack_obj <- function(curr.locus.gr,
 
     keytype <- "ENTREZID"
 
-    grtrack <- GeneRegionTrack(range = txdb,
+    grtrack <- Gviz::GeneRegionTrack(range = txdb,
                                genome = genome,
                                chromosome = as.character(seqnames(curr.locus.gr)),
                                start = start(curr.locus.gr),

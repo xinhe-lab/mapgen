@@ -12,12 +12,12 @@ annotate_snps_binary(sumstats, annotations, keep.annot.only = TRUE)
 \item{annotations}{Paths to annotation BED files}
 
 \item{keep.annot.only}{Logical. If TRUE, only returns the
-snp and annotation columns}
+SNP and annotation columns}
 }
 \value{
 if \code{keep.annot.only=TRUE}, returns
-a data frame or tibble of snp and annotations. Otherwise, returns
-a data frame or tibble of GWAS summary statistics and annotations.
+a data frame of SNPs and annotations. Otherwise, returns
+a data frame of GWAS summary statistics and annotations.
 }
 \description{
 Assigns SNPs with annotations based on overlap

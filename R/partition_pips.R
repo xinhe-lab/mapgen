@@ -1,22 +1,22 @@
 
 #' @title Partition PIPs into disjoint functional annotation regions
 #'
-#' @param finemapstats.gr a GRanges object of fine mapping summary statistics
-#' @param annots.list a list of GRanges objects of disjoint functional annotations.
+#' @param finemapstats A GRanges object of fine-mapping summary statistics
+#' @param annots.list A list of GRanges objects of disjoint functional annotations.
 #' Note: the annotation regions need to be disjoint!
-#' @return a list with a data frame with the sum of PIPs and
+#' @return A list with a data frame with the sum of PIPs and
 #' a data frame with the number of SNPs included for each annotation category.
 #' @export
 #'
-partition_pip_regions <- function(finemapstats.gr, annots.list){
-  locus.list <- sort(unique(finemapstats.gr$locus))
+partition_pip_regions <- function(finemapstats, annots.list){
+  locus.list <- sort(unique(finemapstats$locus))
 
   sum.pip.mat <- matrix(NA, nrow = length(locus.list), ncol = length(annots.list)*2)
   rownames(sum.pip.mat) <- locus.list
   colnames(sum.pip.mat) <- paste(rep(names(annots.list),each = 2), c('Sum.PIPs', 'N.SNPs'))
   for(i in 1:length(locus.list)){
-    finemapstats.locus.gr <- finemapstats.gr[finemapstats.gr$locus == locus.list[i]]
-    sum.pip.categories <- sapply(annots.list, function(x){sum_pip_regions(finemapstats.locus.gr, x)})
+    finemapstats.locus <- finemapstats[finemapstats$locus == locus.list[i]]
+    sum.pip.categories <- sapply(annots.list, function(x){sum_pip_regions(finemapstats.locus, x)})
     sum.pip.mat[i,] <- as.numeric(sum.pip.categories)
   }
 
@@ -29,11 +29,10 @@ partition_pip_regions <- function(finemapstats.gr, annots.list){
   return(list(sum.pips = sum.pips, n.snps = n.snps))
 }
 
-#' Sum PIPs for genomic regions
-#'
-sum_pip_regions <- function(finemapstats.locus.gr, regions.gr){
-  overlaps <- (GenomicRanges::countOverlaps(finemapstats.locus.gr, regions.gr, ignore.strand = TRUE) > 0)
-  finemapstats.locus.in.gr <- finemapstats.locus.gr[overlaps]
+# Sum PIPs for genomic regions
+sum_pip_regions <- function(finemapstats.locus, regions.gr){
+  overlaps <- (GenomicRanges::countOverlaps(finemapstats.locus, regions.gr, ignore.strand = TRUE) > 0)
+  finemapstats.locus.in.gr <- finemapstats.locus[overlaps]
   return(c(Sum.PIPs = sum(finemapstats.locus.in.gr$pip),
            N.SNPs = length(finemapstats.locus.in.gr)))
 }
@@ -41,7 +40,7 @@ sum_pip_regions <- function(finemapstats.locus.gr, regions.gr){
 
 #' @title Partition PIPs into functional annotation categories.
 #'
-#' @param finemapstats.gr a GRanges object of fine mapping summary statistics
+#' @param finemapstats a GRanges object of fine mapping summary statistics
 #' @param annots.list a list of GRanges objects of ordered functional annotation categories,
 #' if a SNP is in multiple annotation categories,
 #' it will be assigned to the first ordered category.
@@ -49,15 +48,15 @@ sum_pip_regions <- function(finemapstats.locus.gr, regions.gr){
 #' a data frame with the number of SNPs included for each annotation category.
 #' @export
 #'
-partition_pip_annots <- function(finemapstats.gr, annots.list){
-  locus.list <- sort(unique(finemapstats.gr$locus))
+partition_pip_annots <- function(finemapstats, annots.list){
+  locus.list <- sort(unique(finemapstats$locus))
 
   sum.pip.mat <- matrix(NA, nrow = length(locus.list), ncol = (length(annots.list)+1)*2)
   rownames(sum.pip.mat) <- locus.list
   colnames(sum.pip.mat) <- paste(rep(c(names(annots.list), "others"),each = 2), c('Sum.PIPs', 'N.SNPs'))
   for(i in 1:length(locus.list)){
-    finemapstats.locus.gr <- finemapstats.gr[finemapstats.gr$locus == locus.list[i]]
-    sum.pip.categories <- sum_pip_annots(finemapstats.locus.gr, annots.list)
+    finemapstats.locus <- finemapstats[finemapstats$locus == locus.list[i]]
+    sum.pip.categories <- sum_pip_annots(finemapstats.locus, annots.list)
     sum.pip.mat[i,] <- as.numeric(sum.pip.categories)
   }
 
@@ -71,18 +70,17 @@ partition_pip_annots <- function(finemapstats.gr, annots.list){
 }
 
 
-#' Sum PIPs for each annotation category,
-#' assign SNPs to annotations with the priority of the earlier category
-sum_pip_annots <- function(finemapstats.locus.gr, annots.list){
+# Sum PIPs for each annotation category, assign SNPs to annotations with the priority of the earlier category
+sum_pip_annots <- function(finemapstats.locus, annots.list){
 
   sum.pip.categories <- matrix(NA, nrow = 2, ncol = length(annots.list)+1)
   colnames(sum.pip.categories) <- c(names(annots.list), "others")
 
   counted.SNPs <- NULL
   for(i in 1:length(annots.list)){
-    finemapstats.locus.gr <- finemapstats.locus.gr[!finemapstats.locus.gr$snp %in% counted.SNPs, ]
-    overlaps <- (GenomicRanges::countOverlaps(finemapstats.locus.gr, annots.list[[i]], ignore.strand = TRUE) > 0)
-    finemap.locus.in.gr <- finemapstats.locus.gr[overlaps]
+    finemapstats.locus <- finemapstats.locus[!finemapstats.locus$snp %in% counted.SNPs, ]
+    overlaps <- (GenomicRanges::countOverlaps(finemapstats.locus, annots.list[[i]], ignore.strand = TRUE) > 0)
+    finemap.locus.in.gr <- finemapstats.locus[overlaps]
 
     SNPs.in.annot <- unique(finemap.locus.in.gr$snp)
     Sum.PIPs <- sum(finemap.locus.in.gr$pip)
@@ -91,9 +89,9 @@ sum_pip_annots <- function(finemapstats.locus.gr, annots.list){
     counted.SNPs <- c(counted.SNPs, SNPs.in.annot)
   }
 
-  finemapstats.locus.gr <- finemapstats.locus.gr[!finemapstats.locus.gr$snp %in% counted.SNPs, ]
-  Sum.PIPs <- sum(finemapstats.locus.gr$pip)
-  N.SNPs <- length(unique(finemapstats.locus.gr$snp))
+  finemapstats.locus <- finemapstats.locus[!finemapstats.locus$snp %in% counted.SNPs, ]
+  Sum.PIPs <- sum(finemapstats.locus$pip)
+  N.SNPs <- length(unique(finemapstats.locus$snp))
   sum.pip.categories[,"others"] <- c(Sum.PIPs, N.SNPs)
 
   return(sum.pip.categories)

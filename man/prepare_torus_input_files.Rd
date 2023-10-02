@@ -27,7 +27,7 @@ Chromosomes should be numeric (no "chr").}
 \item{torus_zscore_file}{z-score file name (without path).}
 }
 \value{
-a list containing paths to the z-score file and annotation file.
+A list containing paths to the z-score file and annotation file.
 }
 \description{
 Prepares two files necessary for running TORUS:

@@ -4,8 +4,8 @@
 #' @param gtf.file GTF file name
 #' @param save If TRUE, save genomic annotations as a RDS file
 #' @param outname Output file name
-#' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
+#' @import GenomicRanges
+#' @import tidyverse
 #' @export
 make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
 
@@ -98,16 +98,3 @@ substract_exons <- function( genes.gr, exons.gr ) {
   }
 }
 
-#' @title Get nearby interactions for enhancer regions near promoters
-#'
-#' @param enhancers A GRanges object of enhancer regions
-#' @param promoters A GRanges object of promoters
-#' @param max.dist Max distance betweeen enhancer regions and promoters (default: 20kb)
-#' @return A GRanges object of nearby interactions
-#' @export
-nearby_interactions <- function(enhancers, promoters, max.dist = 20000){
-  nearby_interactions.gr <- plyranges::join_overlap_inner(enhancers,
-                                                          promoters,
-                                                          maxgap = max.dist)
-  return(nearby_interactions.gr)
-}

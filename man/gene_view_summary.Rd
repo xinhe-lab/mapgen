@@ -11,6 +11,9 @@ gene_view_summary(gene.mapping.res, gene.pip.thresh = 0.1)
 
 \item{gene.pip.thresh}{Filter genes with gene PIP cutoff (default: 0.1)}
 }
+\value{
+A data frame of gene view summary of gene mapping result
+}
 \description{
 Gene view summary table
 }

@@ -120,8 +120,8 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 #' @param pip.thresh Select SNPs by PIP threshold (default = 0, no filtering).
 #' @param filterCS If TRUE, limiting to SNPs within credible sets.
 #' @param maxL Maximum number of credible sets (default = 10).
-#' @importFrom magrittr %>%
 #' @import GenomicRanges
+#' @import tidyverse
 #' @return A GRanges object with cleaned and filtered fine-mapping summary statistics
 #' @export
 process_finemapping_sumstats <- function(finemapstats,

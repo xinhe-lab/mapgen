@@ -129,8 +129,8 @@ assign_snp_locus <- function(cleaned.sumstats, LD_Blocks){
   ld.gr <- plyranges::mutate(ld.gr, locus=LD_Blocks$X4)
 
   snp.gr <- make_ranges(seqname = cleaned.sumstats$chr,
-                           start = cleaned.sumstats$pos,
-                           end = cleaned.sumstats$pos)
+                        start = cleaned.sumstats$pos,
+                        end = cleaned.sumstats$pos)
   snp.gr <- plyranges::mutate(snp.gr, snp=cleaned.sumstats$snp)
 
   snp.ld.overlap <- plyranges::join_overlap_inner(snp.gr, ld.gr)
@@ -148,7 +148,7 @@ assign_snp_locus <- function(cleaned.sumstats, LD_Blocks){
 #' If so, ambiguous alleles A/T and C/G are removed.
 #' @param match.min.prop Minimum proportion of variants in the smallest data
 #' to be matched, otherwise stops with an error. Default: 10%
-#' @importFrom magrittr %>%
+#' @import tidyverse
 #' @export
 match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1){
 
@@ -156,15 +156,16 @@ match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.pr
   snp_info <- map[,c('chromosome','physical.pos','allele1','allele2')]
   colnames(snp_info) <- c('chr','pos','a0','a1')
 
-  matched.sumstats <- tibble::as_tibble(bigsnpr::snp_match(sumstats,
-                                                           snp_info,
-                                                           strand_flip = strand_flip,
-                                                           match.min.prop = match.min.prop))
+  matched.sumstats <- bigsnpr::snp_match(sumstats,
+                                         snp_info,
+                                         strand_flip = strand_flip,
+                                         match.min.prop = match.min.prop)
 
   matched.sumstats <- matched.sumstats %>%
     dplyr::rename(og_index = `_NUM_ID_.ss`) %>%
     dplyr::rename(bigSNP_index = `_NUM_ID_`) %>%
-    dplyr::mutate(zscore = beta/se)
+    dplyr::mutate(zscore = beta/se) %>%
+    as_tibble()
 
   return(matched.sumstats)
 }

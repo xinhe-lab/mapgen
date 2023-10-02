@@ -4,10 +4,10 @@
 \alias{partition_pip_annots}
 \title{Partition PIPs into functional annotation categories.}
 \usage{
-partition_pip_annots(finemapstats.gr, annots.list)
+partition_pip_annots(finemapstats, annots.list)
 }
 \arguments{
-\item{finemapstats.gr}{a GRanges object of fine mapping summary statistics}
+\item{finemapstats}{a GRanges object of fine mapping summary statistics}
 
 \item{annots.list}{a list of GRanges objects of ordered functional annotation categories,
 if a SNP is in multiple annotation categories,

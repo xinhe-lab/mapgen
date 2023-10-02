@@ -5,8 +5,8 @@
 #' "Interacting_fragment". Interacting_fragment should contains
 #' chr, start and end positions of the fragments interacting with promoters
 #' e.g. "chr.start.end" or "chr:start-end".
-#' @importFrom magrittr %>%
-#' @importFrom GenomicRanges makeGRangesFromDataFrame
+#' @import GenomicRanges
+#' @import tidyverse
 #' @return A GRanges object with processed PC-HiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
@@ -14,13 +14,15 @@ process_pcHiC <- function(pcHiC){
 
   pcHiC <- pcHiC %>% dplyr::select(Promoter, Interacting_fragment)
   # separate genes connecting to the same fragment
-  pcHiC <- pcHiC %>% tidyr::separate_rows(Promoter) %>% dplyr::rename(gene_name = Promoter)
+  pcHiC <- pcHiC %>%
+    tidyr::separate_rows(Promoter) %>%
+    dplyr::rename(gene_name = Promoter)
 
   pcHiC <- pcHiC %>%
     tidyr::separate(Interacting_fragment, c('otherEnd_chr', 'otherEnd_start', 'otherEnd_end')) %>%
     dplyr::mutate(otherEnd_start = as.numeric(otherEnd_start), otherEnd_end = as.numeric(otherEnd_end))
 
-  pcHiC.gr <- makeGRangesFromDataFrame(pcHiC,
+  pcHiC.gr <- GenomicRanges::makeGRangesFromDataFrame(pcHiC,
                                        seqnames.field = 'otherEnd_chr',
                                        start.field = 'otherEnd_start',
                                        end.field = 'otherEnd_end',
@@ -40,8 +42,8 @@ process_pcHiC <- function(pcHiC){
 #' extracted from the "name" column. Otherwise, use the original (narrow)
 #' regions provided in the ABC scores data.
 #' @param expand  Expand the ABC regions around ABC elements (default = 0).
-#' @importFrom magrittr %>%
-#' @importFrom GenomicRanges makeGRangesFromDataFrame
+#' @import GenomicRanges
+#' @import tidyverse
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
@@ -64,7 +66,7 @@ process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, expand = 
     ABC$end <- ABC$end + expand
   }
 
-  ABC.gr <- makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
+  ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
   GenomeInfoDb::seqlevelsStyle(ABC.gr) <- 'UCSC'
 
   return(ABC.gr)
@@ -75,7 +77,7 @@ process_narrowpeaks <- function(peak.file){
   if( !file.exists(peak.file) ){stop('narrowpeak file is not availble!')}
   peaks <- data.table::fread(peak.file)
   colnames(peaks) <- c('chr', 'start', 'end', 'name', 'score', 'strand', 'signalValue', 'pValue', 'qValue', 'peak')
-  peaks.gr <- makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
+  peaks.gr <- GenomicRanges::makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
   GenomeInfoDb::seqlevelsStyle(peaks.gr) <- 'UCSC'
   return(peaks.gr)
 }
@@ -99,7 +101,8 @@ annotator_merged <- function(sumstats, annotations){
       curr <- curr[sumstats$snp %in% snpsIn]
       delims <- rep(';', length(curr))
       delims[which(curr == '')] <- ''
-      sumstats[sumstats$snp %in% snpsIn,"annots"] <- paste0(curr,delims,gsub(pattern = '.bed',replacement = '', x = basename(f)))
+      sumstats[sumstats$snp %in% snpsIn,"annots"] <-
+        paste0(curr,delims,gsub(pattern = '.bed',replacement = '', x = basename(f)))
     }
   }
   return(sumstats)

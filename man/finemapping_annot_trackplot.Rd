@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{finemapping_annot_trackplot}
 \alias{finemapping_annot_trackplot}
-\title{Make gene track plot}
+\title{Make gene track plot using Gviz}
 \usage{
 finemapping_annot_trackplot(
   finemapstats,
@@ -15,9 +15,9 @@ finemapping_annot_trackplot(
   filter_protein_coding_genes = TRUE,
   countsdata,
   peaks,
-  HiC_loops,
-  filter_HiCloops_genes = NULL,
-  filter_HiCloops_snps = NULL,
+  loops,
+  filter_loop_genes = NULL,
+  filter_loop_snps = NULL,
   data_colors = seq_along(countsdata),
   data_ylim = c(0, 1),
   color_pip_by = c("locus", "cs", "none"),
@@ -53,12 +53,12 @@ finemapping_annot_trackplot(
 
 \item{peaks}{A list of peaks}
 
-\item{HiC_loops}{A list of HiC loops, e.g. PC-HiC, ABC, etc.}
+\item{loops}{A list of chromatin loops, e.g. PC-HiC, ABC, etc.}
 
-\item{filter_HiCloops_genes}{If TRUE, only shows HiC loops connected to
+\item{filter_loop_genes}{If TRUE, only shows HiC loops connected to
 the gene(s)}
 
-\item{filter_HiCloops_snps}{If TRUE, only shows HiC loops connected to
+\item{filter_loop_snps}{If TRUE, only shows HiC loops connected to
 the SNP(s)}
 
 \item{data_colors}{Colors for the \code{countsdata} tracks}
@@ -82,5 +82,5 @@ options are: above (default), right, left, below}
 \item{verbose}{if TRUE, print detail messages for plotting}
 }
 \description{
-Make gene track plot
+Make gene track plot using Gviz
 }

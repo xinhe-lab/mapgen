@@ -11,6 +11,9 @@ block_view_summary(gene.mapping.res, finemapstats)
 
 \item{finemapstats}{GRange object of fine mapping result}
 }
+\value{
+A data frame of LD block view summary of gene mapping result
+}
 \description{
 LD block view summary table
 }
