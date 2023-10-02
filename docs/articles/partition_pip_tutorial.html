@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1.9001</span>
       </span>
     </div>
 
@@ -87,8 +87,10 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Partition fine-mapping PIPs by annotation categories</h1>
-                        <h4 data-toc-skip class="author">Kaixuan Luo</h4>
+      <h1 data-toc-skip>Partition fine-mapping PIPs by annotation
+categories</h1>
+                        <h4 data-toc-skip class="author">Kaixuan
+Luo</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/vignettes/partition_pip_tutorial.Rmd" class="external-link"><code>vignettes/partition_pip_tutorial.Rmd</code></a></small>
@@ -101,7 +103,10 @@
 <div class="section level2">
 <h2 id="partitioning-pips-by-cell-types-and-annotation-categories">Partitioning PIPs by cell types and annotation categories<a class="anchor" aria-label="anchor" href="#partitioning-pips-by-cell-types-and-annotation-categories"></a>
 </h2>
-<p>Here, we show an example using data from our heart single-cell study. We assigned the likely cell type(s) through which the causal variants act in each locus using fine-mapped SNPs, and cell-type specific open chromatin regions (OCRs).</p>
+<p>Here, we show an example using data from our heart single-cell study.
+We assigned the likely cell type(s) through which the causal variants
+act in each locus using fine-mapped SNPs, and cell-type specific open
+chromatin regions (OCRs).</p>
 <p><strong>Required input data</strong>:</p>
 <ul>
 <li>Fine-mapping summary statistics.</li>
@@ -121,20 +126,25 @@
 <span>                                             pip.thresh <span class="op">=</span> <span class="fl">1e-5</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co"># Processing fine-mapping summary statistics ...</span></span>
 <span><span class="co"># Select SNPs with PIP &gt; 1e-05</span></span></code></pre>
-<p>We can partition PIPs into different functional annotation categories.</p>
+<p>We can partition PIPs into different functional annotation
+categories.</p>
 <p>Load genomic annotations (hg19).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"genomic.annots.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Load all OCRs (hg19).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"OCRs.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Create a list of the annotations, with priority in the order of OCRs, UTRS, Exons, and Introns.</p>
+<p>Create a list of the annotations, with priority in the order of OCRs,
+UTRS, Exons, and Introns.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annots.list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>OCRs <span class="op">=</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs</span>,</span>
 <span>                    UTRs <span class="op">=</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">UTRs</span>,</span>
 <span>                    Exons <span class="op">=</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">exons</span>,</span>
 <span>                    Introns <span class="op">=</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">introns</span><span class="op">)</span></span></code></pre></div>
-<p>Sum PIPs within annotation categories. Unlike partition_pip_regions(), it is OK to have overlapping annotations here. If a SNP is in multiple annotation categories, it will be assigned to the first ordered category.</p>
+<p>Sum PIPs within annotation categories. Unlike
+partition_pip_regions(), it is OK to have overlapping annotations here.
+If a SNP is in multiple annotation categories, it will be assigned to
+the first ordered category.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sum.pip.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partition_pip_annots.html">partition_pip_annots</a></span><span class="op">(</span><span class="va">finemapstats</span>, <span class="va">annots.list</span><span class="op">)</span></span></code></pre></div>
 <p>Sum of PIPs in each annotation category:</p>
@@ -163,14 +173,17 @@
 <code class="sourceCode R"><span><span class="va">locus.order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">sum.pips</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">sum.pips</span>, <span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">OCRs</span>, <span class="va">UTRs</span>, <span class="va">Exons</span>, <span class="va">Introns</span>, <span class="va">others</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">sum.pips</span> <span class="op">&lt;-</span> <span class="va">sum.pips</span><span class="op">[</span><span class="va">locus.order</span>,<span class="op">]</span></span>
 <span><span class="va">prop.pip.mat</span> <span class="op">&lt;-</span> <span class="va">sum.pips</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">sum.pips</span><span class="op">)</span></span></code></pre></div>
-<p>We can make a structure plot to show the proportion of PIPs in each annotation category.</p>
+<p>We can make a structure plot to show the proportion of PIPs in each
+annotation category.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">categories</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"OCRs"</span>, <span class="st">"UTRs"</span>, <span class="st">"Exons"</span>, <span class="st">"Introns"</span>, <span class="st">"others"</span><span class="op">)</span></span>
 <span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>OCRs <span class="op">=</span> <span class="st">"#E18727FF"</span>, UTRs <span class="op">=</span> <span class="st">"#238b45"</span>, Exons <span class="op">=</span>  <span class="st">"#bee6af"</span>, Introns <span class="op">=</span> <span class="st">"#B09C85FF"</span>, others <span class="op">=</span> <span class="st">"#aaaaaa"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/make_structure_plot.html">make_structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
 <p><img src="partition_pip_tutorial_files/figure-html/structure-plot-annots-1.png" width="960"></p>
-<p>We can further partition PIPs into disjoint OCRs for different cell types.</p>
-<p>Load cell type OCR peaks. This is a list of GRanges objects containing disjoint OCRs for different cell types.</p>
+<p>We can further partition PIPs into disjoint OCRs for different cell
+types.</p>
+<p>Load cell type OCR peaks. This is a list of GRanges objects
+containing disjoint OCRs for different cell types.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">disjoint.OCRs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"disjoint.OCRs.hg19.grlist.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Sum PIPs within cell-type specific OCRs.</p>
@@ -194,20 +207,22 @@
 <span><span class="co"># 31 0.000000e+00 0.0000000000</span></span>
 <span><span class="co"># 32 0.000000e+00 0.0001766484</span></span>
 <span><span class="co"># 33 1.821428e-03 0.0006501397</span></span></code></pre>
-<p>Filter loci with a cutoff of total PIPs in OCR &gt; 0.25, compute the proportion of PIPs partitioned in each cell type category.</p>
+<p>Filter loci with a cutoff of total PIPs in OCR &gt; 0.25, compute the
+proportion of PIPs partitioned in each cell type category.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># reorder the loci to match the previous figure</span></span>
 <span><span class="va">sum.pips</span> <span class="op">&lt;-</span> <span class="va">sum.pips</span><span class="op">[</span><span class="va">locus.order</span>, <span class="op">]</span></span>
 <span><span class="co"># filter loci with a cutoff of total PIPs in OCR &gt; 0.25</span></span>
 <span><span class="va">sum.pips.filtered</span> <span class="op">&lt;-</span> <span class="va">sum.pips</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">sum.pips</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.25</span>,<span class="op">]</span></span>
 <span><span class="va">prop.pip.mat</span> <span class="op">&lt;-</span> <span class="va">sum.pips.filtered</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">sum.pips.filtered</span><span class="op">)</span></span></code></pre></div>
-<p>We can make a structure plot to show the proportion of PIPs in each cell type category.</p>
+<p>We can make a structure plot to show the proportion of PIPs in each
+cell type category.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">categories</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cardiomyocyte"</span>, <span class="st">"Endothelial"</span>, <span class="st">"Fibroblast"</span>, <span class="st">"Lymphoid"</span>, </span>
 <span>                <span class="st">"Myeloid"</span>, <span class="st">"Pericyte"</span>, <span class="st">"Shared 2-3"</span>, <span class="st">"Shared 4+"</span><span class="op">)</span></span>
 <span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#b22222"</span>, <span class="st">"#8DD3C7"</span>, <span class="st">"#BEBADA"</span>, <span class="st">"#FB8072"</span>, </span>
 <span>            <span class="st">"#80B1D3"</span>, <span class="st">"#B3DE69"</span>, <span class="st">"royalblue"</span>, <span class="st">"#003C86"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/make_structure_plot.html">make_structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
 <p><img src="partition_pip_tutorial_files/figure-html/structure-plot-OCRs-1.png" width="960"></p>
 </div>
   </div>

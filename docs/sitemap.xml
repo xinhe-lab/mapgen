@@ -82,7 +82,13 @@
     <loc>https://xinhe-lab.github.io/mapgen/reference/gene_view_summary.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/get_gene_cs.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/get_locus_level_gene_pip.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/get_nearby_interactions.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/index.html</loc>
@@ -110,6 +116,9 @@
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/partition_pip_regions.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/pipe.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/prepare_susie_data_with_torus_result.html</loc>

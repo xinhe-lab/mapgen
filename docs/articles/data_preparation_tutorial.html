@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1.9001</span>
       </span>
     </div>
 
@@ -88,7 +88,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Tutorial for data preparation</h1>
-                        <h4 data-toc-skip class="author">Kaixuan Luo</h4>
+                        <h4 data-toc-skip class="author">Kaixuan
+Luo</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/vignettes/data_preparation_tutorial.Rmd" class="external-link"><code>vignettes/data_preparation_tutorial.Rmd</code></a></small>
@@ -105,9 +106,18 @@
 <div class="section level2">
 <h2 id="reference-genotype-panel">Reference genotype panel<a class="anchor" aria-label="anchor" href="#reference-genotype-panel"></a>
 </h2>
-<p>If you need to run fine-mapping, you would need to prepare a <code>bigSNP</code> object for the reference genotype panel, which will be used for computing LD matrices. You can skip this if you only want to run enrichment analysis or gene mapping with precomputed fine-mapping result.</p>
-<p>We provided a <code>bigSNP</code> object of the reference genotype panel for the 1000 Genome (1KG) European population. Otherwise, you could obtain your own reference genotypes in PLINK format (bed/bim/fam) and use <code>readBed()</code> from the <code>bigsnpr</code> package to create the <code>.rds</code> file.</p>
-<p>You need to install the <code>bigsnpr</code> package, and use <code>snp_attach</code> to load <code>.rds</code> file.</p>
+<p>If you need to run fine-mapping, you would need to prepare a
+<code>bigSNP</code> object for the reference genotype panel, which will
+be used for computing LD matrices. You can skip this if you only want to
+run enrichment analysis or gene mapping with precomputed fine-mapping
+result.</p>
+<p>We provided a <code>bigSNP</code> object of the reference genotype
+panel for the 1000 Genome (1KG) European population. Otherwise, you
+could obtain your own reference genotypes in PLINK format (bed/bim/fam)
+and use <code>readBed()</code> from the <code>bigsnpr</code> package to
+create the <code>.rds</code> file.</p>
+<p>You need to install the <code>bigsnpr</code> package, and use
+<code>snp_attach</code> to load <code>.rds</code> file.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span></span>
 <span><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu">bigsnpr</span><span class="fu">::</span><span class="fu"><a href="https://privefl.github.io/bigsnpr/reference/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></span></code></pre></div>
@@ -115,8 +125,11 @@
 <div class="section level2">
 <h2 id="reference-ld-blocks">Reference LD blocks<a class="anchor" aria-label="anchor" href="#reference-ld-blocks"></a>
 </h2>
-<p>We provided within the package the LD blocks from 1000 Genome (1KG) European population (in hg19).</p>
-<p>This loads a data frame called <code>LD_Blocks</code>. It has four columns: chromosome, start and end positions (in hg19), and the indices of the LD blocks.</p>
+<p>We provided within the package the LD blocks from 1000 Genome (1KG)
+European population (in hg19).</p>
+<p>This loads a data frame called <code>LD_Blocks</code>. It has four
+columns: chromosome, start and end positions (in hg19), and the indices
+of the LD blocks.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'EUR_LD_Blocks'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">LD_Blocks</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
@@ -130,8 +143,10 @@
 <div class="section level2">
 <h2 id="gwas-summary-statistics">GWAS summary statistics<a class="anchor" aria-label="anchor" href="#gwas-summary-statistics"></a>
 </h2>
-<p>The GWAS summary statistics file could be in either tab or comma delimited. You could read it using the <code>vroom</code> package.</p>
-<p>Let’s load a small example GWAS dataset (<code>test.sumstats.txt.gz</code>) included in the package.</p>
+<p>The GWAS summary statistics file could be in either tab or comma
+delimited. You could read it using the <code>vroom</code> package.</p>
+<p>Let’s load a small example GWAS dataset
+(<code>test.sumstats.txt.gz</code>) included in the package.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Loading GWAS summary statistics</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vroom.r-lib.org" class="external-link">vroom</a></span><span class="op">)</span></span>
@@ -158,9 +173,11 @@
 <ul>
 <li>sumstats: A data frame of the GWAS summary statistics</li>
 <li>chr: chromosome</li>
-<li>pos: position (<em>note: the LD reference data included in the package are in hg19!</em>)<br>
+<li>pos: position (<em>note: the LD reference data included in the
+package are in hg19!</em>)<br>
 </li>
-<li>beta: effect size (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))<br>
+<li>beta: effect size (if you have Odds Ratio, you will need to
+transform it to log(Odds Ratio))<br>
 </li>
 <li>se: standard error (SE)<br>
 </li>
@@ -169,7 +186,9 @@
 <li>snp: SNP ID (rsID, or chr:position:a1:a2)</li>
 <li>pval: p-value</li>
 </ul>
-<p>We run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to load and process the summary statistics. This cleans GWAS summary statistics and adds information from bigSNP and LD_Blocks (loaded above).</p>
+<p>We run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to load and process the
+summary statistics. This cleans GWAS summary statistics and adds
+information from bigSNP and LD_Blocks (loaded above).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gwas.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats</a></span><span class="op">(</span><span class="va">sumstats</span>, </span>
 <span>                                       chr<span class="op">=</span><span class="st">'chr'</span>, </span>
@@ -182,7 +201,8 @@
 <span>                                       pval<span class="op">=</span><span class="st">'bcac_onco2_P1df_Wald'</span>,</span>
 <span>                                       LD_Blocks<span class="op">=</span><span class="va">LD_Blocks</span>,</span>
 <span>                                       bigSNP<span class="op">=</span><span class="va">bigSNP</span><span class="op">)</span></span></code></pre></div>
-<p>You can skip bigSNP and/or LD_Blocks if you only need to run enrichment analysis.</p>
+<p>You can skip bigSNP and/or LD_Blocks if you only need to run
+enrichment analysis.</p>
 <p>Check that the output is cleaned and has appropriate columns:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gwas.sumstats</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>

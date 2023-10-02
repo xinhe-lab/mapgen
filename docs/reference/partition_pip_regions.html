@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1.9001</span>
       </span>
     </div>
 
@@ -72,17 +72,17 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">partition_pip_regions</span><span class="op">(</span><span class="va">finemapstats.gr</span>, <span class="va">annots.list</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">partition_pip_regions</span><span class="op">(</span><span class="va">finemapstats</span>, <span class="va">annots.list</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>finemapstats.gr</dt>
-<dd><p>a GRanges object of fine mapping summary statistics</p></dd>
+    <dl><dt>finemapstats</dt>
+<dd><p>A GRanges object of fine-mapping summary statistics</p></dd>
 
 
 <dt>annots.list</dt>
-<dd><p>a list of GRanges objects of disjoint functional annotations.
+<dd><p>A list of GRanges objects of disjoint functional annotations.
 Note: the annotation regions need to be disjoint!</p></dd>
 
 </dl></div>
@@ -90,7 +90,7 @@ Note: the annotation regions need to be disjoint!</p></dd>
     <h2>Value</h2>
     
 
-<p>a list with a data frame with the sum of PIPs and
+<p>A list with a data frame with the sum of PIPs and
 a data frame with the number of SNPs included for each annotation category.</p>
     </div>
 

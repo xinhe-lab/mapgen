@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1.9001</span>
       </span>
     </div>
 
@@ -88,7 +88,8 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Gene mapping tutorial</h1>
-                        <h4 data-toc-skip class="author">Kaixuan Luo</h4>
+                        <h4 data-toc-skip class="author">Kaixuan
+Luo</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/vignettes/gene_mapping_tutorial.Rmd" class="external-link"><code>vignettes/gene_mapping_tutorial.Rmd</code></a></small>
@@ -101,13 +102,27 @@
 <div class="section level2">
 <h2 id="gene-mapping-procedure">Gene mapping procedure<a class="anchor" aria-label="anchor" href="#gene-mapping-procedure"></a>
 </h2>
-<p>Despite our fine-mapping efforts, there remains considerable uncertainty of causal variants in most loci. Even if the causal variants are known, assigning target genes can be difficult due to complex, often long-range, regulatory relationships between enhancers and genes.</p>
-<p>We developed a novel gene mapping procedure to prioritize target genes:</p>
+<p>Despite our fine-mapping efforts, there remains considerable
+uncertainty of causal variants in most loci. Even if the causal variants
+are known, assigning target genes can be difficult due to complex, often
+long-range, regulatory relationships between enhancers and genes.</p>
+<p>We developed a novel gene mapping procedure to prioritize target
+genes:</p>
 <ol style="list-style-type: decimal">
-<li><p>For every putative causal SNP, we assign a weight to each nearby gene, taking into account multiple ways a SNP may affect a gene. The weight of a nearby gene can be viewed as the probability that this SNP targets that gene.</p></li>
-<li><p>The PIP of each SNP is then distributed among all potential target genes according to the weights of these genes. The “fractional PIP” a gene receives from a SNP can be viewed as the support the SNP provides to that gene.</p></li>
-<li><p>For each gene, we then sum over the fractional PIPs it receives from all candidate SNPs in the region. The resulting “gene PIP” approximates the probability of a gene being causal.</p></li>
-<li><p>Similar to variant-level fine-mapping, we also define a “credible gene set”, the set of genes that capture the causal signal at a locus with high probability (80% by default).</p></li>
+<li><p>For every putative causal SNP, we assign a weight to each nearby
+gene, taking into account multiple ways a SNP may affect a gene. The
+weight of a nearby gene can be viewed as the probability that this SNP
+targets that gene.</p></li>
+<li><p>The PIP of each SNP is then distributed among all potential
+target genes according to the weights of these genes. The “fractional
+PIP” a gene receives from a SNP can be viewed as the support the SNP
+provides to that gene.</p></li>
+<li><p>For each gene, we then sum over the fractional PIPs it receives
+from all candidate SNPs in the region. The resulting “gene PIP”
+approximates the probability of a gene being causal.</p></li>
+<li><p>Similar to variant-level fine-mapping, we also define a “credible
+gene set”, the set of genes that capture the causal signal at a locus
+with high probability (80% by default).</p></li>
 </ol>
 <div class="figure">
 <img src="../reference/figures/gene.mapping.diagram.png" alt="Schematic of gene-level PIP calculation. s: SNP, g: gene" width="75%"><p class="caption">
@@ -118,17 +133,22 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <div class="section level2">
 <h2 id="gene-mapping-tutorial">Gene mapping tutorial<a class="anchor" aria-label="anchor" href="#gene-mapping-tutorial"></a>
 </h2>
-<p>Our gene mapping procedure takes variant-level PIPs from genetic fine-mapping (probability for a SNP being causal), together with functional annotation data, and computes gene-level PIPs (probability for a gene being causal).</p>
+<p>Our gene mapping procedure takes variant-level PIPs from genetic
+fine-mapping (probability for a SNP being causal), together with
+functional annotation data, and computes gene-level PIPs (probability
+for a gene being causal).</p>
 <p><strong>Required input data</strong>:</p>
 <ul>
 <li>Fine-mapping summary statistics.</li>
 <li>Gene annotations, exons, introns, UTRs, etc.</li>
-<li>Functional annotation data, including: PC-HiC, ABC scores, open chromatin regions (OCRs), etc.</li>
+<li>Functional annotation data, including: PC-HiC, ABC scores, open
+chromatin regions (OCRs), etc.</li>
 </ul>
 <p>Load R packages</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xinhe-lab/mapgen" class="external-link">mapgen</a></span><span class="op">)</span></span></code></pre></div>
-<p>Load fine-mapping results, filter SNPs with PIP threshold of 1e-5, and save as a GRanges object.</p>
+<p>Load fine-mapping results, filter SNPs with PIP threshold of 1e-5,
+and save as a GRanges object.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">finemapstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"AF.finemapping.result.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># filter SNPs and rename columns</span></span>
@@ -166,17 +186,22 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <p>Load open chromatin regions (OCRs)</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"OCRs.hg19.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>We defined active promoters as promoters overlapping with OCRs (overlap at least 100 bp).</p>
+<p>We defined active promoters as promoters overlapping with OCRs
+(overlap at least 100 bp).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span> <span class="op">&lt;-</span> <span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/findOverlaps-methods.html" class="external-link">subsetByOverlaps</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">promoters</span>, </span>
 <span>                                                             <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs</span>, </span>
 <span>                                                             minoverlap <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <p>Define enhancer loops:</p>
-<p>We used promoter-capture HiC (PC-HiC) data from cardiomyocytes (CMs).</p>
+<p>We used promoter-capture HiC (PC-HiC) data from cardiomyocytes
+(CMs).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pcHiC.CM.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>You can use your own PC-HiC data using process_pcHiC(). You may skip this if you do not have relevant PC-HiC data.</p>
-<p>We used ABC scores from heart ventricle (from Nasser <em>et al.</em> <em>Nature</em> 2021). You may skip this if you do not have relevant ABC scores.</p>
+<p>You can use your own PC-HiC data using process_pcHiC(). You may skip
+this if you do not have relevant PC-HiC data.</p>
+<p>We used ABC scores from heart ventricle (from Nasser <em>et al.</em>
+<em>Nature</em> 2021). You may skip this if you do not have relevant ABC
+scores.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ABC.heart.ventricle.ENCODE.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># process_ABC() process a data frame of ABC scores and converts to a GRanges object.</span></span>
@@ -185,12 +210,15 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <p>Enhancer regions</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_regions</span> <span class="op">&lt;-</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs</span><span class="op">[</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs</span><span class="op">$</span><span class="va">peakType</span><span class="op">!=</span><span class="st">"Promoter"</span>,<span class="op">]</span></span></code></pre></div>
-<p>Considering the fact that PC-HiC and HiC loops may miss contacts between close regions due to technical reasons, we also consider enhancer regions (based on OCRs) within 20 kb of active promoters.</p>
+<p>Considering the fact that PC-HiC and HiC loops may miss contacts
+between close regions due to technical reasons, we also consider
+enhancer regions (based on OCRs) within 20 kb of active promoters.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nearby20kb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nearby_interactions.html">nearby_interactions</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_regions</span>,</span>
-<span>                                                          <span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span>, </span>
-<span>                                                          max.dist <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></code></pre></div>
-<p>Include ABC, PC-HiC and nearby interactions (20kb) in the enhancer loops</p>
+<code class="sourceCode R"><span><span class="va">nearby20kb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_nearby_interactions.html">get_nearby_interactions</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_regions</span>,</span>
+<span>                                      <span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span>, </span>
+<span>                                      max.dist <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></code></pre></div>
+<p>Include ABC, PC-HiC and nearby interactions (20kb) in the enhancer
+loops</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_loops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ABC <span class="op">=</span> <span class="va">ABC</span>, pcHiC <span class="op">=</span> <span class="va">pcHiC</span>, nearby20kb <span class="op">=</span> <span class="va">nearby20kb</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -199,7 +227,8 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 </h2>
 <p>Parameter settings:</p>
 <ul>
-<li>intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).</li>
+<li>intron.mode = FALSE (do not assign intronic SNPs to the genes
+containing the introns).</li>
 <li>d0 = 50000 (distance weight parameter: 50kb by default).</li>
 </ul>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -232,7 +261,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gene.pip.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_gene_level_result.html">extract_gene_level_result</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, <span class="va">gene.annots</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Extract gene level result ...</span></span>
-<span><span class="co">## Remove 6 genes not included in gene.annots...</span></span></code></pre>
+<span><span class="co">## Remove 6 genes not included in gene.annots.</span></span></code></pre>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.pip.res</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##    chr       pos gene_name    gene_pip</span></span>
@@ -244,7 +273,7 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span><span class="co">## 6 chr2  60780702    BCL11A 0.000439048</span></span></code></pre>
 <p>Obtain 80% credible gene sets</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gene.cs.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/gene_cs.html">gene_cs</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">gene.cs.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_gene_cs.html">get_gene_cs</a></span><span class="op">(</span><span class="va">gene.mapping.res</span>, by.locus <span class="op">=</span> <span class="cn">TRUE</span>, gene.cs.percent.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.cs.df</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   locus      gene_cs          gene_cs_locus_pip top_gene top_locus_gene_pip</span></span>
 <span><span class="co">## 1     7        CASZ1               CASZ1(0.882)    CASZ1          0.8820389</span></span>
@@ -260,7 +289,8 @@ Schematic of gene-level PIP calculation. s: SNP, g: gene
 <span><span class="co">## 4    0.9969803</span></span>
 <span><span class="co">## 5    0.4259176</span></span>
 <span><span class="co">## 6    0.4482764</span></span></code></pre>
-<p>Make a Manhattan plot of the gene PIPs, and label genes with gene PIP &gt; 0.8.</p>
+<p>Make a Manhattan plot of the gene PIPs, and label genes with gene PIP
+&gt; 0.8.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_manhattan_plot.html">gene_manhattan_plot</a></span><span class="op">(</span><span class="va">gene.pip.res</span>, sig.pip <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="gene_mapping_tutorial_files/figure-html/gene-manhattan-plot-1.png" width="768"></p>
