@@ -17,7 +17,7 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
   my.genes <- my.gtf.protein[my.gtf.protein$type=='gene',]
 
   canonical.transcripts <- my.gtf.protein %>%
-    as_tibble() %>%
+    tibble::as_tibble() %>%
     dplyr::filter(type == 'transcript') %>%
     group_by(gene_id) %>%
     mutate(transLength = abs(end - start)) %>%

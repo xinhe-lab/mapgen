@@ -148,7 +148,6 @@ assign_snp_locus <- function(cleaned.sumstats, LD_Blocks){
 #' If so, ambiguous alleles A/T and C/G are removed.
 #' @param match.min.prop Minimum proportion of variants in the smallest data
 #' to be matched, otherwise stops with an error. Default: 10%
-#' @import tidyverse
 #' @export
 match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1){
 
@@ -162,10 +161,10 @@ match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.pr
                                          match.min.prop = match.min.prop)
 
   matched.sumstats <- matched.sumstats %>%
+    tibble::as_tibble() %>%
     dplyr::rename(og_index = `_NUM_ID_.ss`) %>%
     dplyr::rename(bigSNP_index = `_NUM_ID_`) %>%
-    dplyr::mutate(zscore = beta/se) %>%
-    as_tibble()
+    dplyr::mutate(zscore = beta/se)
 
   return(matched.sumstats)
 }

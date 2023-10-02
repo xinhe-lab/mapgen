@@ -15,7 +15,7 @@ run_finemapping(
 )
 }
 \arguments{
-\item{sumstats}{a tibble or data frame containing raw summary statistics; must have header!}
+\item{sumstats}{A data frame containing raw summary statistics; must have header!}
 
 \item{bigSNP}{a bigsnpr object attached via bigsnpr::snp_attach()}
 

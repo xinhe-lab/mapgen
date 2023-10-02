@@ -28,7 +28,7 @@ prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fd
 #' @title Run fine-mapping using GWAS summary statistics
 #' @description Run finemapping with SuSiE using GWAS summary statistics
 #' for all LD blocks with prior probabilities computed by TORUS
-#' @param sumstats a tibble or data frame containing raw summary statistics; must have header!
+#' @param sumstats A data frame containing raw summary statistics; must have header!
 #' @param bigSNP a bigsnpr object attached via bigsnpr::snp_attach()
 #' @param n The sample size
 #' @param priortype prior type: "torus" or "uniform".
