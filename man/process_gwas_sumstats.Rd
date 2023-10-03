@@ -14,8 +14,8 @@ process_gwas_sumstats(
   a1 = "a1",
   snp = "snp",
   pval = "pval",
-  LD_Blocks = NULL,
-  bigSNP = NULL
+  LD_Blocks,
+  bigSNP
 )
 }
 \arguments{

@@ -27,23 +27,23 @@ process_gwas_sumstats <- function(sumstats,
                                   a1 = 'a1',
                                   snp = 'snp',
                                   pval = 'pval',
-                                  LD_Blocks = NULL,
-                                  bigSNP = NULL){
+                                  LD_Blocks,
+                                  bigSNP){
 
   cat('Cleaning summary statistics...\n')
   cleaned.sumstats <- clean_sumstats(sumstats,
                                      chr=chr, pos=pos, beta=beta, se=se,
                                      a0=a0, a1=a1, snp=snp, pval=pval)
 
-  if(is.null(LD_Blocks)){
-    cat('LD_Blocks not provided. Skipped assigning SNPs to LD blocks. \n')
+  if(missing(LD_Blocks)){
+    cat('Skipped assigning SNPs to LD blocks. \n')
   }else{
     cat('Assigning GWAS SNPs to LD blocks...\n')
     cleaned.sumstats <- assign_snp_locus(cleaned.sumstats, LD_Blocks)
   }
 
-  if(is.null(bigSNP)){
-    cat('bigSNP not provided. Skipped matching GWAS with bigSNP reference panel. \n')
+  if(missing(bigSNP)){
+    cat('Skipped matching GWAS with bigSNP reference panel. \n')
   }else{
     cat('Matching GWAS with bigSNP reference panel...\n')
     cleaned.sumstats <- match_gwas_bigsnp(cleaned.sumstats, bigSNP)
@@ -83,9 +83,8 @@ clean_sumstats <- function(sumstats,
     colnames(cleaned.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
   }
 
-  # Check chromosome names
+  # Check chromosome names, remove 'chr'
   if( any(grepl('chr', cleaned.sumstats$chr)) ){
-    cat("Remove \'chr\' from the chr column...\n")
     cleaned.sumstats$chr <- gsub('chr', '', cleaned.sumstats$chr)
   }
 
@@ -119,26 +118,39 @@ clean_sumstats <- function(sumstats,
 }
 
 
-#' @title Assigns each SNP to one LD block
-#' @param cleaned.sumstats A data frame of GWAS summary statistics.
-#' @param LD_Blocks A data frame of LD blocks
+#' @title Assign GWAS SNPs to LD blocks
+#' @param sumstats A data frame of GWAS summary statistics.
+#' @param LD_Blocks A data frame of LD blocks with four columns,
+#' 'chr', 'start', 'end', and 'locus'.
 #' @export
-assign_snp_locus <- function(cleaned.sumstats, LD_Blocks){
+assign_snp_locus <- function(sumstats, LD_Blocks){
 
-  ld.gr <- make_ranges(LD_Blocks$X1, LD_Blocks$X2, LD_Blocks$X3)
-  ld.gr <- plyranges::mutate(ld.gr, locus=LD_Blocks$X4)
+  LD_Blocks <- as.data.frame(LD_Blocks)
+  colnames(LD_Blocks)[1:4] <- c('chr', 'start', 'end', 'locus')
 
-  snp.gr <- make_ranges(seqname = cleaned.sumstats$chr,
-                        start = cleaned.sumstats$pos,
-                        end = cleaned.sumstats$pos)
-  snp.gr <- plyranges::mutate(snp.gr, snp=cleaned.sumstats$snp)
+  if( any(grepl('chr', sumstats$chr)) ){
+    sumstats$chr <- gsub('chr', '', sumstats$chr)
+  }
 
-  snp.ld.overlap <- plyranges::join_overlap_inner(snp.gr, ld.gr)
-  snp.ld.block <- tibble::as_tibble(snp.ld.overlap@elementMetadata)
-  snp.ld.block <- snp.ld.block[!duplicated(snp.ld.block$snp), ] # some SNPs are in multiple LD blocks due to edge of LD blocks
-  cleaned.annot.sumstats <- dplyr::inner_join(cleaned.sumstats, snp.ld.block, 'snp')
+  if( any(grepl('chr', LD_Blocks$chr)) ){
+    LD_Blocks$chr <- gsub('chr', '', LD_Blocks$chr)
+  }
 
-  return(cleaned.annot.sumstats)
+  LD_Blocks.gr <- GenomicRanges::makeGRangesFromDataFrame(LD_Blocks,
+                                                          keep.extra.columns = TRUE)
+
+  snp.gr <- GenomicRanges::makeGRangesFromDataFrame(sumstats,
+                                                    start.field = 'pos', end.field = 'pos')
+
+  snp.gr <- plyranges::mutate(snp.gr, snp=sumstats$snp)
+
+  snp.ld.block.overlap <- plyranges::join_overlap_inner(snp.gr, LD_Blocks.gr)
+  snp.ld.block <- tibble::as_tibble(snp.ld.block.overlap@elementMetadata)
+  # remove duplicated SNPs,
+  snp.ld.block <- snp.ld.block[!duplicated(snp.ld.block$snp), ]
+  sumstats.ld.block <- dplyr::inner_join(sumstats, snp.ld.block, by = 'snp')
+
+  return(sumstats.ld.block)
 }
 
 #' @title Match GWAS with bigSNP reference panel.
