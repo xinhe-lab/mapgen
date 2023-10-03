@@ -59,8 +59,9 @@ genomic annotations, including gene annotations, chromatin loops, etc.
 
 ## Reference
 
-Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin Smith, Xiaotong
-Sun, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin
-He, Sebastian Pott. Single-cell genomics improves the discovery of risk
-variants and genes of Atrial Fibrillation. medRxiv 2022.02.02.22270312;
-doi: <https://doi.org/10.1101/2022.02.02.22270312>
+> Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin Smith, Xiaotong
+> Sun, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin
+> He, Sebastian Pott. Single-cell genomics improves the discovery of
+> risk variants and genes of atrial fibrillation. *Nat Commun.* 2023 Aug
+> 17;14(1):4999. doi: 10.1038/s41467-023-40505-5. PMID: 37591828; PMCID:
+> PMC10435551.
