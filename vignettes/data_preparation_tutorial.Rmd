@@ -24,8 +24,8 @@ obtain a file with `.rds` extension.
 This RDS file is used for downstream analyses when attached with 
 `bigsnpr::snp_attach()`.
 
-You can skip this if you only need to run enrichment analysis or 
-other analysis (e.g.gene mapping) with precomputed fine-mapping result.
+_* You can skip this if you only need to run enrichment analysis or 
+downstream analysis (e.g. gene mapping) with precomputed fine-mapping result._
 
 We provided a `bigSNP` object of the reference genotype panel from 
 the 1000 Genomes (1KG) European population. 
@@ -41,26 +41,23 @@ bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds
 
 ## LD blocks
 
-We provided LD blocks from `LDetect` for 1000 Genomes (1KG) European population (in hg19).
-The data frame has four columns: 
-chromosome, start and end positions (in hg19), and 
-the LD block indices.
+For the LD blocks, we need a data frame with four columns: 
+chromosome, start and end positions, and 
+the indices of the LD blocks.
+
+We provided the LD blocks from `LDetect` for the 1000 Genomes (1KG) European population (in hg19).
 ```{r load-LD-blocks}
 LD_blocks <- readRDS(system.file('extdata', 'LD.blocks.LDetect.1KG.EUR.hg19.rds', package='mapgen'))
 head(as.data.frame(LD_blocks), 3)
 ```
 
-You can skip this if you only need to run enrichment analysis.
-
+_* You can skip this if you only need to run enrichment analysis._
 
 ## GWAS summary statistics
 
-The GWAS summary statistics file could be in either tab or comma delimited. 
-You could read it using the `vroom` package.
-
-Let's load a small example GWAS dataset (`test.sumstats.txt.gz`) included in the package.
+Let's load a small example GWAS dataset (`test.sumstats.txt.gz`).
 ```{r load-gwas-sumstats}
-# Read in GWAS summary statistics using vroom package
+# Read in GWAS summary statistics using the vroom package
 library(vroom)
 gwas.file <- system.file('extdata', 'test.sumstats.txt.gz', package='mapgen')
 sumstats <- vroom(gwas.file, col_names = TRUE, show_col_types = FALSE)
@@ -81,7 +78,7 @@ We need the following columns in the summary statistics:
 
 We run `process_gwas_sumstats()` to load and process the summary statistics.
 This cleans GWAS summary statistics, match SNPs with the reference panel 
-from the bigSNP object, and add locus ID from the LD Blocks.
+from the `bigSNP` object, and add locus ID from `LD_Blocks`.
 ```{r process-gwas-sumstats, eval=FALSE}
 gwas.sumstats <- process_gwas_sumstats(sumstats, 
                                        chr='chr', 
@@ -96,7 +93,7 @@ gwas.sumstats <- process_gwas_sumstats(sumstats,
                                        bigSNP=bigSNP)
 ```
 
-You can skip bigSNP and LD_Blocks if you only need to run enrichment analysis.
+_* You do not need `bigSNP` and `LD_Blocks` if you only need to run enrichment analysis._
 
 Check that the output is cleaned and has appropriate columns:
 ```{r include=FALSE}
