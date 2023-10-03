@@ -152,7 +152,7 @@ head(gene.pip.res)
 
 Obtain 80% credible gene sets
 ```{r gene-cs}
-gene.cs.df <- get_gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
+gene.cs.df <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
 head(gene.cs.df)
 ```
 

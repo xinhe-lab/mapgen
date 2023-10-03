@@ -202,7 +202,7 @@ extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
 
 }
 
-#' @title Get credible gene sets from SNP-level gene mapping table
+#' @title Obtain credible gene sets from SNP-level gene mapping table
 #'
 #' @param gene.mapping.res A data frame of SNP-level gene mapping table
 #' @param by.locus Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
@@ -218,9 +218,9 @@ extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
 #' Locus-level gene PIP only includes SNPs within a locus, so this value may be lower than the gene PIP.
 #' top_gene_pip:  gene PIP of the top gene.
 #' @export
-get_gene_cs <- function(gene.mapping.res,
-                        by.locus = TRUE,
-                        gene.cs.percent.thresh = 0.8){
+gene_cs <- function(gene.mapping.res,
+                    by.locus = TRUE,
+                    gene.cs.percent.thresh = 0.8){
 
   # Get locus level gene PIP
   locus.gene.pip.df <- get_locus_level_gene_pip(gene.mapping.res)
