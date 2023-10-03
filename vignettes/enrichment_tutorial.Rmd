@@ -33,8 +33,8 @@ contain the columns "chr", "start", "end".
 Chromosomes should be just the numbers (no "chr"). 
 
 ```{r prepare-torus-files}
-annotations_dir <- system.file('extdata', 'test_bed_dir/', package='mapgen')
-annotation_bed_files <- list.files(path = annotations_dir, pattern = '*.bed', full.names = TRUE)
+annotation_bed_files <- list.files(path = system.file('extdata', 'test_bed_dir', package='mapgen'),
+                                   pattern = '*.bed', full.names = TRUE)
 
 # annotation_bed_files: Path to the annotation (.bed) files.
 gwas.sumstats <- readRDS(system.file('extdata', 'test.processed.sumstats.rds', package='mapgen'))
@@ -49,8 +49,8 @@ enrichment estimates (log odds ratio) and 95% confidence intervals for each anno
 as well as SNP-level priors (which could be used as priors in fine-mapping).
 
 ```{r run-torus-est-prior, eval=FALSE}
-torus.res <- run_torus(torus.files$torus_annot_file, 
-                       torus.files$torus_zscore_file,
+torus.res <- run_torus(torus_annot_file = torus.files$torus_annot_file, 
+                       torus_zscore_file = torus.files$torus_zscore_file,
                        option = 'est-prior',
                        torus_path = 'torus') # set the path to 'torus' executable.
 torus.enrich <- torus.res$enrich
@@ -61,8 +61,8 @@ If you only want to estimate enrichment but do not need SNP-level priors,
 you can set `option = "est"` to save time computing the priors.
 
 ```{r run-torus-est, eval=FALSE}
-torus.res <- run_torus(torus.files$torus_annot_file, 
-                       torus.files$torus_zscore_file,
+torus.res <- run_torus(torus_annot_file = torus.files$torus_annot_file, 
+                       torus_zscore_file = torus.files$torus_zscore_file,
                        option = 'est',
                        torus_path = 'torus') # set the path to 'torus' executable.
 torus.enrich <- torus.res$enrich
@@ -71,8 +71,8 @@ torus.enrich <- torus.res$enrich
 TORUS also gives us the uncertainty of whether each locus contains a causal variant or not. 
 You can set `option = "fdr"` to get the FDR associated with each locus.
 ```{r run-torus-fdr, eval=FALSE}
-torus.res <- run_torus(torus.files$torus_annot_file, 
-                       torus.files$torus_zscore_file,
+torus.res <- run_torus(torus_annot_file = torus.files$torus_annot_file, 
+                       torus_zscore_file = torus.files$torus_zscore_file,
                        option = 'fdr',
                        torus_path = 'torus')
 torus.fdr <- torus.res$enrich
