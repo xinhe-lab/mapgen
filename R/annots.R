@@ -2,11 +2,12 @@
 #' @title Make genomic annotations from a GTF file
 #'
 #' @param gtf_file Path to the GTF file
+#' @param add_splice_junctions If TRUE, add splice junctions in the result
 #' @import GenomicRanges
 #' @import tidyverse
 #' @return A list of GRanges objects of genomic annotations
 #' @export
-make_genomic_annots <- function(gtf_file, splice_junctions = FALSE) {
+make_genomic_annots <- function(gtf_file, add_splice_junctions = FALSE) {
 
   my.gtf <- rtracklayer::import(con = gtf_file, format = 'gtf')
   seqlevels(my.gtf, pruning.mode = 'coarse') <- paste0('chr',1:22)
@@ -55,7 +56,7 @@ make_genomic_annots <- function(gtf_file, splice_junctions = FALSE) {
     promoters = my.promoters
   )
 
-  if(splice_junctions){
+  if(add_splice_junctions){
     exon.chr <- c(as.character(seqnames(my.exons)), as.character(seqnames(my.exons)))
     exon.pos <- c(start(my.exons), end(my.exons))
     exon.gene.name <- c(my.exons$gene_name, my.exons$gene_name)
