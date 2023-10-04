@@ -37,13 +37,13 @@ torus.res <- readRDS(system.file('extdata', 'test.torus.res.rds', package='mapge
 
 Now, we can add the SNP-level priors to our summary statistics. 
 ```{r add-torus-priors}
-gwas.sumstats <- prepare_susie_data_with_torus_result(sumstats = gwas.sumstats, 
-                                                      torus_prior = torus.res$snp_prior)
+sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas.sumstats, 
+                                                           torus_prior = torus.res$snp_prior)
 ```
 
 We see we have a new column called 'torus_prior'.
 ```{r}
-head(as.data.frame(gwas.sumstats), 3)
+head(as.data.frame(sumstats.for.susie), 3)
 ```
 
 We did not filter loci in this tutorial example. 
@@ -53,33 +53,51 @@ or by FDR cutoff from running `run_torus()` with `option = "fdr"`.
 ## Fine-mapping
 
 We can then perform fine-mapping with SNP-level priors using `SuSiE`, 
-you will need the `susieR` and `bigsnpr` packages for the steps below. 
+you will need the `susieR` package for the steps below. 
 ```{r, message=FALSE}
 library(susieR)
-library(bigsnpr)
 ```
 
 To use SNP-level priors computed from `TORUS`, we use `run_finemapping()` 
-with `priortype = 'torus'`.
-```{r run-susie-torus-prior, eval=FALSE, message=FALSE}
-susie.finemap.res <- run_finemapping(sumstats = gwas.sumstats, 
-                                     bigSNP = bigSNP, 
-                                     priortype = 'torus', 
-                                     L = 1)
-```
-
-`susie.finemap.res` is a list of `SuSiE` results, one for each locus. 
-
-We ran `SuSiE` with `L = 1`, which allows a single causal signal for 
-each LD block and is robust to mismatching LD patterns.
+with `priortype = 'torus'`. 
 
 You can also run fine-mapping using uniform prior (without SNP-level priors)
 with `priortype = 'uniform'`. _(You don't need to run `TORUS` if you run 
 fine-mapping using uniform prior.)_
 
+You can use the bigSNP object prepared earlier in 
+the [data preparation tutorial][data-preparation-tutorial]. 
+If you provide bigSNP instead of LD matrices, 
+it will compute R matrices using the genotype data in the bigSNP object. 
+```{r run-susie-torus-prior-bigSNP, eval=FALSE, message=FALSE}
+# you will need the bigsnpr package if you use the bigSNP object.
+library(bigsnpr)
+susie.res <- run_finemapping(sumstats = sumstats.for.susie, 
+                             bigSNP = bigSNP, 
+                             priortype = 'torus', 
+                             L = 1)
+```
+
+If you have the LD matrices, you can provide those instead of 
+using the bigSNP object. 
+```{r run-susie-torus-prior-LD-matrices, eval=FALSE, message=FALSE}
+# LD_matrices is a list of R correlation matrices for the LD blocks in sumstats
+susie.res <- run_finemapping(sumstats = sumstats.for.susie, 
+                             LD_matrices = LD_matrices, 
+                             priortype = 'torus', 
+                             L = 1)
+```
+
+We did not provide sample size (n) for this toy example, 
+but it is highly encouraged to provide that in the real data analysis.
+
+We ran `SuSiE` with `L = 1` here, which allows a single causal signal for 
+each LD block and is robust to mismatching LD patterns. 
+
+`susie.res` is a list of `SuSiE` results, one for each locus. 
 We can merge GWAS summary statistics with SuSiE result:
 ```{r merge-susie-sumstats, eval=FALSE}
-finemap.sumstats <- merge_susie_sumstats(susie.finemap.res, gwas.sumstats)
+finemap.sumstats <- merge_susie_sumstats(susie.res, sumstats.for.susie)
 ```
 
 We now have a new column called `susie_pip` which is the probability of a SNP 

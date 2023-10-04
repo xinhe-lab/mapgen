@@ -15,7 +15,7 @@ process_finemapping_sumstats(
   cs = "cs",
   locus = "locus",
   pip.thresh = 0,
-  filter.cs = FALSE,
+  filterCS = FALSE,
   maxL = 10
 )
 }
@@ -34,15 +34,17 @@ process_finemapping_sumstats(
 
 \item{zscore}{Name of the z-score column in the fine-mapping summary statistics}
 
-\item{cs}{Name of the credible set column in the fine-mapping summary statistics}
+\item{cs}{Name of the credible set (CS) column in the fine-mapping summary statistics}
 
 \item{locus}{Name of the locus column in the fine-mapping summary statistics}
 
 \item{pip.thresh}{Select SNPs by PIP threshold (default = 0, no filtering).}
 
-\item{filter.cs}{If TRUE, limiting to SNPs within credible sets.}
+\item{filterCS}{If TRUE, limiting to SNPs within credible sets.}
 
-\item{maxL}{Maximum number of credible sets (default = 10).}
+\item{maxL}{Maximum number of credible sets (default = 10).
+If filterCS is TRUE, it will only keep SNPs with credible set (CS) number >= 1
+and <= \code{maxL}.}
 }
 \value{
 A GRanges object with cleaned and filtered fine-mapping summary statistics

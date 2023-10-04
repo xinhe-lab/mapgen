@@ -12,8 +12,8 @@
 #' @param a1 Column name of the association/effect allele.
 #' @param snp Name of the SNP ID (rsID) column.
 #' @param pval Name of the p-value column.
-#' @param bigSNP bigSNP object from \code{bigsnpr} containing the reference
-#' genotype panel.
+##' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+#' containing the reference genotype panel.
 #' @param LD_Blocks A data frame of LD blocks with four columns,
 #' 'chr', 'start', 'end', and 'locus' (LD block indices).
 #' @return A data frame of processed GWAS summary statistics.
@@ -173,8 +173,8 @@ assign_snp_locus <- function(sumstats, LD_Blocks){
 #' accounting for possible strand flips and reverse reference alleles (opposite effects).
 #'
 #' @param sumstats  A data frame of GWAS summary statistics
-#' @param bigSNP bigSNP object from \code{bigsnpr} containing the reference
-#' genotype panel.
+#' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+#' containing the reference genotype panel.
 #' @param strand_flip Whether to try to flip strand? (default is TRUE).
 #' If so, ambiguous alleles A/T and C/G are removed.
 #' @param match.min.prop Minimum proportion of variants in the smallest data
@@ -182,7 +182,7 @@ assign_snp_locus <- function(sumstats, LD_Blocks){
 #' @return A data frame with matched summary statistics.
 #' Values in column "beta" are multiplied by -1 for variants with
 #' alleles reversed (i.e. swapped).
-#' New variable "sumstats_index" returns the corresponding row indices of the sumstats,
+#' New variable "ss_index" returns the corresponding row indices of the sumstats,
 #' and "bigSNP_index" corresponding to the indices of the bigSNP.
 #' @export
 match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1){
@@ -198,7 +198,7 @@ match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.pr
 
   matched.sumstats <- matched.sumstats %>%
     tibble::as_tibble() %>%
-    dplyr::rename(sumstats_index = `_NUM_ID_.ss`) %>%
+    dplyr::rename(ss_index = `_NUM_ID_.ss`) %>%
     dplyr::rename(bigSNP_index = `_NUM_ID_`) %>%
     dplyr::mutate(zscore = beta/se)
 

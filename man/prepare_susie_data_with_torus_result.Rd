@@ -2,7 +2,8 @@
 % Please edit documentation in R/finemapping.R
 \name{prepare_susie_data_with_torus_result}
 \alias{prepare_susie_data_with_torus_result}
-\title{Prepare SuSiE summary statistics with TORUS SNP-level priors}
+\title{Prepare summary statistics with TORUS SNP-level priors as
+input data for SuSiE}
 \usage{
 prepare_susie_data_with_torus_result(
   sumstats,
@@ -12,20 +13,23 @@ prepare_susie_data_with_torus_result(
 )
 }
 \arguments{
-\item{sumstats}{A data frame containing GWAS summary statistics}
+\item{sumstats}{A data frame of summary statistics}
 
-\item{torus_prior}{A data frame containing SNP level priors
+\item{torus_prior}{A data frame with SNP level priors
 (result from \code{run_torus()} with \code{option=\dQuote{est-prior}})}
 
 \item{torus_fdr}{A data frame containing the FDR of each region
 (result from \code{run_torus()} with \code{option=\dQuote{fdr}}).
-Optional, if available, only keep the loci with TORUS FDR < fdr.thresh.}
+Optional, if available, only keep the loci with FDR < \code{fdr.thresh}.}
 
 \item{fdr.thresh}{FDR cutoff (default: 0.1)}
 }
 \value{
-A data frame of GWAS summary statistics with TORUS prior probabilities
+A data frame of summary statistics with SNP-level priors
+to be used as input data for \code{susie_rss}.
 }
 \description{
-Adds TORUS SNP-level priors to GWAS summary statistics
+Check for required columns in summary statistics and
+adds TORUS SNP-level priors to summary statistics to be used as input
+data for \code{susie_rss}.
 }

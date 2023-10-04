@@ -9,8 +9,8 @@ match_gwas_bigsnp(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1)
 \arguments{
 \item{sumstats}{A data frame of GWAS summary statistics}
 
-\item{bigSNP}{bigSNP object from \code{bigsnpr} containing the reference
-genotype panel.}
+\item{bigSNP}{a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+containing the reference genotype panel.}
 
 \item{strand_flip}{Whether to try to flip strand? (default is TRUE).
 If so, ambiguous alleles A/T and C/G are removed.}
@@ -22,7 +22,7 @@ to be matched, otherwise stops with an error. Default: 10\%}
 A data frame with matched summary statistics.
 Values in column "beta" are multiplied by -1 for variants with
 alleles reversed (i.e. swapped).
-New variable "sumstats_index" returns the corresponding row indices of the sumstats,
+New variable "ss_index" returns the corresponding row indices of the sumstats,
 and "bigSNP_index" corresponding to the indices of the bigSNP.
 }
 \description{

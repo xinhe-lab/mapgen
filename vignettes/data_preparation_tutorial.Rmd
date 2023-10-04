@@ -15,28 +15,28 @@ Load the package.
 library(mapgen)
 ```
 
-## Reference panel
+## GWAS summary statistics
 
-Fine-mapping requires linkage-disequilibrium (LD) information. 
-We utilize the R package `bigsnpr` to read in PLINK files (bed/bim/fam) into R 
-on the fly. If you have PLINK files, you can use `bigsnpr::snp_readBed()` to 
-obtain a file with `.rds` extension. 
-This RDS file is used for downstream analyses when attached with 
-`bigsnpr::snp_attach()`.
+We need a data frame of GWAS summary statistics with the following columns:
 
-_* You can skip this if you only need to run enrichment analysis or 
-downstream analysis (e.g. gene mapping) with precomputed fine-mapping result._
+* chr: chromosome
+* pos: position  
+* beta: effect size (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))  
+* se: standard error (SE)  
+* a0: reference allele
+* a1: association/effect allele
+* snp: SNP ID (e.g. rsID)
+* pval: p-value
 
-We provided a `bigSNP` object of the reference genotype panel from 
-the 1000 Genomes (1KG) European population. 
+Let's load a small example GWAS dataset (`test.sumstats.txt.gz`), and
+process the data (see below).
 
-If you are in the He lab at UChicago, you can load the following file from RCC.
-Otherwise, you could obtain 
-your own reference genotypes in PLINK format (bed/bim/fam) 
-and use `readBed()` from the `bigsnpr` package to create the `.rds` file.
-```{r load-bigSNP, eval=FALSE, message=FALSE}
-library(bigsnpr)
-bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
+We can use the `vroom` package to read the GWAS summary statistics.
+```{r load-gwas-sumstats}
+library(vroom)
+gwas.file <- system.file('extdata', 'test.sumstats.txt.gz', package='mapgen')
+sumstats <- vroom(gwas.file, col_names = TRUE, show_col_types = FALSE)
+head(as.data.frame(sumstats),3)
 ```
 
 ## LD blocks
@@ -53,32 +53,41 @@ head(as.data.frame(LD_blocks), 3)
 
 _* You can skip this if you only need to run enrichment analysis._
 
-## GWAS summary statistics
+## Reference panel
 
-Let's load a small example GWAS dataset (`test.sumstats.txt.gz`).
-```{r load-gwas-sumstats}
-# Read in GWAS summary statistics using the vroom package
-library(vroom)
-gwas.file <- system.file('extdata', 'test.sumstats.txt.gz', package='mapgen')
-sumstats <- vroom(gwas.file, col_names = TRUE, show_col_types = FALSE)
-head(as.data.frame(sumstats),3)
+Fine-mapping requires linkage-disequilibrium (LD) information. 
+
+You could either provide LD matrices or 
+use a reference genotype panel, which will compute LD matrices internally. 
+
+To use the reference genotype panel, we utilize the R package `bigsnpr` to 
+read in PLINK files (bed/bim/fam) into R and 
+match alleles between GWAS summary statistics and reference genotype panel. 
+
+If you have reference genotypes in PLINK format, you can use [bigsnpr::snp_readBed()](https://privefl.github.io/bigsnpr/reference/snp_readBed.html) 
+to read `bed/bim/fam` files into a [bigSNP][bigSNP] object and save as a '.rds' file.
+This '.rds' file could be used for downstream analyses when attached with 
+\code{bigsnpr::snp_attach()}.
+
+We provided a `bigSNP` object of the reference genotype panel from 
+the 1000 Genomes (1KG) European population. If you are in the He lab at UChicago, 
+you can load the bigSNP object from RCC as below.
+```{r load-bigSNP, eval=FALSE, message=FALSE}
+library(bigsnpr)
+bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
 
-We need the following columns in the summary statistics:
+_* You can skip this if you only need to run enrichment analysis, 
+or you have LD matrices, or if you only need to run 
+downstream analysis (e.g. gene mapping) with precomputed fine-mapping result._
 
-* sumstats: A data frame of the GWAS summary statistics
-* chr: chromosome
-* pos: position  
-* beta: effect size (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))  
-* se: standard error (SE)  
-* a0: reference allele
-* a1: association/effect allele
-* snp: SNP ID (rsID, or chr:position:a1:a2)
-* pval: p-value
+## Process GWAS summary statistics
 
-We run `process_gwas_sumstats()` to load and process the summary statistics.
-This cleans GWAS summary statistics, match SNPs with the reference panel 
-from the `bigSNP` object, and add locus ID from `LD_Blocks`.
+We run `process_gwas_sumstats()` to process the summary statistics.
+This checks and cleans GWAS summary statistics, 
+(optionally) match alleles in GWAS SNPs with the reference panel from
+the `bigSNP` object, and (optionally) add locus ID from the `LD_Blocks`.
+
 ```{r process-gwas-sumstats, eval=FALSE}
 gwas.sumstats <- process_gwas_sumstats(sumstats, 
                                        chr='chr', 
@@ -93,9 +102,9 @@ gwas.sumstats <- process_gwas_sumstats(sumstats,
                                        bigSNP=bigSNP)
 ```
 
-_* You do not need `bigSNP` and `LD_Blocks` if you only need to run enrichment analysis._
+_* You do not need to specify `bigSNP` and `LD_Blocks` if you only need to run enrichment analysis._
 
-Check that the output is cleaned and has appropriate columns:
+Check that the summary statistics is processed and has appropriate columns:
 ```{r include=FALSE}
 gwas.sumstats <- readRDS(system.file('extdata', 'test.processed.sumstats.rds', package='mapgen'))
 ```
@@ -107,3 +116,4 @@ head(as.data.frame(gwas.sumstats),3)
 [enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
 [finemapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
 [gene-mapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html
+[bigSNP]: https://privefl.github.io/bigsnpr/reference/bigSNP-class.html

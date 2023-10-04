@@ -2,41 +2,50 @@
 % Please edit documentation in R/finemapping.R
 \name{run_finemapping}
 \alias{run_finemapping}
-\title{Run fine-mapping using GWAS summary statistics}
+\title{Run fine-mapping using summary statistics}
 \usage{
 run_finemapping(
   sumstats,
   bigSNP,
+  LD_matrices,
   n,
   priortype = c("torus", "uniform"),
   L = 1,
   estimate_residual_variance = FALSE,
-  verbose = FALSE
+  verbose = FALSE,
+  ...
 )
 }
 \arguments{
-\item{sumstats}{A data frame containing raw summary statistics; must have header!}
+\item{sumstats}{A data frame of summary statistics}
 
-\item{bigSNP}{a bigsnpr object attached via bigsnpr::snp_attach()}
+\item{bigSNP}{a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+containing the reference genotype panel.}
 
-\item{n}{The sample size}
+\item{LD_matrices}{A list of LD matrices (R, correlation matrices) for
+all the LD blocks in \code{sumstats}, names of the list should
+correspond to the 'locus' column in \code{sumstats}.}
 
-\item{priortype}{prior type: "torus" or "uniform".}
+\item{n}{The sample size (optional, but strongly recommended.)}
 
-\item{L}{Number of causal signals}
+\item{priortype}{prior type:
+'torus' (use the 'torus_prior' in \code{sumstats})
+or 'uniform' (uniform prior).}
+
+\item{L}{Number of causal signals.}
 
 \item{estimate_residual_variance}{The default is FALSE,
 the residual variance is fixed to 1 or variance of y.
 If the in-sample LD matrix is provided,
 we recommend setting estimate_residual_variance = TRUE.}
 
-\item{verbose}{If verbose = TRUE, print progress,
-and a summary of the optimization settings from susie.}
+\item{verbose}{If TRUE, print progress,
+and a summary of \code{susie_rss}.}
 }
 \value{
-list of finemapping results; one per LD block
+A list of SuSiE results; one per LD block.
 }
 \description{
-Run fine-mapping with SuSiE using GWAS summary statistics
+Run fine-mapping with SuSiE using summary statistics
 for all LD blocks with prior probabilities computed by TORUS
 }

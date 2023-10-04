@@ -41,8 +41,8 @@ you will need to transform it to log(Odds Ratio)).}
 \item{LD_Blocks}{A data frame of LD blocks with four columns,
 'chr', 'start', 'end', and 'locus' (LD block indices).}
 
-\item{bigSNP}{bigSNP object from \code{bigsnpr} containing the reference
-genotype panel.}
+\item{bigSNP}{a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+containing the reference genotype panel.}
 }
 \value{
 A data frame of processed GWAS summary statistics.
