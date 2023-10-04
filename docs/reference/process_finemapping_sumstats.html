@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@
 <span>  cs <span class="op">=</span> <span class="st">"cs"</span>,</span>
 <span>  locus <span class="op">=</span> <span class="st">"locus"</span>,</span>
 <span>  pip.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  filter.cs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  filterCS <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  maxL <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -119,7 +119,7 @@
 
 
 <dt>cs</dt>
-<dd><p>Name of the credible set column in the fine-mapping summary statistics</p></dd>
+<dd><p>Name of the credible set (CS) column in the fine-mapping summary statistics</p></dd>
 
 
 <dt>locus</dt>
@@ -130,12 +130,14 @@
 <dd><p>Select SNPs by PIP threshold (default = 0, no filtering).</p></dd>
 
 
-<dt>filter.cs</dt>
+<dt>filterCS</dt>
 <dd><p>If TRUE, limiting to SNPs within credible sets.</p></dd>
 
 
 <dt>maxL</dt>
-<dd><p>Maximum number of credible sets (default = 10).</p></dd>
+<dd><p>Maximum number of credible sets (default = 10).
+If filterCS is TRUE, it will only keep SNPs with credible set (CS) number &gt;= 1
+and &lt;= <code>maxL</code>.</p></dd>
 
 </dl></div>
     <div id="value">
