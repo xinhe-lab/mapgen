@@ -115,10 +115,12 @@ gene_manhattan_plot <- function(gene.pip.res,
 #' @param categories annotation categories
 #' @param colors Colors of the structure plot categories
 #' @param ticks Labels of x-axis
+#' @param font.size Font size of structure plot
 #' @param highlight Highlight a sample
 #' @import ggplot2
 #' @export
-structure_plot <- function (mat, categories, colors, ticks = NULL, highlight = NULL){
+structure_plot <- function (mat, categories, colors, ticks = NULL,
+                            font.size = 9, highlight = NULL){
 
   mat <- na.omit(as.matrix(mat))
   n <- nrow(mat)
@@ -139,6 +141,7 @@ structure_plot <- function (mat, categories, colors, ticks = NULL, highlight = N
     scale_color_manual(values = colors) +
     scale_fill_manual(values = colors) +
     labs(x = "",y = "Proportion") +
+    cowplot::theme_cowplot(font.size) +
     theme(axis.line   = element_blank(),
           axis.ticks  = element_blank(),
           axis.text.x = element_text(angle = 45, hjust = 1))
