@@ -212,10 +212,7 @@ file with the <code><a href="../reference/make_genomic_annots.html">make_genomic
 <code class="sourceCode R"><span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">active_promoters</span> <span class="op">&lt;-</span> <span class="fu">IRanges</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/IRanges/man/findOverlaps-methods.html" class="external-link">subsetByOverlaps</a></span><span class="op">(</span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">promoters</span>, </span>
 <span>                                                             <span class="va">genomic.annots</span><span class="op">$</span><span class="va">OCRs</span>, </span>
 <span>                                                             minoverlap <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="enhancer-loops">Enhancer loops<a class="anchor" aria-label="anchor" href="#enhancer-loops"></a>
-</h3>
+<p>Enhancer loops:</p>
 <p>We used promoter-capture HiC (PC-HiC) data from cardiomyocytes
 (CMs).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -245,10 +242,9 @@ enhancer regions (based on OCRs) within 20 kb of active promoters.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span><span class="op">$</span><span class="va">enhancer_loops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ABC <span class="op">=</span> <span class="va">ABC</span>, pcHiC <span class="op">=</span> <span class="va">pcHiC</span>, nearby20kb <span class="op">=</span> <span class="va">nearby20kb</span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="run-gene-mapping">Run gene mapping<a class="anchor" aria-label="anchor" href="#run-gene-mapping"></a>
-</h2>
+<div class="section level3">
+<h3 id="run-gene-mapping">Run gene mapping<a class="anchor" aria-label="anchor" href="#run-gene-mapping"></a>
+</h3>
 <p>Parameter settings:</p>
 <ul>
 <li>intron.mode = FALSE (do not assign intronic SNPs to the genes
@@ -315,6 +311,7 @@ containing the introns).</li>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_manhattan_plot.html">gene_manhattan_plot</a></span><span class="op">(</span><span class="va">gene.pip.res</span>, gene.pip.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="gene_mapping_tutorial_files/figure-html/gene-manhattan-plot-1.png" width="768"></p>
+</div>
 </div>
   </div>
 

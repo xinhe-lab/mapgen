@@ -113,12 +113,13 @@ genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$prom
                                                              minoverlap = 100)
 ```
 
-### Enhancer loops
+Enhancer loops:
 
 We used promoter-capture HiC (PC-HiC) data from cardiomyocytes (CMs).
 ```{r load-pcHiC}
 pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "mapgen"))
 ```
+
 You can use your own PC-HiC data using process_pcHiC(). 
 You may skip this if you do not have relevant PC-HiC data.
 
@@ -150,7 +151,7 @@ We include ABC, PC-HiC and nearby interactions (20kb) in the "enhancer loop" cat
 genomic.annots$enhancer_loops <- list(ABC = ABC, pcHiC = pcHiC, nearby20kb = nearby20kb)
 ```
 
-## Run gene mapping
+### Run gene mapping
 
 Parameter settings: 
 
