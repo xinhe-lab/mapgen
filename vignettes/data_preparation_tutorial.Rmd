@@ -47,7 +47,7 @@ the indices of the LD blocks.
 
 We provided the LD blocks from `LDetect` for the 1000 Genomes (1KG) European population (in hg19).
 ```{r load-LD-blocks}
-LD_blocks <- readRDS(system.file('extdata', 'LD.blocks.LDetect.1KG.EUR.hg19.rds', package='mapgen'))
+LD_blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
 head(as.data.frame(LD_blocks), 3)
 ```
 
