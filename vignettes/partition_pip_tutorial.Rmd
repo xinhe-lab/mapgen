@@ -41,7 +41,7 @@ We can partition PIPs into different functional annotation categories.
 
 Load genomic annotations (hg19). 
 ```{r load-genomic-annotations}
-genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "mapgen"))
+genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
 ```
 
 Load all OCRs (hg19).
