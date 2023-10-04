@@ -11,19 +11,19 @@ finemapping_annot_trackplot(
   bigSNP,
   txdb,
   genome = c("hg19", "hg38"),
-  genetrack_db = c("txdb", "gene.annots", "UCSC"),
-  filter_protein_coding_genes = TRUE,
+  genetrack.db = c("txdb", "gene.annots", "UCSC"),
+  filter.protein.coding.genes = TRUE,
   countsdata,
   peaks,
   loops,
-  filter_loop_genes = NULL,
-  filter_loop_snps = NULL,
-  data_colors = seq_along(countsdata),
-  data_ylim = c(0, 1),
-  color_pip_by = c("locus", "cs", "none"),
-  highlight_snps = NULL,
-  highlight_colors = "pink",
-  genelabel_side = c("above", "right", "left", "below"),
+  filter.loop.genes = NULL,
+  filter.loop.snps = NULL,
+  data.colors = seq_along(countsdata),
+  data.ylim = c(0, 1),
+  color.pip.by = c("locus", "cs", "none"),
+  highlight.snps = NULL,
+  highlight.colors = "pink",
+  genelabel.side = c("above", "right", "left", "below"),
   track.sizes = NULL,
   rotation.title = 90,
   verbose = FALSE
@@ -42,12 +42,12 @@ finemapping_annot_trackplot(
 
 \item{genome}{Genome assembly version, hg19 (default) or hg38.}
 
-\item{genetrack_db}{Select a gene annotation database to use. Options:
+\item{genetrack.db}{Select a gene annotation database to use. Options:
 \code{txdb}: use the \code{txdb} objec.
 \code{gene.annots}: use the \code{gene.annots} object.
 \code{UCSC} uses \verb{UCSC knownGene} annotations.}
 
-\item{filter_protein_coding_genes}{If TRUE, only shows protein coding gene}
+\item{filter.protein.coding.genes}{If TRUE, only shows protein coding gene}
 
 \item{countsdata}{A list of counts data}
 
@@ -55,24 +55,24 @@ finemapping_annot_trackplot(
 
 \item{loops}{A list of chromatin loops, e.g. PC-HiC, ABC, etc.}
 
-\item{filter_loop_genes}{If TRUE, only shows HiC loops connected to
+\item{filter.loop.genes}{If TRUE, only shows HiC loops connected to
 the gene(s)}
 
-\item{filter_loop_snps}{If TRUE, only shows HiC loops connected to
+\item{filter.loop.snps}{If TRUE, only shows HiC loops connected to
 the SNP(s)}
 
-\item{data_colors}{Colors for the \code{countsdata} tracks}
+\item{data.colors}{Colors for the \code{countsdata} tracks}
 
-\item{data_ylim}{ylim range for the \code{countsdata} tracks}
+\item{data.ylim}{ylim range for the \code{countsdata} tracks}
 
-\item{color_pip_by}{color SNPs in the PIP track by \code{locus}, \code{cs},
+\item{color.pip.by}{color SNPs in the PIP track by \code{locus}, \code{cs},
 or \code{none} (same color).}
 
-\item{highlight_snps}{SNPs (rsIDs) to highlight}
+\item{highlight.snps}{SNPs (rsIDs) to highlight}
 
-\item{highlight_colors}{Colors for the highlighted SNPs}
+\item{highlight.colors}{Colors for the highlighted SNPs}
 
-\item{genelabel_side}{Side to put gene labels,
+\item{genelabel.side}{Side to put gene labels,
 options are: above (default), right, left, below}
 
 \item{track.sizes}{Sizes of the tracks}

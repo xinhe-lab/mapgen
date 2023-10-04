@@ -1,13 +1,13 @@
 
-#' @title Make gene manhattan plot
+#' @title Make gene Manhattan plot
 #'
-#' @param gene.pip.res Gene level finemapping result
-#' @param chr Name of the chr column in the gene finemapping summary statistics data
-#' @param pos Name of the pos column in the gene finemapping summary statistics data
-#' @param gene_name Name of the gene name column in the gene finemapping summary statistics data
-#' @param gene_pip Name of the gene PIP column in the gene finemapping summary statistics data
-#' @param sig.pip Signficant gene PIP (default: 0.8)
-#' @param highlight Highlight genes with gene PIP > sig.pip
+#' @param gene.pip.res Gene mapping result
+#' @param chr Name of the chr column in the gene mapping result
+#' @param pos Name of the pos column in the gene mapping result
+#' @param gene_name Name of the gene name column in the gene mapping result
+#' @param gene_pip Name of the gene PIP column in the gene gene mapping result
+#' @param gene.pip.thresh Gene PIP cutoff (default: 0.8)
+#' @param highlight Highlight genes with gene PIP > gene.pip.thresh
 #' @param ylim Truncate gene PIP to ylim value in the plot.
 #' @param point.size Size of the points.
 #' @param label.size Size of the labels.
@@ -22,7 +22,7 @@ gene_manhattan_plot <- function(gene.pip.res,
                                 pos='pos',
                                 gene_name='gene_name',
                                 gene_pip='gene_pip',
-                                sig.pip = 0.8,
+                                gene.pip.thresh = 0.8,
                                 highlight = TRUE,
                                 ylim = 1.2,
                                 point.size = 2,
@@ -38,7 +38,7 @@ gene_manhattan_plot <- function(gene.pip.res,
 
   # Highlight genes
   gene.pip.res <- gene.pip.res %>%
-    dplyr::mutate( is_highlight=(gene_pip >= sig.pip))
+    dplyr::mutate( is_highlight=(gene_pip >= gene.pip.thresh))
 
   df <- gene.pip.res %>%
 
@@ -73,7 +73,7 @@ gene_manhattan_plot <- function(gene.pip.res,
     scale_y_continuous(expand = c(0, 0), limits = c(0,ylim)) +     # remove space between plot area and x axis
 
     # Add a dotted line for significant PIP cutoff
-    geom_hline(yintercept=sig.pip, linetype="dashed", color = "red") +
+    geom_hline(yintercept=gene.pip.thresh, linetype="dashed", color = "red") +
 
     # Add highlighted points
     ggrastr::geom_point_rast(data=subset(df, is_highlight==TRUE), color="orange", size=point.size) +
@@ -158,25 +158,25 @@ structure_plot <- function (mat, categories, colors, ticks = NULL, highlight = N
 #' @param bigSNP A bigsnpr object attached via bigsnpr::snp_attach()
 #' @param txdb A txdb object of gene annotations
 #' @param genome Genome assembly version, hg19 (default) or hg38.
-#' @param genetrack_db Select a gene annotation database to use. Options:
+#' @param genetrack.db Select a gene annotation database to use. Options:
 #' `txdb`: use the `txdb` objec.
 #' `gene.annots`: use the `gene.annots` object.
 #' `UCSC` uses `UCSC knownGene` annotations.
-#' @param filter_protein_coding_genes If TRUE, only shows protein coding gene
+#' @param filter.protein.coding.genes If TRUE, only shows protein coding gene
 #' @param countsdata A list of counts data
 #' @param peaks A list of peaks
 #' @param loops A list of chromatin loops, e.g. PC-HiC, ABC, etc.
-#' @param filter_loop_genes If TRUE, only shows HiC loops connected to
+#' @param filter.loop.genes If TRUE, only shows HiC loops connected to
 #' the gene(s)
-#' @param filter_loop_snps If TRUE, only shows HiC loops connected to
+#' @param filter.loop.snps If TRUE, only shows HiC loops connected to
 #' the SNP(s)
-#' @param data_colors Colors for the `countsdata` tracks
-#' @param data_ylim ylim range for the `countsdata` tracks
-#' @param color_pip_by color SNPs in the PIP track by `locus`, `cs`,
+#' @param data.colors Colors for the `countsdata` tracks
+#' @param data.ylim ylim range for the `countsdata` tracks
+#' @param color.pip.by color SNPs in the PIP track by `locus`, `cs`,
 #' or `none` (same color).
-#' @param highlight_snps SNPs (rsIDs) to highlight
-#' @param highlight_colors Colors for the highlighted SNPs
-#' @param genelabel_side Side to put gene labels,
+#' @param highlight.snps SNPs (rsIDs) to highlight
+#' @param highlight.colors Colors for the highlighted SNPs
+#' @param genelabel.side Side to put gene labels,
 #' options are: above (default), right, left, below
 #' @param track.sizes Sizes of the tracks
 #' @param rotation.title Rotation of the track titles
@@ -190,27 +190,27 @@ finemapping_annot_trackplot <- function(finemapstats,
                                         bigSNP,
                                         txdb,
                                         genome = c("hg19", "hg38"),
-                                        genetrack_db = c("txdb", "gene.annots","UCSC"),
-                                        filter_protein_coding_genes = TRUE,
+                                        genetrack.db = c("txdb", "gene.annots","UCSC"),
+                                        filter.protein.coding.genes = TRUE,
                                         countsdata,
                                         peaks,
                                         loops,
-                                        filter_loop_genes = NULL,
-                                        filter_loop_snps = NULL,
-                                        data_colors = seq_along(countsdata),
-                                        data_ylim = c(0,1),
-                                        color_pip_by = c("locus", "cs", "none"),
-                                        highlight_snps = NULL,
-                                        highlight_colors = "pink",
-                                        genelabel_side = c("above", "right", "left", "below"),
+                                        filter.loop.genes = NULL,
+                                        filter.loop.snps = NULL,
+                                        data.colors = seq_along(countsdata),
+                                        data.ylim = c(0,1),
+                                        color.pip.by = c("locus", "cs", "none"),
+                                        highlight.snps = NULL,
+                                        highlight.colors = "pink",
+                                        genelabel.side = c("above", "right", "left", "below"),
                                         track.sizes = NULL,
                                         rotation.title = 90,
                                         verbose = FALSE) {
 
   genome <- match.arg(genome)
-  genetrack_db <- match.arg(genetrack_db)
-  genelabel_side <- match.arg(genelabel_side)
-  color_pip_by <- match.arg(color_pip_by)
+  genetrack.db <- match.arg(genetrack.db)
+  genelabel.side <- match.arg(genelabel.side)
+  color.pip.by <- match.arg(color.pip.by)
 
   if(verbose){ cat("Making trackplots ...\n") }
 
@@ -278,7 +278,7 @@ finemapping_annot_trackplot <- function(finemapstats,
   Gviz::displayPars(pval.track) <- dpars.pval
 
   # PIP track
-  if(color_pip_by == "locus"){
+  if(color.pip.by == "locus"){
     if(verbose){ cat("color PIP by loci. \n")}
     pip.df <- curr_finemapstats %>% dplyr::select(chr, pos, pip, locus) %>%
       dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
@@ -286,7 +286,7 @@ finemapping_annot_trackplot <- function(finemapstats,
     pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
     seqlevelsStyle(pip.gr) <- "UCSC"
     avail_pip_groups <- names(mcols(pip.gr))
-  }else if(color_pip_by == "cs"){
+  }else if(color.pip.by == "cs"){
     if(verbose){ cat("color PIP by credible sets.\n")}
     pip.df <- curr_finemapstats %>% dplyr::select(chr, pos, pip, cs) %>%
       dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
@@ -337,10 +337,10 @@ finemapping_annot_trackplot <- function(finemapstats,
       countsdata.track <- Gviz::DataTrack(range = countsdata.gr,
                                     type = 'h',
                                     genome = genome,
-                                    col = data_colors[i],
+                                    col = data.colors[i],
                                     name = x,
                                     showAxis=FALSE,
-                                    ylim = data_ylim)
+                                    ylim = data.ylim)
 
       Gviz::displayPars(countsdata.track) <- dpars.data
       countsdata.track
@@ -404,7 +404,7 @@ finemapping_annot_trackplot <- function(finemapstats,
     loops.tracks <- lapply(names(loops), function(x){
       if(verbose){ cat("Adding", x, "track...\n") }
       loops.gr <- loops[[x]]
-      if(filter_protein_coding_genes){
+      if(filter.protein.coding.genes){
         loops.gr <- loops.gr[loops.gr$gene_name %in% gene.annots$gene_name]
       }
 
@@ -417,14 +417,14 @@ finemapping_annot_trackplot <- function(finemapstats,
       loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = loops_promoters.gr, anchor2 = loops_enhancers.gr)
       loops.obj$counts <- round(loops.obj$anchor1.score)
 
-      if(!is.null(filter_loop_genes)){
-        cat("Only shows", x, "links to", paste(filter_loop_genes, collapse = ","), "\n")
-        loops.obj <- loops.obj[which(loops.obj$anchor1.gene %in% filter_loop_genes),]
+      if(!is.null(filter.loop.genes)){
+        cat("Only shows", x, "links to", paste(filter.loop.genes, collapse = ","), "\n")
+        loops.obj <- loops.obj[which(loops.obj$anchor1.gene %in% filter.loop.genes),]
       }
 
-      if(!is.null(filter_loop_snps)){
-        cat("Only shows", x, "links to", paste(filter_loop_snps, collapse = ","), "\n")
-        highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter_loop_snps]
+      if(!is.null(filter.loop.snps)){
+        cat("Only shows", x, "links to", paste(filter.loop.snps, collapse = ","), "\n")
+        highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter.loop.snps]
         loops.obj <- subsetByOverlaps(loops.obj, highlighted.snps.gr)
       }
 
@@ -437,7 +437,7 @@ finemapping_annot_trackplot <- function(finemapstats,
   }
 
   # gene track
-  gene.track <- make_genetrack_obj(region, genetrack_db, txdb, gene.annots, genome, track_name = "Genes")
+  gene.track <- make_genetrack_obj(region, genetrack.db, txdb, gene.annots, genome, track_name = "Genes")
 
   dpars.genes <- list(col.title = "black",
                       col.axis = "black",
@@ -449,7 +449,7 @@ finemapping_annot_trackplot <- function(finemapstats,
   displayPars(gene.track) <- dpars.genes
 
   # # restrict to protein coding genes
-  if(filter_protein_coding_genes){
+  if(filter.protein.coding.genes){
     gene.track <- gene.track[symbol(gene.track) %in% gene.annots$gene_name]
   }
 
@@ -477,31 +477,31 @@ finemapping_annot_trackplot <- function(finemapstats,
   }
 
   # Highlight SNPs
-  if( !missing(highlight_snps) && (length(highlight_snps) > 0)){
+  if( !missing(highlight.snps) && (length(highlight.snps) > 0)){
 
-    if("topSNP" %in% highlight_snps){
+    if("topSNP" %in% highlight.snps){
       topsnp_idx <- which.max(curr_finemapstats$pip)
-      highlight_snps[which(highlight_snps == "topSNP")] <- curr_finemapstats$snp[topsnp_idx]
+      highlight.snps[which(highlight.snps == "topSNP")] <- curr_finemapstats$snp[topsnp_idx]
     }
-    highlight_snps <- intersect(highlight_snps, curr_finemapstats$snp)
-    highlight_pos <- curr_finemapstats$pos[match(highlight_snps, curr_finemapstats$snp)]
-    cat("Highlight SNPs:", highlight_snps[which(highlight_snps %in% curr_finemapstats$snp)], "\n")
+    highlight.snps <- intersect(highlight.snps, curr_finemapstats$snp)
+    highlight_pos <- curr_finemapstats$pos[match(highlight.snps, curr_finemapstats$snp)]
+    cat("Highlight SNPs:", highlight.snps[which(highlight.snps %in% curr_finemapstats$snp)], "\n")
 
     if(length(highlight_pos) == 1){
       list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
                                        start = c(highlight_pos-500), width = 1000,
                                        chromosome = as.character(seqnames(region)),
-                                       col = highlight_colors)
+                                       col = highlight.colors)
     }else if(length(highlight_pos) > 1){
       cat("Highlight SNP positions:", highlight_pos, "\n")
 
-      if(length(highlight_colors) > 1){
-        highlight_colors <- highlight_colors[which(highlight_snps %in% curr_finemapstats$snp)]
+      if(length(highlight.colors) > 1){
+        highlight.colors <- highlight.colors[which(highlight.snps %in% curr_finemapstats$snp)]
       }
       list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
                                        start = highlight_pos, width = 1,
                                        chromosome = as.character(seqnames(region)),
-                                       col = highlight_colors)
+                                       col = highlight.colors)
     }
   }
 
@@ -512,22 +512,22 @@ finemapping_annot_trackplot <- function(finemapstats,
              from = start(region),
              to = end(region),
              sizes = track.sizes,
-             just.group = genelabel_side)
+             just.group = genelabel.side)
 
 }
 
 
 # Generating gene track object for Gviz
 make_genetrack_obj <- function(curr.locus.gr,
-                               genetrack_db = c("txdb", "gene.annots","UCSC"),
+                               genetrack.db = c("txdb", "gene.annots","UCSC"),
                                txdb = NULL, gene.annots = NULL,
                                genome = "hg19", keytype = "ENSEMBL",
                                track_name = "Genes",
-                               filter_protein_coding_genes = TRUE){
+                               filter.protein.coding.genes = TRUE){
 
-  genetrack_db <- match.arg(genetrack_db)
+  genetrack.db <- match.arg(genetrack.db)
 
-  if(genetrack_db == "txdb"){
+  if(genetrack.db == "txdb"){
     # use supplied txdb if available.
     cat("Making gene track object using gene annotations in txdb ...\n")
     grtrack <- Gviz::GeneRegionTrack(range = txdb,
@@ -543,7 +543,7 @@ make_genetrack_obj <- function(curr.locus.gr,
 
     symbol(grtrack) <- ifelse(is.na(symbol(grtrack)), "", symbol(grtrack))
 
-  }else if(genetrack_db == "gene.annots"){
+  }else if(genetrack.db == "gene.annots"){
     # use supplied gene.annots if available.
     cat("Making gene track object using gene annotations in gene.annots ...\n")
     grtrack <- Gviz::GeneRegionTrack(range = gene.annots,
@@ -554,7 +554,7 @@ make_genetrack_obj <- function(curr.locus.gr,
                                name = track_name,
                                symbol = gene.annots$gene_name)
 
-  }else if(genetrack_db == "UCSC"){
+  }else if(genetrack.db == "UCSC"){
     if(genome == "hg19"){
       txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene::TxDb.Hsapiens.UCSC.hg19.knownGene
       cat("Making gene track object using TxDb.Hsapiens.UCSC.hg19.knownGene ...\n")
@@ -582,7 +582,7 @@ make_genetrack_obj <- function(curr.locus.gr,
 
 
   # restrict to protein coding genes
-  if(filter_protein_coding_genes){
+  if(filter.protein.coding.genes){
     grtrack <- grtrack[symbol(grtrack) %in% gene.annots$gene_name]
   }
 

@@ -15,32 +15,32 @@ process_finemapping_sumstats(
   cs = "cs",
   locus = "locus",
   pip.thresh = 0,
-  filterCS = FALSE,
+  filter.cs = FALSE,
   maxL = 10
 )
 }
 \arguments{
 \item{finemapstats}{A data frame of fine-mapping summary statistics}
 
-\item{snp}{Name of the SNP ID (rsID) column in the summary statistics data}
+\item{snp}{Name of the SNP ID (rsID) column in the fine-mapping summary statistics}
 
-\item{chr}{Name of the chr column in the summary statistics data frame}
+\item{chr}{Name of the chr column in the fine-mapping summary statistics}
 
-\item{pos}{Name of the position column in the summary statistics data frame}
+\item{pos}{Name of the position column in the fine-mapping summary statistics}
 
-\item{pip}{Name of the PIP column in the summary statistics data frame}
+\item{pip}{Name of the PIP column in the fine-mapping summary statistics}
 
-\item{pval}{Name of the P-value column in the summary statistics data frame}
+\item{pval}{Name of the P-value column in the fine-mapping summary statistics}
 
-\item{zscore}{Name of the z-score column in the summary statistics data frame}
+\item{zscore}{Name of the z-score column in the fine-mapping summary statistics}
 
-\item{cs}{Name of the CS column in the summary statistics data frame}
+\item{cs}{Name of the credible set column in the fine-mapping summary statistics}
 
-\item{locus}{Name of the locus column in the summary statistics data frame}
+\item{locus}{Name of the locus column in the fine-mapping summary statistics}
 
 \item{pip.thresh}{Select SNPs by PIP threshold (default = 0, no filtering).}
 
-\item{filterCS}{If TRUE, limiting to SNPs within credible sets.}
+\item{filter.cs}{If TRUE, limiting to SNPs within credible sets.}
 
 \item{maxL}{Maximum number of credible sets (default = 10).}
 }

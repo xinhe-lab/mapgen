@@ -4,7 +4,7 @@
 \alias{gene_cs}
 \title{Obtain credible gene sets from SNP-level gene mapping table}
 \usage{
-gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
+gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.coverage = 0.8)
 }
 \arguments{
 \item{gene.mapping.res}{A data frame of SNP-level gene mapping table}
@@ -12,7 +12,7 @@ gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
 \item{by.locus}{Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
 If FALSE, get credible gene sets based on gene PIP.}
 
-\item{gene.cs.percent.thresh}{percentage threshold for credible gene sets}
+\item{gene.cs.coverage}{A number between 0 and 1 specifying desired coverage of each credible gene set}
 }
 \value{
 a data frame of credible gene set result.

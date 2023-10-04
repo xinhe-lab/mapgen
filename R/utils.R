@@ -159,8 +159,8 @@ get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
 
 # Add LD information
 add_LD_bigSNP <- function(sumstats, bigSNP,
-                          r2_breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
-                          r2_labels = c("0-0.1","0.1-0.25","0.25-0.75","0.75-0.9","0.9-1")) {
+                          r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
+                          r2.labels = c("0-0.1","0.1-0.25","0.25-0.75","0.75-0.9","0.9-1")) {
 
   # only include SNPs in bigSNP markers
   sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
@@ -180,7 +180,7 @@ add_LD_bigSNP <- function(sumstats, bigSNP,
     genotype.mat <- bigSNP$genotypes[,curr_sumstats$bigSNP_idx]
 
     r2.vals <- as.vector(cor(top_snp_genotype, genotype.mat))^2
-    r2.brackets <- cut(r2.vals, breaks = r2_breaks, labels = r2_labels)
+    r2.brackets <- cut(r2.vals, breaks = r2.breaks, labels = r2.labels)
     curr_sumstats$r2 <- r2.brackets
     sumstats.r2.df <- rbind(sumstats.r2.df, curr_sumstats)
   }

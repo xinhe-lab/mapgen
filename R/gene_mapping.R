@@ -207,7 +207,7 @@ extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
 #' @param gene.mapping.res A data frame of SNP-level gene mapping table
 #' @param by.locus Logical, if TRUE, get credible gene sets based on locus-level gene PIP,
 #' If FALSE, get credible gene sets based on gene PIP.
-#' @param gene.cs.percent.thresh percentage threshold for credible gene sets
+#' @param gene.cs.coverage A number between 0 and 1 specifying desired coverage of each credible gene set
 #' @return a data frame of credible gene set result.
 #' Columns:
 #' gene_cs: credible gene sets,
@@ -220,7 +220,7 @@ extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
 #' @export
 gene_cs <- function(gene.mapping.res,
                     by.locus = TRUE,
-                    gene.cs.percent.thresh = 0.8){
+                    gene.cs.coverage = 0.8){
 
   # Get locus level gene PIP
   locus.gene.pip.df <- get_locus_level_gene_pip(gene.mapping.res)
@@ -237,10 +237,10 @@ gene_cs <- function(gene.mapping.res,
     # for each locus, keep the genes with gene locus PIP cumsum > 0.8
     gene.cumsum.df <- locus.gene.pip.df %>%
       dplyr::group_by(locus) %>%
-      dplyr::filter(sum(locus_gene_pip) >= gene.cs.percent.thresh) %>%
+      dplyr::filter(sum(locus_gene_pip) >= gene.cs.coverage) %>%
       dplyr::arrange(desc(locus_gene_pip)) %>%
       dplyr::mutate(gene_pip_csum = cumsum(locus_gene_pip)) %>%
-      dplyr::slice(1:which(gene_pip_csum >= gene.cs.percent.thresh)[1])
+      dplyr::slice(1:which(gene_pip_csum >= gene.cs.coverage)[1])
 
     gene.cs.df <- gene.cumsum.df %>%
       dplyr::group_by(locus) %>%
@@ -253,10 +253,10 @@ gene_cs <- function(gene.mapping.res,
     # for each locus, keep the genes with gene PIP cumsum > 0.8
     gene.cumsum.df <- locus.gene.pip.df %>%
       dplyr::group_by(locus) %>%
-      dplyr::filter(sum(gene_pip) >= gene.cs.percent.thresh) %>%
+      dplyr::filter(sum(gene_pip) >= gene.cs.coverage) %>%
       dplyr::arrange(desc(gene_pip)) %>%
       dplyr::mutate(gene_pip_csum = cumsum(gene_pip)) %>%
-      dplyr::slice(1:which(gene_pip_csum >= gene.cs.percent.thresh)[1])
+      dplyr::slice(1:which(gene_pip_csum >= gene.cs.coverage)[1])
 
     gene.cs.df <- gene.cumsum.df %>%
       dplyr::group_by(locus) %>%
@@ -292,13 +292,13 @@ gene_view_summary <- function(gene.mapping.res, gene.pip.thresh = 0.1){
 #'
 #' @param gene.mapping.res A data frame of gene mapping result
 #' @param gene.annots A data frame of gene annotations
-#' @param finemapstats A GRange object of fine mapping result
-#' @param fractional.PIP.thresh Filter SNPs with fractional PIP cutoff (default: 0.02)
+#' @param finemapstats A GRange object of fine-mapping summary statistics
+#' @param fractional.pip.thresh Filter SNPs with fractional PIP cutoff (default: 0.02)
 #' @return A data frame of SNP view summary of gene mapping result
 #' @export
 #'
-snp_view_summary <- function(gene.mapping.res, gene.annots, finemapstats, fractional.PIP.thresh = 0.02){
-  high.conf.snp.df <- gene.mapping.res %>% dplyr::filter(fractional_PIP >= fractional.PIP.thresh)
+snp_view_summary <- function(gene.mapping.res, gene.annots, finemapstats, fractional.pip.thresh = 0.02){
+  high.conf.snp.df <- gene.mapping.res %>% dplyr::filter(fractional_PIP >= fractional.pip.thresh)
 
   snp.gene <- high.conf.snp.df %>% dplyr::select(snp, pos, gene_name)
 
@@ -337,14 +337,15 @@ snp_view_summary <- function(gene.mapping.res, gene.annots, finemapstats, fracti
 #' @title LD block view summary table
 #'
 #' @param gene.mapping.res A data frame of gene mapping result
-#' @param finemapstats GRange object of fine mapping result
+#' @param finemapstats A GRange object of fine-mapping summary statistics
+#' @param gene.cs.coverage A number between 0 and 1 specifying desired coverage of each credible gene set
 #' @return A data frame of LD block view summary of gene mapping result
 #' @export
 #'
-block_view_summary <- function(gene.mapping.res, finemapstats){
+block_view_summary <- function(gene.mapping.res, finemapstats, gene.cs.coverage = 0.8){
 
   # Gene CS based on locus level gene PIP
-  gene.cs.l <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.percent.thresh = 0.8)
+  gene.cs.l <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.coverage = gene.cs.coverage)
   gene.cs.df <- gene.cs.l$gene.cs.df
   gene.cumsum.df <- gene.cs.l$gene.cumsum.df
   locus.gene.pip.df <- gene.cs.l$locus.gene.pip.df

@@ -7,8 +7,8 @@
 prepare_susie_data_with_torus_result(
   sumstats,
   torus_prior,
-  torus_fdr = NULL,
-  fdr_thresh = 0.1
+  torus_fdr,
+  fdr.thresh = 0.1
 )
 }
 \arguments{
@@ -19,9 +19,9 @@ prepare_susie_data_with_torus_result(
 
 \item{torus_fdr}{A data frame containing the FDR of each region
 (result from \code{run_torus()} with \code{option=\dQuote{fdr}}).
-Optional, if available, only keep the loci with Torus FDR < fdr_thresh.}
+Optional, if available, only keep the loci with TORUS FDR < fdr.thresh.}
 
-\item{fdr_thresh}{FDR cutoff (default: 0.1)}
+\item{fdr.thresh}{FDR cutoff (default: 0.1)}
 }
 \value{
 A data frame of GWAS summary statistics with TORUS prior probabilities

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{gene_manhattan_plot}
 \alias{gene_manhattan_plot}
-\title{Make gene manhattan plot}
+\title{Make gene Manhattan plot}
 \usage{
 gene_manhattan_plot(
   gene.pip.res,
@@ -10,7 +10,7 @@ gene_manhattan_plot(
   pos = "pos",
   gene_name = "gene_name",
   gene_pip = "gene_pip",
-  sig.pip = 0.8,
+  gene.pip.thresh = 0.8,
   highlight = TRUE,
   ylim = 1.2,
   point.size = 2,
@@ -21,19 +21,19 @@ gene_manhattan_plot(
 )
 }
 \arguments{
-\item{gene.pip.res}{Gene level finemapping result}
+\item{gene.pip.res}{Gene mapping result}
 
-\item{chr}{Name of the chr column in the gene finemapping summary statistics data}
+\item{chr}{Name of the chr column in the gene mapping result}
 
-\item{pos}{Name of the pos column in the gene finemapping summary statistics data}
+\item{pos}{Name of the pos column in the gene mapping result}
 
-\item{gene_name}{Name of the gene name column in the gene finemapping summary statistics data}
+\item{gene_name}{Name of the gene name column in the gene mapping result}
 
-\item{gene_pip}{Name of the gene PIP column in the gene finemapping summary statistics data}
+\item{gene_pip}{Name of the gene PIP column in the gene gene mapping result}
 
-\item{sig.pip}{Signficant gene PIP (default: 0.8)}
+\item{gene.pip.thresh}{Gene PIP cutoff (default: 0.8)}
 
-\item{highlight}{Highlight genes with gene PIP > sig.pip}
+\item{highlight}{Highlight genes with gene PIP > gene.pip.thresh}
 
 \item{ylim}{Truncate gene PIP to ylim value in the plot.}
 
@@ -48,5 +48,5 @@ gene_manhattan_plot(
 \item{title}{Title of the plot}
 }
 \description{
-Make gene manhattan plot
+Make gene Manhattan plot
 }

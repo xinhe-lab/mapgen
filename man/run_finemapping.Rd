@@ -37,6 +37,6 @@ and a summary of the optimization settings from susie.}
 list of finemapping results; one per LD block
 }
 \description{
-Run finemapping with SuSiE using GWAS summary statistics
+Run fine-mapping with SuSiE using GWAS summary statistics
 for all LD blocks with prior probabilities computed by TORUS
 }

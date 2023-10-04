@@ -6,19 +6,19 @@
 #' (result from \code{run_torus()} with \code{option=\dQuote{est-prior}})
 #' @param torus_fdr A data frame containing the FDR of each region
 #' (result from \code{run_torus()} with \code{option=\dQuote{fdr}}).
-#' Optional, if available, only keep the loci with Torus FDR < fdr_thresh.
-#' @param fdr_thresh FDR cutoff (default: 0.1)
+#' Optional, if available, only keep the loci with TORUS FDR < fdr.thresh.
+#' @param fdr.thresh FDR cutoff (default: 0.1)
 #' @return A data frame of GWAS summary statistics with TORUS prior probabilities
 #' @export
-prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fdr=NULL, fdr_thresh=0.1){
+prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fdr, fdr.thresh=0.1){
 
-  if(!is.null(torus_fdr)){
-    # Select loci by fdr_thresh
-    selected.loci <- torus_fdr$region_id[torus_fdr$fdr < fdr_thresh]
+  if(!missing(torus_fdr)){
+    # Filter loci by FDR from TORUS
+    selected.loci <- torus_fdr$region_id[torus_fdr$fdr < fdr.thresh]
     sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
   }
 
-  # Add SNP-level prior probabilities
+  # Add SNP-level priors
   sumstats <- dplyr::inner_join(sumstats, torus_prior, by='snp')
 
   return(sumstats)
@@ -26,7 +26,7 @@ prepare_susie_data_with_torus_result <- function(sumstats, torus_prior, torus_fd
 }
 
 #' @title Run fine-mapping using GWAS summary statistics
-#' @description Run finemapping with SuSiE using GWAS summary statistics
+#' @description Run fine-mapping with SuSiE using GWAS summary statistics
 #' for all LD blocks with prior probabilities computed by TORUS
 #' @param sumstats A data frame containing raw summary statistics; must have header!
 #' @param bigSNP a bigsnpr object attached via bigsnpr::snp_attach()
@@ -109,16 +109,16 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 #' @title Process fine-mapping summary statistics data
 #'
 #' @param finemapstats A data frame of fine-mapping summary statistics
-#' @param snp Name of the SNP ID (rsID) column in the summary statistics data
-#' @param chr Name of the chr column in the summary statistics data frame
-#' @param pos Name of the position column in the summary statistics data frame
-#' @param pip Name of the PIP column in the summary statistics data frame
-#' @param pval Name of the P-value column in the summary statistics data frame
-#' @param zscore Name of the z-score column in the summary statistics data frame
-#' @param cs Name of the CS column in the summary statistics data frame
-#' @param locus Name of the locus column in the summary statistics data frame
+#' @param snp Name of the SNP ID (rsID) column in the fine-mapping summary statistics
+#' @param chr Name of the chr column in the fine-mapping summary statistics
+#' @param pos Name of the position column in the fine-mapping summary statistics
+#' @param pip Name of the PIP column in the fine-mapping summary statistics
+#' @param pval Name of the P-value column in the fine-mapping summary statistics
+#' @param zscore Name of the z-score column in the fine-mapping summary statistics
+#' @param cs Name of the credible set column in the fine-mapping summary statistics
+#' @param locus Name of the locus column in the fine-mapping summary statistics
 #' @param pip.thresh Select SNPs by PIP threshold (default = 0, no filtering).
-#' @param filterCS If TRUE, limiting to SNPs within credible sets.
+#' @param filter.cs If TRUE, limiting to SNPs within credible sets.
 #' @param maxL Maximum number of credible sets (default = 10).
 #' @import GenomicRanges
 #' @import tidyverse
@@ -134,7 +134,7 @@ process_finemapping_sumstats <- function(finemapstats,
                                          cs = 'cs',
                                          locus = 'locus',
                                          pip.thresh = 0,
-                                         filterCS = FALSE,
+                                         filter.cs = FALSE,
                                          maxL = 10){
 
   cat('Processing fine-mapping summary statistics ...\n')
@@ -186,7 +186,7 @@ process_finemapping_sumstats <- function(finemapstats,
     finemapstats.gr <- finemapstats.gr[finemapstats.gr$pip > pip.thresh, ]
   }
 
-  if( filterCS ) {
+  if( filter.cs ) {
     cat('Select SNPs within credible sets. \n')
     finemapstats.gr <- finemapstats.gr[finemapstats.gr$cs >= 1 & finemapstats.gr$cs <= maxL, ]
   }
