@@ -46,8 +46,9 @@ We see we have a new column called 'torus_prior'.
 head(as.data.frame(sumstats.for.susie), 3)
 ```
 
-We did not filter loci in this tutorial example. 
-You could limit loci with GWAS p-value cutoff (e.g. 5e-8), 
+We did not filter loci in this toy example. 
+
+You could limit loci with GWAS p-value cutoff (e.g. by setting \code{pval.thresh = 5e-8}),
 or by FDR cutoff from running `run_torus()` with `option = "fdr"`. 
 
 ## Fine-mapping

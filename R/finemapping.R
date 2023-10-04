@@ -17,7 +17,8 @@
 prepare_susie_data_with_torus_result <- function(sumstats,
                                                  torus_prior,
                                                  torus_fdr,
-                                                 fdr.thresh = 0.1){
+                                                 fdr.thresh = 0.1,
+                                                 pval.thresh = 5e-8){
 
   # Check for required columns in sumstats
   required.cols <- c('chr','pos','snp','pval','locus','bigSNP_index')
@@ -33,16 +34,28 @@ prepare_susie_data_with_torus_result <- function(sumstats,
   }
 
   if(!missing(torus_fdr)){
-    # Filter loci by FDR from TORUS
+    # Select loci by FDR from TORUS
+    cat('Select loci by TORUS FDR <', fdr.thresh, '\n')
     selected.loci <- torus_fdr$region_id[torus_fdr$fdr < fdr.thresh]
     sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
   }
 
+  if(!missing(pval.thresh)){
+    # Select loci by pval
+    cat('Select loci by pval <', pval.thresh, '\n')
+    if(max(sumstats$pval) > 1){
+      sig.sumstats <- sumstats %>% dplyr::filter(pval > -log10(pval.thresh))
+    }else{
+      sig.sumstats <- sumstats %>% dplyr::filter(pval < pval.thresh)
+    }
+    selected.loci <- unique(sig.sumstats$locus)
+    sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
+  }
+
   # Add SNP-level priors
-  sumstats <- dplyr::inner_join(sumstats, torus_prior, by='snp')
+  sumstats <- dplyr::inner_join(sumstats, torus_prior, by = 'snp')
 
   return(sumstats)
-
 }
 
 #' @title Run fine-mapping using summary statistics

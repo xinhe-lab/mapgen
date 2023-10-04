@@ -9,7 +9,8 @@ prepare_susie_data_with_torus_result(
   sumstats,
   torus_prior,
   torus_fdr,
-  fdr.thresh = 0.1
+  fdr.thresh = 0.1,
+  pval.thresh = 5e-08
 )
 }
 \arguments{

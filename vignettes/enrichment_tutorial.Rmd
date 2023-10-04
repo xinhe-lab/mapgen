@@ -61,21 +61,19 @@ If you only want to estimate enrichment but do not need SNP-level priors,
 you can set `option = "est"` to save time computing the priors.
 
 ```{r run-torus-est, eval=FALSE}
-torus.res <- run_torus(torus.files$torus_annot_file, 
+torus.enrich <- run_torus(torus.files$torus_annot_file, 
                        torus.files$torus_zscore_file,
                        option = 'est',
-                       torus_path = 'torus') # set the path to 'torus' executable.
-torus.enrich <- torus.res$enrich
+                       torus_path = 'torus')$enrich
 ```
 
 TORUS also gives us the uncertainty of whether each locus contains a causal variant or not. 
 You can set `option = "fdr"` to get the FDR associated with each locus.
 ```{r run-torus-fdr, eval=FALSE}
-torus.res <- run_torus(torus.files$torus_annot_file, 
+torus.fdr <- run_torus(torus.files$torus_annot_file, 
                        torus.files$torus_zscore_file,
                        option = 'fdr',
-                       torus_path = 'torus')
-torus.fdr <- torus.res$enrich
+                       torus_path = 'torus')$fdr
 ```
 
 [data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
