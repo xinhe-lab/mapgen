@@ -24,7 +24,8 @@ Imports:
     ggplot2,
     ggrepel,
     ggrastr,
-    processx
+    processx,
+    cowplot
 Suggests: 
     susieR,
     bigsnpr,
