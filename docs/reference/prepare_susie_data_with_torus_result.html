@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -75,8 +75,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">prepare_susie_data_with_torus_result</span><span class="op">(</span></span>
 <span>  <span class="va">sumstats</span>,</span>
 <span>  <span class="va">torus_prior</span>,</span>
-<span>  torus_fdr <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  fdr_thresh <span class="op">=</span> <span class="fl">0.1</span></span>
+<span>  <span class="va">torus_fdr</span>,</span>
+<span>  fdr.thresh <span class="op">=</span> <span class="fl">0.1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,10 +94,10 @@
 <dt>torus_fdr</dt>
 <dd><p>A data frame containing the FDR of each region
 (result from <code><a href="run_torus.html">run_torus()</a></code> with <code>option=“fdr”</code>).
-Optional, if available, only keep the loci with Torus FDR &lt; fdr_thresh.</p></dd>
+Optional, if available, only keep the loci with TORUS FDR &lt; fdr.thresh.</p></dd>
 
 
-<dt>fdr_thresh</dt>
+<dt>fdr.thresh</dt>
 <dd><p>FDR cutoff (default: 0.1)</p></dd>
 
 </dl></div>

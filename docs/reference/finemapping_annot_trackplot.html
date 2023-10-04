@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -79,19 +79,19 @@
 <span>  <span class="va">bigSNP</span>,</span>
 <span>  <span class="va">txdb</span>,</span>
 <span>  genome <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hg19"</span>, <span class="st">"hg38"</span><span class="op">)</span>,</span>
-<span>  genetrack_db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"txdb"</span>, <span class="st">"gene.annots"</span>, <span class="st">"UCSC"</span><span class="op">)</span>,</span>
-<span>  filter_protein_coding_genes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  genetrack.db <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"txdb"</span>, <span class="st">"gene.annots"</span>, <span class="st">"UCSC"</span><span class="op">)</span>,</span>
+<span>  filter.protein.coding.genes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">countsdata</span>,</span>
 <span>  <span class="va">peaks</span>,</span>
 <span>  <span class="va">loops</span>,</span>
-<span>  filter_loop_genes <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  filter_loop_snps <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  data_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">countsdata</span><span class="op">)</span>,</span>
-<span>  data_ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  color_pip_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"locus"</span>, <span class="st">"cs"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
-<span>  highlight_snps <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  highlight_colors <span class="op">=</span> <span class="st">"pink"</span>,</span>
-<span>  genelabel_side <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"above"</span>, <span class="st">"right"</span>, <span class="st">"left"</span>, <span class="st">"below"</span><span class="op">)</span>,</span>
+<span>  filter.loop.genes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filter.loop.snps <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  data.colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">countsdata</span><span class="op">)</span>,</span>
+<span>  data.ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  color.pip.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"locus"</span>, <span class="st">"cs"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  highlight.snps <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  highlight.colors <span class="op">=</span> <span class="st">"pink"</span>,</span>
+<span>  genelabel.side <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"above"</span>, <span class="st">"right"</span>, <span class="st">"left"</span>, <span class="st">"below"</span><span class="op">)</span>,</span>
 <span>  track.sizes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rotation.title <span class="op">=</span> <span class="fl">90</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -124,14 +124,14 @@
 <dd><p>Genome assembly version, hg19 (default) or hg38.</p></dd>
 
 
-<dt>genetrack_db</dt>
+<dt>genetrack.db</dt>
 <dd><p>Select a gene annotation database to use. Options:
 <code>txdb</code>: use the <code>txdb</code> objec.
 <code>gene.annots</code>: use the <code>gene.annots</code> object.
 <code>UCSC</code> uses <code>UCSC knownGene</code> annotations.</p></dd>
 
 
-<dt>filter_protein_coding_genes</dt>
+<dt>filter.protein.coding.genes</dt>
 <dd><p>If TRUE, only shows protein coding gene</p></dd>
 
 
@@ -147,38 +147,38 @@
 <dd><p>A list of chromatin loops, e.g. PC-HiC, ABC, etc.</p></dd>
 
 
-<dt>filter_loop_genes</dt>
+<dt>filter.loop.genes</dt>
 <dd><p>If TRUE, only shows HiC loops connected to
 the gene(s)</p></dd>
 
 
-<dt>filter_loop_snps</dt>
+<dt>filter.loop.snps</dt>
 <dd><p>If TRUE, only shows HiC loops connected to
 the SNP(s)</p></dd>
 
 
-<dt>data_colors</dt>
+<dt>data.colors</dt>
 <dd><p>Colors for the <code>countsdata</code> tracks</p></dd>
 
 
-<dt>data_ylim</dt>
+<dt>data.ylim</dt>
 <dd><p>ylim range for the <code>countsdata</code> tracks</p></dd>
 
 
-<dt>color_pip_by</dt>
+<dt>color.pip.by</dt>
 <dd><p>color SNPs in the PIP track by <code>locus</code>, <code>cs</code>,
 or <code>none</code> (same color).</p></dd>
 
 
-<dt>highlight_snps</dt>
+<dt>highlight.snps</dt>
 <dd><p>SNPs (rsIDs) to highlight</p></dd>
 
 
-<dt>highlight_colors</dt>
+<dt>highlight.colors</dt>
 <dd><p>Colors for the highlighted SNPs</p></dd>
 
 
-<dt>genelabel_side</dt>
+<dt>genelabel.side</dt>
 <dd><p>Side to put gene labels,
 options are: above (default), right, left, below</p></dd>
 

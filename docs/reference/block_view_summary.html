@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2</span>
       </span>
     </div>
 
@@ -72,7 +72,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">block_view_summary</span><span class="op">(</span><span class="va">gene.mapping.res</span>, <span class="va">finemapstats</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">block_view_summary</span><span class="op">(</span><span class="va">gene.mapping.res</span>, <span class="va">finemapstats</span>, gene.cs.coverage <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -82,7 +82,11 @@
 
 
 <dt>finemapstats</dt>
-<dd><p>GRange object of fine mapping result</p></dd>
+<dd><p>A GRange object of fine-mapping summary statistics</p></dd>
+
+
+<dt>gene.cs.coverage</dt>
+<dd><p>A number between 0 and 1 specifying desired coverage of each credible gene set</p></dd>
 
 </dl></div>
     <div id="value">
