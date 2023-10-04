@@ -1,9 +1,9 @@
 #' @title Cleans GWAS summary statistics and adds metadata
 #' @description Cleans GWAS summary statistics and adds metadata, including:
-#' the locus ID of every SNP, as well as its index in the bigSNP object.
+#' the index in the bigSNP object of each SNP, and the LD block locus.
 #'
 #' @param sumstats A data frame of GWAS summary statistics.
-#' @param chr Name of the chromosome column in summary statistics file.
+#' @param chr Name of the chromosome column in summary statistics.
 #' @param pos Name of the position column (base pair position).
 #' @param beta Name of beta column (if you have Odds Ratio,
 #' you will need to transform it to log(Odds Ratio)).
@@ -14,9 +14,9 @@
 #' @param pval Name of the p-value column.
 #' @param bigSNP bigSNP object from \code{bigsnpr} containing the reference
 #' genotype panel.
-#' @param LD_Blocks Reference LD blocks.
-#'
-#' @return Processed GWAS summary statistics.
+#' @param LD_Blocks A data frame of LD blocks with four columns,
+#' 'chr', 'start', 'end', and 'locus' (LD block indices).
+#' @return A data frame of processed GWAS summary statistics.
 #' @export
 process_gwas_sumstats <- function(sumstats,
                                   chr = 'chr',
@@ -54,11 +54,25 @@ process_gwas_sumstats <- function(sumstats,
 }
 
 #' @title Cleans summary statistics
+#' @description
+#' It will extract the required columns from summary statistics,
+#' check chromosomes, remove X, Y chromosomes, compute z-scores,
+#' convert alleles to upper case, remove indels,
+#' and sort by chromosome and position.
 #' @param sumstats A data frame of GWAS summary statistics.
-#' @param cols.to.keep columns to keep.
-#' It is required to have 8 columns in the exact order of:
-#' chr, position, beta, se, allele1, allele2, SNP ID (rs), p-value.
-#'
+#' It is required to have the following columns:
+#' chr, position, beta, se, a0, a1, SNP ID (rs), p-value.
+#' @param chr Name of the chromosome column in summary statistics.
+#' @param pos Name of the position column (base pair position).
+#' @param beta Name of beta column (if you have Odds Ratio,
+#' you will need to transform it to log(Odds Ratio)).
+#' @param se Name of the standard error (se) column.
+#' @param a0 Column name of the reference allele.
+#' @param a1 Column name of the association/effect allele.
+#' @param snp Name of the SNP ID (rsID) column.
+#' @param pval Name of the p-value column.
+#' @return A data frame of cleaned summary statistics,
+#' sort by chromosome and position.
 #' @export
 clean_sumstats <- function(sumstats,
                            chr = 'chr',
@@ -69,8 +83,6 @@ clean_sumstats <- function(sumstats,
                            a1 = 'a1',
                            snp = 'snp',
                            pval = 'pval'){
-
-  stopifnot(!is.null(sumstats))
 
   cols.to.keep <- c(chr, pos, beta, se, a0, a1, snp, pval)
 
@@ -83,7 +95,8 @@ clean_sumstats <- function(sumstats,
     colnames(cleaned.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
   }
 
-  # Check chromosome names, remove 'chr'
+  # Check chromosomes
+  # Remove 'chr'
   if( any(grepl('chr', cleaned.sumstats$chr)) ){
     cleaned.sumstats$chr <- gsub('chr', '', cleaned.sumstats$chr)
   }
@@ -92,7 +105,7 @@ clean_sumstats <- function(sumstats,
   cleaned.sumstats <- cleaned.sumstats[!(cleaned.sumstats$chr %in% c('X','Y')), ]
   cleaned.sumstats$chr <- as.integer(cleaned.sumstats$chr)
 
-  # Compute Zscores
+  # Compute z-scores
   zscore <- cleaned.sumstats$beta/cleaned.sumstats$se
   cleaned.sumstats$zscore <- zscore
   cleaned.sumstats <- cleaned.sumstats[!is.na(zscore),]
@@ -101,18 +114,16 @@ clean_sumstats <- function(sumstats,
   cleaned.sumstats$a0 <- toupper(cleaned.sumstats$a0)
   cleaned.sumstats$a1 <- toupper(cleaned.sumstats$a1)
 
-  # Keep SNPs only, no indels
+  # Keep SNPs only, remove indels
   nucs <- c('A','C','T','G')
-  bola1 <- (cleaned.sumstats$a0 %in% nucs)
-  bola2 <- (cleaned.sumstats$a1 %in% nucs)
-  cleaned.sumstats <- cleaned.sumstats[bola1 & bola2,]
+  cleaned.sumstats <- cleaned.sumstats %>% dplyr::filter(a0 %in% nucs, a1 %in% nucs)
 
   # Sort by chromosome and position
-  cleaned.sumstats <- cleaned.sumstats[order(cleaned.sumstats$chr, cleaned.sumstats$pos), ]
+  cleaned.sumstats <- cleaned.sumstats %>% dplyr::arrange(chr, pos)
 
   # Remove duplicate SNPs
-  chrpos <- paste0(cleaned.sumstats$chr, '_', cleaned.sumstats$pos)
-  cleaned.sumstats <- cleaned.sumstats[!duplicated(chrpos), ]
+  chr_pos <- paste0(cleaned.sumstats$chr, '_', cleaned.sumstats$pos)
+  cleaned.sumstats <- cleaned.sumstats[!duplicated(chr_pos), ]
 
   return(cleaned.sumstats)
 }
@@ -121,7 +132,8 @@ clean_sumstats <- function(sumstats,
 #' @title Assign GWAS SNPs to LD blocks
 #' @param sumstats A data frame of GWAS summary statistics.
 #' @param LD_Blocks A data frame of LD blocks with four columns,
-#' 'chr', 'start', 'end', and 'locus'.
+#' 'chr', 'start', 'end', and 'locus' (LD block indices).
+#' @return A data frame with summary statistics with assigned locus ID.
 #' @export
 assign_snp_locus <- function(sumstats, LD_Blocks){
 
@@ -153,13 +165,25 @@ assign_snp_locus <- function(sumstats, LD_Blocks){
   return(sumstats.ld.block)
 }
 
-#' @title Match GWAS with bigSNP reference panel.
+#' @title Match alleles between GWAS summary statistics and bigSNP reference panel.
+#' @description
+#' Match alleles between summary statistics and SNP information in the
+#' bigSNP reference panel using the \code{bigsnpr::snp_match()} function.
+#' Match by ("chr", "a0", "a1") and ("pos" or "rsid"),
+#' accounting for possible strand flips and reverse reference alleles (opposite effects).
+#'
 #' @param sumstats  A data frame of GWAS summary statistics
-#' @param bigSNP  bigSNP object
+#' @param bigSNP bigSNP object from \code{bigsnpr} containing the reference
+#' genotype panel.
 #' @param strand_flip Whether to try to flip strand? (default is TRUE).
 #' If so, ambiguous alleles A/T and C/G are removed.
 #' @param match.min.prop Minimum proportion of variants in the smallest data
 #' to be matched, otherwise stops with an error. Default: 10%
+#' @return A data frame with matched summary statistics.
+#' Values in column "beta" are multiplied by -1 for variants with
+#' alleles reversed (i.e. swapped).
+#' New variable "sumstats_index" returns the corresponding row indices of the sumstats,
+#' and "bigSNP_index" corresponding to the indices of the bigSNP.
 #' @export
 match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1){
 
@@ -174,7 +198,7 @@ match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.pr
 
   matched.sumstats <- matched.sumstats %>%
     tibble::as_tibble() %>%
-    dplyr::rename(og_index = `_NUM_ID_.ss`) %>%
+    dplyr::rename(sumstats_index = `_NUM_ID_.ss`) %>%
     dplyr::rename(bigSNP_index = `_NUM_ID_`) %>%
     dplyr::mutate(zscore = beta/se)
 

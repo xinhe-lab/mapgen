@@ -21,7 +21,7 @@ process_gwas_sumstats(
 \arguments{
 \item{sumstats}{A data frame of GWAS summary statistics.}
 
-\item{chr}{Name of the chromosome column in summary statistics file.}
+\item{chr}{Name of the chromosome column in summary statistics.}
 
 \item{pos}{Name of the position column (base pair position).}
 
@@ -38,15 +38,16 @@ you will need to transform it to log(Odds Ratio)).}
 
 \item{pval}{Name of the p-value column.}
 
-\item{LD_Blocks}{Reference LD blocks.}
+\item{LD_Blocks}{A data frame of LD blocks with four columns,
+'chr', 'start', 'end', and 'locus' (LD block indices).}
 
 \item{bigSNP}{bigSNP object from \code{bigsnpr} containing the reference
 genotype panel.}
 }
 \value{
-Processed GWAS summary statistics.
+A data frame of processed GWAS summary statistics.
 }
 \description{
 Cleans GWAS summary statistics and adds metadata, including:
-the locus ID of every SNP, as well as its index in the bigSNP object.
+the index in the bigSNP object of each SNP, and the LD block locus.
 }

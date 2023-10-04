@@ -2,14 +2,15 @@
 % Please edit documentation in R/gwas.R
 \name{match_gwas_bigsnp}
 \alias{match_gwas_bigsnp}
-\title{Match GWAS with bigSNP reference panel.}
+\title{Match alleles between GWAS summary statistics and bigSNP reference panel.}
 \usage{
 match_gwas_bigsnp(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1)
 }
 \arguments{
 \item{sumstats}{A data frame of GWAS summary statistics}
 
-\item{bigSNP}{bigSNP object}
+\item{bigSNP}{bigSNP object from \code{bigsnpr} containing the reference
+genotype panel.}
 
 \item{strand_flip}{Whether to try to flip strand? (default is TRUE).
 If so, ambiguous alleles A/T and C/G are removed.}
@@ -17,6 +18,16 @@ If so, ambiguous alleles A/T and C/G are removed.}
 \item{match.min.prop}{Minimum proportion of variants in the smallest data
 to be matched, otherwise stops with an error. Default: 10\%}
 }
+\value{
+A data frame with matched summary statistics.
+Values in column "beta" are multiplied by -1 for variants with
+alleles reversed (i.e. swapped).
+New variable "sumstats_index" returns the corresponding row indices of the sumstats,
+and "bigSNP_index" corresponding to the indices of the bigSNP.
+}
 \description{
-Match GWAS with bigSNP reference panel.
+Match alleles between summary statistics and SNP information in the
+bigSNP reference panel using the \code{bigsnpr::snp_match()} function.
+Match by ("chr", "a0", "a1") and ("pos" or "rsid"),
+accounting for possible strand flips and reverse reference alleles (opposite effects).
 }

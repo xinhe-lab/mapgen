@@ -10,7 +10,10 @@ assign_snp_locus(sumstats, LD_Blocks)
 \item{sumstats}{A data frame of GWAS summary statistics.}
 
 \item{LD_Blocks}{A data frame of LD blocks with four columns,
-'chr', 'start', 'end', and 'locus'.}
+'chr', 'start', 'end', and 'locus' (LD block indices).}
+}
+\value{
+A data frame with summary statistics with assigned locus ID.
 }
 \description{
 Assign GWAS SNPs to LD blocks
