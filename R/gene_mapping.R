@@ -177,12 +177,11 @@ compute_gene_pip <- function(finemapstats,
 #' @return A data frame of gene-level view of gene mapping result
 #' @export
 extract_gene_level_result <- function(gene.mapping.res, gene.annots) {
-  cat('Extract gene level result ...\n')
 
   gene.mapping.res <- gene.mapping.res[!is.na(gene.mapping.res$gene_name),]
   genes_not_included <- setdiff(gene.mapping.res$gene_name, gene.annots$gene_name)
   if(length(genes_not_included) > 0){
-    cat('Remove', length(genes_not_included), 'genes not included in gene.annots.\n')
+    message(sprintf('Remove %d genes not included in gene.annots.\n', length(genes_not_included)))
     gene.mapping.res <- gene.mapping.res %>% dplyr::filter(!gene_name %in% genes_not_included)
   }
 
@@ -247,8 +246,8 @@ gene_cs <- function(gene.mapping.res,
       dplyr::summarise(gene_cs = paste0(gene_name, collapse=','),
                        gene_cs_locus_pip = paste(paste0(gene_name, '(',round(locus_gene_pip,3),')'), collapse=','),
                        top_gene = gene_name[1],
-                       top_locus_gene_pip = locus_gene_pip[1],
-                       top_gene_pip = gene_pip[1])
+                       top_locus_gene_pip = round(locus_gene_pip[1],3),
+                       top_gene_pip = round(gene_pip[1],3))
   }else{
     # for each locus, keep the genes with gene PIP cumsum > 0.8
     gene.cumsum.df <- locus.gene.pip.df %>%
@@ -263,7 +262,7 @@ gene_cs <- function(gene.mapping.res,
       dplyr::summarise(gene_cs = paste0(gene_name, collapse=','),
                        gene_cs_pip = paste(paste0(gene_name, '(',round(gene_pip,3),')'), collapse=','),
                        top_gene = gene_name[1],
-                       top_gene_pip = gene_pip[1])
+                       top_gene_pip = round(gene_pip[1],3))
   }
 
   gene.cs.df <- as.data.frame(gene.cs.df)
