@@ -373,12 +373,13 @@ block_view_summary <- function(gene.mapping.res, finemapstats, gene.cs.coverage 
 #' @title Get locus level gene PIP
 #'
 #' @param gene.mapping.res A data frame of SNP-level gene mapping result
-#' @return A data frame of locus level gene PIP result
+#' @return A data frame of locus-level gene PIP result
 #' @export
 #'
 get_locus_level_gene_pip <- function(gene.mapping.res){
 
-  # For each locus - gene pair, sum over the fractional PIPs for SNPs in the locus and linked to the gene
+  # For each locus - gene pair, sum over the fractional PIPs for SNPs
+  # in the locus and linked to the gene
   snp.locus.gene.pip.mat <- gene.mapping.res %>%
     dplyr::group_by(locus, gene_name) %>%
     dplyr::mutate(locus_gene_pip = sum(pip * frac_pip)) %>%
@@ -395,13 +396,13 @@ get_locus_level_gene_pip <- function(gene.mapping.res){
 
 #' @title Get nearby interactions for enhancer regions near promoters
 #'
-#' @param enhancers A GRanges object of enhancer regions
+#' @param enhancer_regions A GRanges object of enhancer regions
 #' @param promoters A GRanges object of promoters
 #' @param max.dist Max distance betweeen enhancer regions and promoters (default: 20kb)
 #' @return A GRanges object of nearby interactions
 #' @export
-get_nearby_interactions <- function(enhancers, promoters, max.dist = 20000){
-  nearby.interactions <- plyranges::join_overlap_inner(enhancers,
+nearby_interactions <- function(enhancer_regions, promoters, max.dist = 20000){
+  nearby.interactions <- plyranges::join_overlap_inner(enhancer_regions,
                                                        promoters,
                                                        maxgap = max.dist)
   return(nearby.interactions)
@@ -414,7 +415,7 @@ get_nearby_interactions <- function(enhancers, promoters, max.dist = 20000){
 #' @param genes A GRanges object of gene information
 #' @param dist.to Find nearest genes by distance to gene body or TSS
 #' @param cols.to.keep columns to keep in the result
-#' @return a data frame with SNP location and nearest gene.
+#' @return A data frame with SNP locations and nearest genes.
 #' @export
 #'
 find_nearest_genes <- function(top.snps,

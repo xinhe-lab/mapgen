@@ -21,7 +21,7 @@ find_nearest_genes(
 \item{cols.to.keep}{columns to keep in the result}
 }
 \value{
-a data frame with SNP location and nearest gene.
+A data frame with SNP locations and nearest genes.
 }
 \description{
 Find the nearest genes for top SNPs in each locus.
