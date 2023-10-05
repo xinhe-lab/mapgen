@@ -153,15 +153,10 @@ run_torus <- function(torus_annot_file,
 }
 
 
-#' @title Assigns SNPs with annotations based on overlap
-#' @param sumstats A data frame of GWAS summary statistics
-#' @param annotations Paths to annotation BED files
-#' @param keep.annot.only Logical. If TRUE, only returns the
-#' SNP and annotation columns
-#' @return if \code{keep.annot.only=TRUE}, returns
-#' a data frame of SNPs and annotations. Otherwise, returns
-#' a data frame of GWAS summary statistics and annotations.
-#' @export
+# Assigns SNPs with annotations based on overlap.
+# sumstats: A data frame of GWAS summary statistics
+# annotations: Paths to annotation BED files
+# keep.annot.only: Logical. If TRUE, only returns the SNP and annotation columns
 annotate_snps_binary <- function(sumstats, annotations, keep.annot.only=TRUE){
 
   snpRanges <- make_ranges(sumstats$chr, sumstats$pos, sumstats$pos)
