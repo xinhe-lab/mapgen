@@ -36,18 +36,18 @@ process_pcHiC <- function(pcHiC){
 #' @title Process ABC scores and save as a GRanges object
 #'
 #' @param ABC A data frame of ABC scores from Nasser et al. Nature 2021 paper
-#' @param ABC.thresh Threshold of ABC scores
+#' @param ABC.thresh Numeric. Threshold of ABC scores.
 #' (default = 0.015, as in Nasser et al. Nature 2021 paper).
 #' @param full.element Logical; if TRUE, use full length of ABC elements
 #' extracted from the "name" column. Otherwise, use the original (narrow)
 #' regions provided in the ABC scores data.
-#' @param expand  Expand the ABC regions around ABC elements (default = 0).
+#' @param flank  Integer. Expand bases around ABC elements (default = 0).
 #' @import GenomicRanges
 #' @import tidyverse
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, expand = 0){
+process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0){
 
   if(full.element){
     ABC <- ABC %>%
@@ -61,9 +61,9 @@ process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, expand = 
     dplyr::rename(gene_name = TargetGene) %>%
     dplyr::filter(ABC.Score >= ABC.thresh)
 
-  if(expand > 0){
-    ABC$start <- ABC$start - expand
-    ABC$end <- ABC$end + expand
+  if(flank > 0){
+    ABC$start <- ABC$start - flank
+    ABC$end <- ABC$end + flank
   }
 
   ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
@@ -101,7 +101,7 @@ annotator_merged <- function(sumstats, annotations){
       curr <- curr[sumstats$snp %in% snpsIn]
       delims <- rep(';', length(curr))
       delims[which(curr == '')] <- ''
-      sumstats[sumstats$snp %in% snpsIn,"annots"] <-
+      sumstats[sumstats$snp %in% snpsIn,'annots'] <-
         paste0(curr,delims,gsub(pattern = '.bed',replacement = '', x = basename(f)))
     }
   }
@@ -131,7 +131,7 @@ get_tss <- function(gr, type = c('promoter', 'gene')){
   return(tss)
 }
 
-# get LD (r^2) between each SNP and the top SNP in sumstats
+# get LD (r^2) between each SNP and the top SNP in sumstats from bigSNP
 get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
 
   # only include SNPs in bigSNP markers
@@ -157,10 +157,10 @@ get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
 }
 
 
-# Add LD information
+# Add LD information from bigSNP
 add_LD_bigSNP <- function(sumstats, bigSNP,
                           r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
-                          r2.labels = c("0-0.1","0.1-0.25","0.25-0.75","0.75-0.9","0.9-1")) {
+                          r2.labels = c('0-0.1','0.1-0.25','0.25-0.75','0.75-0.9','0.9-1')) {
 
   # only include SNPs in bigSNP markers
   sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
@@ -189,8 +189,10 @@ add_LD_bigSNP <- function(sumstats, bigSNP,
 }
 
 # get gene region
-get_gene_region <- function(gene.mapping.res, genes.of.interest, ext = 10000,
-                            select.region = c("all", "locus")){
+get_gene_region <- function(gene.mapping.res,
+                            genes.of.interest,
+                            ext = 10000,
+                            select.region = c('all', 'locus')){
 
   select.region <- match.arg(select.region)
 
@@ -198,7 +200,7 @@ get_gene_region <- function(gene.mapping.res, genes.of.interest, ext = 10000,
     dplyr::group_by(snp) %>% dplyr::arrange(-gene_pip) %>% dplyr::slice(1)
   gene.gr <- gene.annots[match(high.conf.snp.df$gene_name, gene.annots$gene_name),]
   gene.gr$tss <- start(resize(gene.gr, width = 1))
-  gene.gr <- gene.gr[,c("gene_name","tss")]
+  gene.gr <- gene.gr[,c('gene_name','tss')]
   high.conf.snp.df$tss <- gene.gr$tss
 
   gene.snp.tss <- high.conf.snp.df %>%
@@ -209,21 +211,21 @@ get_gene_region <- function(gene.mapping.res, genes.of.interest, ext = 10000,
     dplyr::mutate(distToTSS = pos-tss) %>%
     dplyr::select(gene_name, locus, chr, pos, tss, distToTSS)
 
-  if(select.region == "all"){
+  if(select.region == 'all'){
     chr <- gene.snp.tss$chr[1]
-    locus <- paste(gene.snp.tss$locus, collapse = ",")
+    locus <- paste(gene.snp.tss$locus, collapse = ',')
     region_start <- min(c(gene.snp.tss$pos, gene.snp.tss$tss)) - ext
     region_end <- max(c(gene.snp.tss$pos, gene.snp.tss$tss)) + ext
     region <- GRanges(seqnames = chr,
                       IRanges(start = region_start, end = region_end),
                       locus = locus)
-    seqlevelsStyle(region) <- "UCSC"
-  }else if(select.region == "locus"){
+    seqlevelsStyle(region) <- 'UCSC'
+  }else if(select.region == 'locus'){
     region <- lapply(gene.snp.tss$locus, function(l){
       locus <- l
       locus.snp.tss <- gene.snp.tss[gene.snp.tss$locus == locus, ]
       chr <- locus.snp.tss$chr
-      if(distToTSS < 0){ #snp is upstream
+      if(distToTSS < 0){ # snp is upstream
         region_start <- locus.snp.tss$pos - ext
         region_end <- locus.snp.tss$tss + ext
       } else{ # snp is downstream
@@ -233,7 +235,7 @@ get_gene_region <- function(gene.mapping.res, genes.of.interest, ext = 10000,
       gene_locus_region.gr <- GRanges(seqnames = chr,
                                       IRanges(start = region_start, end = region_end),
                                       locus = locus)
-      seqlevelsStyle(gene_locus_region.gr) <- "UCSC"
+      seqlevelsStyle(gene_locus_region.gr) <- 'UCSC'
       gene_locus_region.gr
     })
   }
