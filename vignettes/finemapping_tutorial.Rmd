@@ -35,25 +35,19 @@ gwas.sumstats <- readRDS(system.file('extdata', 'test.processed.sumstats.rds', p
 torus.res <- readRDS(system.file('extdata', 'test.torus.res.rds', package='mapgen'))
 ```
 
-Now, we can add the SNP-level priors to our summary statistics. 
+We can add the SNP-level priors (column called 'torus_prior') to 
+our summary statistics.
 ```{r add-torus-priors}
 sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas.sumstats, 
                                                            torus_prior = torus.res$snp_prior)
 ```
 
-We see we have a new column called 'torus_prior'.
-```{r}
-head(as.data.frame(sumstats.for.susie), 3)
-```
-
-We did not filter loci in this toy example. 
-
-You could limit loci with GWAS p-value cutoff (e.g. by setting \code{pval.thresh = 5e-8}),
+We could limit loci with GWAS p-value cutoff (e.g. by setting \code{pval.thresh = 5e-8}),
 or by FDR cutoff from running `run_torus()` with `option = "fdr"`. 
 
 ## Fine-mapping
 
-We can then perform fine-mapping with SNP-level priors using `SuSiE`, 
+We can perform fine-mapping with SNP-level priors using `SuSiE`, 
 you will need the `susieR` package for the steps below. 
 ```{r, message=FALSE}
 library(susieR)
@@ -81,8 +75,8 @@ susie.res <- run_finemapping(sumstats = sumstats.for.susie,
 
 If you have the LD matrices, you can provide those instead of 
 using the bigSNP object. 
+The LD matrices should be a list of LD (R) matrices for the loci in sumstats.
 ```{r run-susie-torus-prior-LD-matrices, eval=FALSE, message=FALSE}
-# LD_matrices is a list of R correlation matrices for the LD blocks in sumstats
 susie.res <- run_finemapping(sumstats = sumstats.for.susie, 
                              LD_matrices = LD_matrices, 
                              priortype = 'torus', 
@@ -90,7 +84,8 @@ susie.res <- run_finemapping(sumstats = sumstats.for.susie,
 ```
 
 We did not provide sample size (n) for this toy example, 
-but it is highly encouraged to provide that in the real data analysis.
+but it is highly encouraged to provide that (set argument `n` = sample size) 
+in the real data analysis.
 
 We ran `SuSiE` with `L = 1` here, which allows a single causal signal for 
 each LD block and is robust to mismatching LD patterns. 
@@ -101,16 +96,8 @@ We can merge GWAS summary statistics with SuSiE result:
 finemap.sumstats <- merge_susie_sumstats(susie.res, sumstats.for.susie)
 ```
 
-We now have a new column called `susie_pip` which is the probability of a SNP 
+We now have a new column called `susie_pip`, which is the probability of a SNP 
 being causal estimated using `SuSiE`.
-
-```{r, include=FALSE}
-finemap.sumstats <- readRDS(system.file('extdata', 'test.finemap.sumstats.rds', package='mapgen'))
-```
-
-```{r}
-head(as.data.frame(finemap.sumstats),3)
-```
 
 [data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
 [enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
