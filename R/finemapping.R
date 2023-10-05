@@ -37,18 +37,24 @@ prepare_susie_data_with_torus_result <- function(sumstats,
     # Select loci by FDR from TORUS
     cat('Select loci by TORUS FDR <', fdr.thresh, '\n')
     selected.loci <- torus_fdr$region_id[torus_fdr$fdr < fdr.thresh]
+    if(length(selected.loci) == 0){
+      message('No loci selected. Please double check!')
+    }
     sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
   }
 
   if(!missing(pval.thresh)){
     # Select loci by pval
     cat('Select loci by pval <', pval.thresh, '\n')
-    if(max(sumstats$pval) > 1){
-      sig.sumstats <- sumstats %>% dplyr::filter(pval > -log10(pval.thresh))
-    }else{
-      sig.sumstats <- sumstats %>% dplyr::filter(pval < pval.thresh)
+    if( min(sumstats$pval) >= 0 && max(sumstats$pval) <= 1 ){
+      cat("Convert GWAS p-value to -log10(pvalue). \n")
+      sumstats$pval <- -log10(sumstats$pval)
     }
+    sig.sumstats <- sumstats %>% dplyr::filter(pval > -log10(pval.thresh))
     selected.loci <- unique(sig.sumstats$locus)
+    if(length(selected.loci) == 0){
+      message('No loci selected. Please double check!')
+    }
     sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
   }
 
@@ -169,7 +175,7 @@ merge_susie_sumstats <- function(susie_results, sumstats){
     if(!is.null(susie_results[[l]]$sets$cs)){
       snps.in.cs[unlist(susie_results[[l]]$sets$cs$L1)] <- 1
     }
-    sumstats[sumstats$locus == as.numeric(l), 'CS'] <- snps.in.cs
+    sumstats[sumstats$locus == as.numeric(l), 'cs'] <- snps.in.cs
   }
 
   return(sumstats)
