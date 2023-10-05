@@ -4,7 +4,13 @@
 \alias{match_gwas_bigsnp}
 \title{Match alleles between GWAS summary statistics and bigSNP reference panel.}
 \usage{
-match_gwas_bigsnp(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1)
+match_gwas_bigsnp(
+  sumstats,
+  bigSNP,
+  strand_flip = TRUE,
+  match.min.prop = 0.1,
+  ...
+)
 }
 \arguments{
 \item{sumstats}{A data frame of GWAS summary statistics}

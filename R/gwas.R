@@ -185,7 +185,10 @@ assign_snp_locus <- function(sumstats, LD_Blocks){
 #' New variable "ss_index" returns the corresponding row indices of the sumstats,
 #' and "bigSNP_index" corresponding to the indices of the bigSNP.
 #' @export
-match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.prop = 0.1){
+match_gwas_bigsnp <- function(sumstats,
+                              bigSNP,
+                              strand_flip = TRUE,
+                              match.min.prop = 0.1, ...){
 
   map <- bigSNP$map
   snp_info <- map[,c('chromosome','physical.pos','allele1','allele2')]
@@ -194,7 +197,8 @@ match_gwas_bigsnp <- function(sumstats, bigSNP, strand_flip = TRUE, match.min.pr
   matched.sumstats <- bigsnpr::snp_match(sumstats,
                                          snp_info,
                                          strand_flip = strand_flip,
-                                         match.min.prop = match.min.prop)
+                                         match.min.prop = match.min.prop,
+                                         ...)
 
   matched.sumstats <- matched.sumstats %>%
     tibble::as_tibble() %>%
