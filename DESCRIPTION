@@ -11,7 +11,7 @@ Description: Performs enrichment, functionally-informed genetic fine-mapping
     and gene mapping.
 BugReports: https://github.com/xinhe-lab/mapgen/issues
 License: MIT + file LICENSE
-Depends: R (>= 3.5.1)
+Depends: R (>= 3.5.0)
 Encoding: UTF-8
 Imports:
     tidyverse,

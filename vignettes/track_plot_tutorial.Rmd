@@ -20,9 +20,9 @@ Please have the following Bioconductor packages installed:
 `GenomicInteractions`, `AnnotationDbi`, `org.Hs.eg.db`.
 
 Load packages
-```{r load-packages, message=FALSE}
+```{r load-packages, message=FALSE, warning=FALSE}
 library(GenomicFeatures) #  Making and manipulating annotations
-library(rtracklayer)
+library(rtracklayer) # Import annotation data
 library(Gviz) # R package used to visualize track plots
 library(GenomicInteractions) # visualize HiC loops
 library(AnnotationDbi) # match gene ID to gene symbol
@@ -45,14 +45,9 @@ finemapstats <- process_finemapping_sumstats(finemapstats,
                                              pip.thresh = 0)
 ```
 
-Load genomic annotations (hg19) included in the package
+Load gene annotations (hg19) included in the package
 ```{r load-annotations}
 genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
-summary(genomic.annots)
-```
-
-gene annotations
-```{r}
 gene.annots <- genomic.annots$genes
 ```
 
@@ -110,7 +105,7 @@ using a reference panel in `bigSNP` object.
 We provided a `bigSNP` object of the reference genotype panel from the 1000 Genomes (1KG) European population. 
 
 If you are in the He lab at UChicago, you can load the `bigSNP` object from RCC as below.
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(bigsnpr) # loading reference genotype for LD calculation
 ```
 
@@ -125,6 +120,7 @@ bigSNP <- snp_attach(rdsfile = "../../mapgen_tutorial_data/bigsnpr/EUR_variable_
 ## Make track plots
 
 Plot CALU locus in the genomic region "chr7:128375000-128425000"
+
 Highlight topSNP "rs55985730"
 ```{r make-CALU-trackplot, fig.width=12, fig.height=8, message=FALSE}
 counts <- list("CM" = CM_counts, "Endo" = Endo_counts, "Fibro" = Fibro_counts)
@@ -145,13 +141,12 @@ track_plot(finemapstats,
            counts.color = c("red", "green", "purple"),
            peaks.color = c("navy", "blue"),
            loops.color = "gray", 
-           rotation.title = 0,
-           genelabel.side = "left",
-           verbose = TRUE)
+           genelabel.side = "left")
 ```
 
 
 Plot HCN4 locus in the genomic region "chr15:73610000-73700000"
+
 Highlight topSNP "rs7172038"
 ```{r make-HCN4-trackplot, fig.width=12, fig.height=8, message=FALSE}
 counts <- list("CM" = CM_counts, "Endo" = Endo_counts, "Fibro" = Fibro_counts)
@@ -172,9 +167,7 @@ track_plot(finemapstats,
            counts.color = c("red", "green", "purple"),
            peaks.color = c("navy", "blue"),
            loops.color = "gray", 
-           rotation.title = 0,
-           genelabel.side = "above",
-           verbose = TRUE)
+           genelabel.side = "above")
 ```
 
 [GENCODE]: https://www.gencodegenes.org
