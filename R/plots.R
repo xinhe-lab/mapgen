@@ -210,7 +210,7 @@ track_plot <- function(finemapstats,
                        highlight.color = 'pink',
                        genelabel.side = c('above', 'below', 'left', 'right'),
                        track.sizes,
-                       rotation.title = 90,
+                       rotation.title = 0,
                        verbose = FALSE,
                        ...) {
 
