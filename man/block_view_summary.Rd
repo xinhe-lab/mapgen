@@ -4,12 +4,17 @@
 \alias{block_view_summary}
 \title{LD block view summary table}
 \usage{
-block_view_summary(genemapping_res, finemapstats.gr)
+block_view_summary(gene.mapping.res, finemapstats, gene.cs.coverage = 0.8)
 }
 \arguments{
-\item{genemapping_res}{data frame of gene mapping result}
+\item{gene.mapping.res}{A data frame of gene mapping result}
 
-\item{finemapstats.gr}{GRange object of fine mapping result}
+\item{finemapstats}{A GRange object of fine-mapping summary statistics}
+
+\item{gene.cs.coverage}{A number between 0 and 1 specifying desired coverage of each credible gene set}
+}
+\value{
+A data frame of LD block view summary of gene mapping result
 }
 \description{
 LD block view summary table

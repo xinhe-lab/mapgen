@@ -37,7 +37,7 @@ or \dQuote{fdr}, perform Bayesian FDR control, and output the result.}
 \item{torus_path}{Path to \code{torus} executable.}
 }
 \value{
-a list of enrichment results, SNP-level prior probabilities,
+A list of enrichment results, SNP-level prior probabilities,
 and/or FDR result.
 Enrichment result contains the point estimate (MLE) of the log odds ratio,
 as well as 95\% confidence interval for the corresponding point estimate.

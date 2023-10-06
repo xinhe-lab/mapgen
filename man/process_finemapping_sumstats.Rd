@@ -16,36 +16,35 @@ process_finemapping_sumstats(
   locus = "locus",
   pip.thresh = 0,
   filterCS = FALSE,
-  maxL = 10,
-  cols.to.keep = c("snp", "chr", "pos", "pip", "pval", "zscore", "cs", "locus")
+  maxL = 10
 )
 }
 \arguments{
 \item{finemapstats}{A data frame of fine-mapping summary statistics}
 
-\item{snp}{Name of the SNP ID (rsID) column in the summary statistics data}
+\item{snp}{Name of the SNP ID (rsID) column in the fine-mapping summary statistics}
 
-\item{chr}{Name of the chr column in the summary statistics data frame}
+\item{chr}{Name of the chr column in the fine-mapping summary statistics}
 
-\item{pos}{Name of the position column in the summary statistics data frame}
+\item{pos}{Name of the position column in the fine-mapping summary statistics}
 
-\item{pip}{Name of the PIP column in the summary statistics data frame}
+\item{pip}{Name of the PIP column in the fine-mapping summary statistics}
 
-\item{pval}{Name of the P-value column in the summary statistics data frame}
+\item{pval}{Name of the P-value column in the fine-mapping summary statistics}
 
-\item{zscore}{Name of the z-score column in the summary statistics data frame}
+\item{zscore}{Name of the z-score column in the fine-mapping summary statistics}
 
-\item{cs}{Name of the CS column in the summary statistics data frame}
+\item{cs}{Name of the credible set (CS) column in the fine-mapping summary statistics}
 
-\item{locus}{Name of the locus column in the summary statistics data frame}
+\item{locus}{Name of the locus column in the fine-mapping summary statistics}
 
-\item{pip.thresh}{PIP threshold (default = 0).}
+\item{pip.thresh}{Select SNPs by PIP threshold (default = 0, no filtering).}
 
 \item{filterCS}{If TRUE, limiting to SNPs within credible sets.}
 
-\item{maxL}{Maximum number of credible sets (default = 10).}
-
-\item{cols.to.keep}{columns to keep in the returned data frame}
+\item{maxL}{Maximum number of credible sets (default = 10).
+If filterCS is TRUE, it will only keep SNPs with credible set (CS) number >= 1
+and <= \code{maxL}.}
 }
 \value{
 A GRanges object with cleaned and filtered fine-mapping summary statistics

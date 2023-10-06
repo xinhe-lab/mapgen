@@ -5,121 +5,121 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, comment = "#")
+knitr::opts_chunk$set(echo = TRUE, eval=TRUE, comment = "#")
 ```
 
-Partitioning PIPs by cell types and annotation categories
-============================================================
+## Partitioning PIPs by cell types and annotation categories
 
-Here, we show an example using data from our heart single-cell study.
+Here, we show an example using AFib GWAS finemapping result and 
+scATAC-seq data from our heart study.
 We assigned the likely cell type(s) through 
 which the causal variants act in each locus using fine-mapped SNPs,
-and cell-type specific open chromatin regions (OCRs).
+and cell-type specific open chromatin regions (OCRs) obtained from scATAC-seq data.
 
 **Required input data**:
 
-* Fine-mapping summary statistics.
+* Fine-mapped summary statistics.
 * A list of GRanges objects of annotation regions. 
 
 Load R packages
 ```{r load-packages, message=FALSE, warning=FALSE}
-suppressMessages(library(tidyverse))
-suppressMessages(library(GenomicRanges))
 library(mapgen)
 ```
 
-Load fine-mapping summary statistics.
+Load fine-mapping summary statistics from the AFib study
+Keep SNPs with PIP > 1e-5, rename columns, and save as a GRanges object.
 ```{r load-finemapping-res}
-finemapstats <- readRDS(system.file("extdata", "AF_finemapping_result.rds", package = "mapgen"))
-finemapstats.gr <- process_finemapping_sumstats(finemapstats, 
-                                                snp = 'snp', chr = 'chr', 
-                                                pos = 'pos', pip = 'susie_pip', 
-                                                pval = 'pval', zscore = 'zscore', 
-                                                cs = 'CS', locus = 'locus',  
-                                                pip.thresh = 1e-5)
+finemapstats <- readRDS(system.file("extdata", "AF.finemapping.sumstats.rds", package = "mapgen"))
+finemapstats <- process_finemapping_sumstats(finemapstats, 
+                                             snp = 'snp', chr = 'chr', 
+                                             pos = 'pos', pip = 'susie_pip', 
+                                             pval = 'pval', zscore = 'zscore', 
+                                             cs = 'cs', locus = 'locus',  
+                                             pip.thresh = 1e-5)
 ```
 
 We can partition PIPs into different functional annotation categories.
 
 Load genomic annotations (hg19). 
 ```{r load-genomic-annotations}
-genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.gr.rds", package = "mapgen"))
+genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
 ```
 
-Load all OCRs (hg19).
+Load cell-type specific open chromatin regions (OCRs) (hg19).
 ```{r load-all-OCRs}
-genomic.annots$OCRs_hg19 <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
+genomic.annots$OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 ```
 
 Create a list of the annotations, with priority in the order of OCRs, UTRS, Exons, and Introns.
 ```{r create-annots.list}
-annots.list <- list(OCRs = genomic.annots$OCRs_hg19,
+annots.list <- list(OCRs = genomic.annots$OCRs,
                     UTRs = genomic.annots$UTRs,
                     Exons = genomic.annots$exons,
                     Introns = genomic.annots$introns)
 ```
 
-Sum PIPs within annotation categories. 
-Unlike partition_pip_regions(), it is OK to have overlapping annotations here. 
-If a SNP is in multiple annotation categories, it will be assigned to the first ordered category.
+### Sum PIPs within annotation categories
+
+Unlike \code{partition_pip_regions()}(below), 
+it is OK to have overlapping annotations here. 
+If a SNP is in multiple annotation categories, 
+it will be assigned to the first ordered category.
 ```{r sum-pip-annots}
-sum_pip_res <- partition_pip_annots(finemapstats.gr, annots.list)
+sum.pip.res <- partition_pip_annots(finemapstats, annots.list)
 ```
 
 Sum of PIPs in each annotation category:
 ```{r}
-sum.pips <- sum_pip_res$sum.pips
+sum.pips <- sum.pip.res$sum.pips
 head(sum.pips)
 ```
 
-Number of SNPs included in each annotation category:
-```{r}
-n.snps <- sum_pip_res$n.snps
-head(n.snps)
-```
-
+Obtain a matrix of the proportion of PIPs in each annotation category.
 ```{r get-prop-pips-annots}
 locus.order <- rownames(sum.pips)[with(sum.pips, order(-OCRs, UTRs, Exons, Introns, others))]
 sum.pips <- sum.pips[locus.order,]
 prop.pip.mat <- sum.pips/rowSums(sum.pips)
+
+head(prop.pip.mat)
 ```
 
 We can make a structure plot to show the proportion of PIPs in each annotation category.
-The structure plot function was adapted from the [fastTopics](https://stephenslab.github.io/fastTopics/) R package.
 ```{r structure-plot-annots, fig.width=10, fig.height=2.5}
 categories <- c("OCRs", "UTRs", "Exons", "Introns", "others")
 colors <- c(OCRs = "#E18727FF", UTRs = "#238b45", Exons =  "#bee6af", Introns = "#B09C85FF", others = "#aaaaaa")
-dat <- compile_structure_plot_data(prop.pip.mat, categories = categories)
-structure_plot(dat, colors = colors)
+structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```
 
-We can further partition PIPs into disjoint OCRs for different cell types.
+### Partition PIPs into disjoint OCRs for different cell types
 
-Load cell type OCR peaks. 
-This is a list of GRanges objects containing disjoint OCRs for different cell types. 
+We can partition PIPs into disjoint OCRs for different cell types.
+
+Load a list of GRanges objects containing disjoint OCRs for different cell types. 
 ```{r load-disjoint-OCRs}
-disjoint_OCRs <- readRDS(system.file("extdata", "disjoint_OCRs_hg19.grlist.rds", package = "mapgen"))
+disjoint.OCRs <- readRDS(system.file("extdata", "disjoint.OCRs.hg19.grlist.rds", package = "mapgen"))
 ```
 
 Sum PIPs within cell-type specific OCRs.
 ```{r sum-pip-disjoint-OCRs}
-sum_pip_res <- partition_pip_regions(finemapstats.gr, disjoint_OCRs)
+sum.pip.res <- partition_pip_regions(finemapstats, disjoint.OCRs)
 ```
 
 Sum of PIPs in each cell type OCR category:
 ```{r}
-sum.pips <- sum_pip_res$sum.pips
+sum.pips <- sum.pip.res$sum.pips
 head(sum.pips)
 ```
 
-Filter loci with a cutoff of total PIPs in OCR > 0.25, 
-compute the proportion of PIPs partitioned in each cell type category.
+Select loci with total PIPs in OCR > 0.25, 
+and compute the proportion of PIPs partitioned in each cell type category.
 ```{r filter-locus-proportion-pips-OCRs}
 # reorder the loci to match the previous figure
 sum.pips <- sum.pips[locus.order, ]
-# filter loci with a cutoff of total PIPs in OCR > 0.25
+# filter loci with total PIPs in OCR > 0.25
 sum.pips.filtered <- sum.pips[rowSums(sum.pips) > 0.25,]
 prop.pip.mat <- sum.pips.filtered/rowSums(sum.pips.filtered)
+
+head(prop.pip.mat)
 ```
 
 We can make a structure plot to show the proportion of PIPs in each cell type category.
@@ -128,6 +128,5 @@ categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid",
                 "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
 colors <- c("#b22222", "#8DD3C7", "#BEBADA", "#FB8072", 
             "#80B1D3", "#B3DE69", "royalblue", "#003C86")
-dat <- compile_structure_plot_data(prop.pip.mat, categories = categories)
-structure_plot(dat, colors = colors)
+structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```

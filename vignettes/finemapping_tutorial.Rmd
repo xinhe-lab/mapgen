@@ -1,0 +1,103 @@
+---
+title: "Tutorial for fine-mapping with functional priors"
+author: Kaixuan Luo, Alan Selewa
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=TRUE)
+```
+
+In this tutorial, we perform fine-mapping (using SuSiE) with 
+functional priors computed from the enrichment analysis using `TORUS`.
+
+Load the packages. 
+```{r load-package}
+library(mapgen)
+```
+
+## Input data
+
+Please see the [data preparation tutorial][data-preparation-tutorial] about 
+preparing GWAS summary statistics. 
+
+We need a `bigSNP` object for the reference genotype panel, 
+which will be used for computing LD matrices. See the 
+[data preparation tutorial][data-preparation-tutorial] for details.
+
+## SNP-level priors
+
+Let's load the processed GWAS summary statistics obtained from 
+the [data preparation tutorial][data-preparation-tutorial] and the 
+SNP-level priors using `run_torus()` obtained from the [enrichment analysis tutorial][enrichment-tutorial].
+```{r}
+gwas.sumstats <- readRDS(system.file('extdata', 'test.processed.sumstats.rds', package='mapgen'))
+torus.res <- readRDS(system.file('extdata', 'test.torus.res.rds', package='mapgen'))
+```
+
+We can add the SNP-level priors (column called 'torus_prior') to 
+our summary statistics.
+```{r add-torus-priors}
+sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas.sumstats, 
+                                                           torus_prior = torus.res$snp_prior)
+```
+
+We could limit loci with GWAS p-value cutoff (e.g. by setting \code{pval.thresh = 5e-8}),
+or by FDR cutoff from running `run_torus()` with `option = "fdr"`. 
+
+## Fine-mapping
+
+We can perform fine-mapping with SNP-level priors using `SuSiE`, 
+you will need the `susieR` package for the steps below. 
+```{r, message=FALSE}
+library(susieR)
+```
+
+To use SNP-level priors computed from `TORUS`, we use `run_finemapping()` 
+with `priortype = 'torus'`. 
+
+You can also run fine-mapping using uniform prior (without SNP-level priors)
+with `priortype = 'uniform'`. _(You don't need to run `TORUS` if you run 
+fine-mapping using uniform prior.)_
+
+You can use the bigSNP object prepared earlier in 
+the [data preparation tutorial][data-preparation-tutorial]. 
+If you provide bigSNP instead of LD matrices, 
+it will compute R matrices using the genotype data in the bigSNP object. 
+```{r run-susie-torus-prior-bigSNP, eval=FALSE, message=FALSE}
+# you will need the bigsnpr package if you use the bigSNP object.
+library(bigsnpr)
+susie.res <- run_finemapping(sumstats = sumstats.for.susie, 
+                             bigSNP = bigSNP, 
+                             priortype = 'torus', 
+                             L = 1)
+```
+
+If you have the LD matrices, you can provide those instead of 
+using the bigSNP object. 
+The LD matrices should be a list of LD (R) matrices for the loci in sumstats.
+```{r run-susie-torus-prior-LD-matrices, eval=FALSE, message=FALSE}
+susie.res <- run_finemapping(sumstats = sumstats.for.susie, 
+                             LD_matrices = LD_matrices, 
+                             priortype = 'torus', 
+                             L = 1)
+```
+
+We did not provide sample size (n) for this toy example, 
+but it is highly encouraged to provide that (set argument `n` = sample size) 
+in the real data analysis.
+
+We ran `SuSiE` with `L = 1` here, which allows a single causal signal for 
+each LD block and is robust to mismatching LD patterns. 
+
+`susie.res` is a list of `SuSiE` results, one for each locus. 
+We can merge GWAS summary statistics with SuSiE result:
+```{r merge-susie-sumstats, eval=FALSE}
+finemap.sumstats <- merge_susie_sumstats(susie.res, sumstats.for.susie)
+```
+
+We now have a new column called `susie_pip`, which is the probability of a SNP 
+being causal estimated using `SuSiE`.
+
+[data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
+[enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html

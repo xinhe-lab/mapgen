@@ -5,7 +5,7 @@
 \title{Cleans GWAS summary statistics and adds metadata}
 \usage{
 process_gwas_sumstats(
-  sumstats_file,
+  sumstats,
   chr = "chr",
   pos = "pos",
   beta = "beta",
@@ -14,17 +14,16 @@ process_gwas_sumstats(
   a1 = "a1",
   snp = "snp",
   pval = "pval",
-  bigSNP,
-  LD_Blocks
+  LD_Blocks,
+  bigSNP
 )
 }
 \arguments{
-\item{sumstats_file}{file containing raw summary statistics.
-Coordinates should be hg19/b37; we current do not support hg38.}
+\item{sumstats}{A data frame of GWAS summary statistics.}
 
-\item{chr}{Name of the chromosome column in summary statistics file.}
+\item{chr}{Name of the chromosome column in summary statistics.}
 
-\item{pos}{Name of the position column (base pair position, in \emph{hg19}!).}
+\item{pos}{Name of the position column (base pair position).}
 
 \item{beta}{Name of beta column (if you have Odds Ratio,
 you will need to transform it to log(Odds Ratio)).}
@@ -39,14 +38,16 @@ you will need to transform it to log(Odds Ratio)).}
 
 \item{pval}{Name of the p-value column.}
 
-\item{bigSNP}{bigSNP object from \code{bigsnpr}.}
+\item{LD_Blocks}{A data frame of LD blocks with four columns,
+'chr', 'start', 'end', and 'locus' (LD block indices).}
 
-\item{LD_Blocks}{Reference LD blocks}
+\item{bigSNP}{a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+containing the reference genotype panel.}
 }
 \value{
-Cleaned summary statistics + LD block of every SNP,
-as well as its index in the reference panel of genotypes
+A data frame of processed GWAS summary statistics.
 }
 \description{
-Cleans GWAS summary statistics and adds metadata
+Cleans GWAS summary statistics and adds metadata, including:
+the index in the bigSNP object of each SNP, and the LD block locus.
 }

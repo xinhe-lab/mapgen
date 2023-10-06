@@ -1,16 +1,19 @@
 
 #' @title Make genomic annotations from a GTF file
+#' @description
+#' Make genomic annotations from a GTF file.
+#' Please install the `bedtoolsr` package from
+#' https://github.com/PhanstielLab/bedtoolsr
 #'
-#' @param gtf.file GTF file name
-#' @param save If TRUE, save genomic annotations as a RDS file
-#' @param outname Output file name
-#' @importFrom magrittr %>%
-#' @importFrom tibble as_tibble
+#' @param gtf_file Path to the GTF file
+#' @param add_splice_junctions If TRUE, add splice junctions in the result
+#' @import GenomicRanges
+#' @import tidyverse
+#' @return A list of GRanges objects of genomic annotations
 #' @export
-#'
-make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
+make_genomic_annots <- function(gtf_file, add_splice_junctions = FALSE) {
 
-  my.gtf <- rtracklayer::import(con = gtf.file, format = 'gtf')
+  my.gtf <- rtracklayer::import(con = gtf_file, format = 'gtf')
   seqlevels(my.gtf, pruning.mode = 'coarse') <- paste0('chr',1:22)
 
   my.gtf.protein <- my.gtf[which(my.gtf$gene_type=='protein_coding'),]
@@ -18,7 +21,7 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
   my.genes <- my.gtf.protein[my.gtf.protein$type=='gene',]
 
   canonical.transcripts <- my.gtf.protein %>%
-    as_tibble() %>%
+    tibble::as_tibble() %>%
     dplyr::filter(type == 'transcript') %>%
     group_by(gene_id) %>%
     mutate(transLength = abs(end - start)) %>%
@@ -49,30 +52,25 @@ make_genomic_annots <- function(gtf.file, save = FALSE, outname = NULL) {
   my.promoters <- append(my.promoters.plus, my.promoters.neg)
   my.promoters$gene_name <- c(my.genes.plus$gene_name, my.genes.neg$gene_name)
 
-  exon.chr <- c(as.character(seqnames(my.exons)), as.character(seqnames(my.exons)))
-  exon.pos <- c(start(my.exons), end(my.exons))
-  exon.gene.name <- c(my.exons$gene_name, my.exons$gene_name)
-  my.splice.junc <- GRanges(seqnames = exon.chr,
-                            ranges = IRanges(start = exon.pos-100, end = exon.pos+100),
-                            gene_name = exon.gene.name)
-
-  annots <- list(
+  genomic.annots <- list(
     genes = my.genes,
     exons = my.exons,
     introns = my.introns,
     UTRs = my.UTR,
-    promoters = my.promoters,
-    splice_junctions = my.splice.junc
+    promoters = my.promoters
   )
 
-  if(save){
-    if(!dir.exists(dirname(outname)))
-      dir.create(dirname(outname), showWarnings = FALSE, recursive = TRUE)
-
-    saveRDS(annots, outname)
+  if(add_splice_junctions){
+    exon.chr <- c(as.character(seqnames(my.exons)), as.character(seqnames(my.exons)))
+    exon.pos <- c(start(my.exons), end(my.exons))
+    exon.gene.name <- c(my.exons$gene_name, my.exons$gene_name)
+    my.splice.junc <- GRanges(seqnames = exon.chr,
+                              ranges = IRanges(start = exon.pos-100, end = exon.pos+100),
+                              gene_name = exon.gene.name)
+    genomic.annots$splice_junctions <- my.splice.junc
   }
 
-  return(annots)
+  return(genomic.annots)
 }
 
 # Subtracts all exon coordinates from all gene coordinates to get all intron coordinates
@@ -99,15 +97,3 @@ substract_exons <- function( genes.gr, exons.gr ) {
   }
 }
 
-#' @title Get nearby interactions for enhancer regions near active promoters
-#'
-#' @param enhancer_regions.gr GRanges object of enhancer regions
-#' @param active_promoters.gr GRanges object of active promoters
-#' @param dist_limit Distance limit (default: 20kb)
-#' @export
-nearby_interactions <- function(enhancer_regions.gr, active_promoters.gr, dist_limit = 20000){
-  overlaps <- GenomicRanges::findOverlaps(enhancer_regions.gr, active_promoters.gr, maxgap = dist_limit, ignore.strand = TRUE)
-  enhancer_nearby_promoter <- enhancer_regions.gr[queryHits(overlaps),]
-  enhancer_nearby_promoter$gene_name <- active_promoters.gr$gene_name[subjectHits(overlaps)]
-  return(enhancer_nearby_promoter)
-}

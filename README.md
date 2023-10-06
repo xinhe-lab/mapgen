@@ -6,8 +6,12 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-`mapgen` is an R package that performs gene mapping based on
-functionally-informed genetic fine-mapping.
+Mapgen is a multi-function software that performs the following tasks:
+
+1.  Enrichment analysis of functional annotations for a trait of
+    interest.
+2.  Functionally-informed genetic fine-mapping.
+3.  Gene mapping based on fine-mapping result and genomic annotations.
 
 ## Installation
 
@@ -15,15 +19,9 @@ You can install the development version of `mapgen` from
 [GitHub](https://github.com/xinhe-lab/mapgen) with:
 
 ``` r
-# install.packages("remotes")
+install.packages("remotes")
 remotes::install_github("xinhe-lab/mapgen")
 ```
-
-- Please install [susieR](https://github.com/stephenslab/susieR)
-  package, if you want to run finemapping with GWAS summary statistics
-  using SuSiE.
-- Please install [TORUS](https://github.com/xqwen/torus) software
-  package, if you want to run enrichment analysis using TORUS.
 
 After installing, check that it loads properly:
 
@@ -31,38 +29,48 @@ After installing, check that it loads properly:
 library(mapgen)
 ```
 
-## Overview of the workflow
+## Tutorials
 
-**Example workflow from our heart single-cell study:**
+### [Data preparation](https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html)
 
-We developed an integrated procedure that combines single-cell genomics
-with novel computational approaches to study genetics of complex traits.
+Prepare input data: GWAS summary statistics, LD information, etc.
 
-Main steps:
+### [Enrichment analysis](https://xinhe-lab.github.io/mapgen/articles/enrichment_tutorial.html)
 
-1.  Obtain cell-type-resolved open chromatin regions (OCRs) using
-    scATAC-seq and snRNA-seq.
-2.  Assess the enrichment of genetic signals of a trait of interest in
-    OCRs across all the cell types.
-3.  Perform Bayesian statistical fine mapping on trait-associated loci,
-    using a informative prior that favors likely functional variants
-    located in OCRs of enriched cell types.
-4.  Assign the likely cell type(s) through which the causal variants act
-    in most loci using fine-mapped SNPs and its associated cell type
-    information.
-5.  Use our novel gene mapping procedure to infer causal genes at each
-    locus.
+Assess the enrichment of genetic signals of a trait of interest in
+functional annotations using `TORUS`.
 
-<img src="man/figures/workflow.overview.png" width="75%" />
+\*Please install [TORUS](https://github.com/xqwen/torus) software
+package, if you need to run enrichment analysis.
 
-Please follow the
-[tutorials](https://xinhe-lab.github.io/mapgen/articles/index.html) to
-use the package.
+### [Fine-mapping](https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html)
+
+Perform Bayesian statistical fine-mapping using `SuSiE` on
+trait-associated loci, using a informative prior that favors variants
+located in enriched annotations.
+
+\*Please install [susieR](https://github.com/stephenslab/susieR)
+package, if you need to run fine-mapping with GWAS summary statistics.
+
+### [Gene mapping](https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html)
+
+Infer causal genes at each locus based on fine-mapping result and
+genomic annotations.
+
+### [PIP partitioning by annotation categories](https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html)
+
+Partitioning finemapping PIPs by annotation categories.
+
+### [Making track plots](https://xinhe-lab.github.io/mapgen/articles/track_plot_tutorial.html)
+
+Making track plots of GWAS, finemapping, and annotation data using
+`Gviz` package.
 
 ## Reference
 
-Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin Smith, Xiaotong
-Sun, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin
-He, Sebastian Pott. Single-cell genomics improves the discovery of risk
-variants and genes of Atrial Fibrillation. medRxiv 2022.02.02.22270312;
-doi: <https://doi.org/10.1101/2022.02.02.22270312>
+> Alan Selewa\*, Kaixuan Luo\*, Michael Wasney, Linsin Smith, Xiaotong
+> Sun, Chenwei Tang, Heather Eckart, Ivan Moskowitz, Anindita Basu, Xin
+> He, Sebastian Pott. Single-cell genomics improves the discovery of
+> risk variants and genes of atrial fibrillation. *Nat Commun.* 2023 Aug
+> 17;14(1):4999. doi: 10.1038/s41467-023-40505-5. PMID: 37591828; PMCID:
+> PMC10435551.

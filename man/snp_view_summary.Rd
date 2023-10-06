@@ -5,20 +5,23 @@
 \title{SNP view summary table}
 \usage{
 snp_view_summary(
-  genemapping_res,
+  gene.mapping.res,
   gene.annots,
-  finemapstats.gr,
-  fractional.PIP.thresh = 0.02
+  finemapstats,
+  fractional.pip.thresh = 0.02
 )
 }
 \arguments{
-\item{genemapping_res}{data frame of gene mapping result}
+\item{gene.mapping.res}{A data frame of gene mapping result}
 
-\item{gene.annots}{data frame of gene annotations}
+\item{gene.annots}{A data frame of gene annotations}
 
-\item{finemapstats.gr}{GRange object of fine mapping result}
+\item{finemapstats}{A GRange object of fine-mapping summary statistics}
 
-\item{fractional.PIP.thresh}{Filter SNPs with fractional PIP cutoff (default: 0.02)}
+\item{fractional.pip.thresh}{Filter SNPs with fractional PIP cutoff (default: 0.02)}
+}
+\value{
+A data frame of SNP view summary of gene mapping result
 }
 \description{
 SNP view summary table

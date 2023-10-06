@@ -4,10 +4,13 @@
 \alias{get_locus_level_gene_pip}
 \title{Get locus level gene PIP}
 \usage{
-get_locus_level_gene_pip(snp.gene.pip.mat)
+get_locus_level_gene_pip(gene.mapping.res)
 }
 \arguments{
-\item{snp.gene.pip.mat}{A data frame of SNP-level gene mapping result}
+\item{gene.mapping.res}{A data frame of SNP-level gene mapping result}
+}
+\value{
+A data frame of locus-level gene PIP result
 }
 \description{
 Get locus level gene PIP

@@ -5,25 +5,23 @@
 \title{Compute gene PIPs based on fine-mapping result and functional annotations.}
 \usage{
 compute_gene_pip(
-  finemapstats.gr,
+  finemapstats,
   genomic.annots,
-  enhancer.loop.method = "ABC.pcHiC.nearby20kb",
   intron.mode = FALSE,
-  c.dist = 50000,
-  cols.to.keep = c(names(mcols(finemapstats.gr)), "gene_name", "category", "weight",
+  d0 = 50000,
+  cols.to.keep = c(names(mcols(finemapstats)), "gene_name", "category", "weight",
     "frac_pip", "gene_pip")
 )
 }
 \arguments{
-\item{finemapstats.gr}{a GRanges object of fine-mapping result.}
+\item{finemapstats}{A GRanges object of fine-mapping result.}
 
 \item{genomic.annots}{A list of GRanges objects of genomic annotations.}
 
-\item{enhancer.loop.method}{Enhancer loop method}
-
 \item{intron.mode}{Logical. If TRUE, assign intronic SNPs to genes containing the introns.}
 
-\item{c.dist}{A scaling number used for computing weight based on SNP-gene distance. Weight = exp(-dist/c). Default = 50000 (50kb).}
+\item{d0}{A scaling parameter used for computing weight based on SNP-gene distance.
+Weight = exp(-dist/d0). Default = 50000 (50kb).}
 
 \item{cols.to.keep}{columns to keep in the SNP gene weights}
 }
