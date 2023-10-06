@@ -22,7 +22,7 @@ Please have the following Bioconductor packages installed:
 Load packages
 ```{r load-packages, message=FALSE, warning=FALSE}
 library(GenomicFeatures) #  Making and manipulating annotations
-library(rtracklayer)
+library(rtracklayer) # Import annotation data
 library(Gviz) # R package used to visualize track plots
 library(GenomicInteractions) # visualize HiC loops
 library(AnnotationDbi) # match gene ID to gene symbol
