@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{structure_plot}
 \alias{structure_plot}
-\title{Make a structure plot}
+\title{Make a structure plot of partitioned PIP by locus}
 \usage{
 structure_plot(
   mat,
@@ -10,11 +10,14 @@ structure_plot(
   colors,
   ticks = NULL,
   font.size = 9,
-  highlight = NULL
+  highlight = NULL,
+  xlab = "Locus",
+  ylab = "Proportion",
+  legend.title = "Category"
 )
 }
 \arguments{
-\item{mat}{matrix of input data}
+\item{mat}{matrix of input data, rows are loci, columns are annotation categories}
 
 \item{categories}{annotation categories}
 
@@ -24,10 +27,10 @@ structure_plot(
 
 \item{font.size}{Font size of structure plot}
 
-\item{highlight}{Highlight a sample}
+\item{highlight}{Highlight a locus}
 }
 \description{
-Makeing a structure plot.
+Making a structure plot of partitioned PIP by locus
 This function is adapted from the 'fastTopics' package
 https://stephenslab.github.io/fastTopics/
 }
