@@ -17,7 +17,8 @@ structure_plot(
 )
 }
 \arguments{
-\item{mat}{matrix of input data, rows are loci, columns are annotation categories}
+\item{mat}{A matrix of input data,
+rows are loci, columns are annotation categories}
 
 \item{categories}{annotation categories}
 

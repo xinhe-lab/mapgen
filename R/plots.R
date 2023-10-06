@@ -111,7 +111,8 @@ gene_manhattan_plot <- function(gene.pip.res,
 #' @description Making a structure plot of partitioned PIP by locus
 #' This function is adapted from the 'fastTopics' package
 #' https://stephenslab.github.io/fastTopics/
-#' @param mat matrix of input data, rows are loci, columns are annotation categories
+#' @param mat A matrix of input data,
+#' rows are loci, columns are annotation categories
 #' @param categories annotation categories
 #' @param colors Colors of the structure plot categories
 #' @param ticks Labels of x-axis
@@ -162,8 +163,8 @@ structure_plot <- function (mat,
 
 #' @title Make gene track plot using Gviz
 #'
-#' @param finemapstats A data frame of finemapping summary statistics
-#' @param region A GRanges object or data frame for the genomic range to plot
+#' @param finemapstats A GRanges object of processed finemapping summary statistics
+#' @param region The genomic region to visualize in the format of "chr:start-end".
 #' @param gene.annots A GRanges object of gene annotations
 #' @param bigSNP A `bigsnpr` object attached via bigsnpr::snp_attach()
 #' @param txdb A `txdb` object of gene annotations
@@ -217,7 +218,6 @@ track_plot <- function(finemapstats,
   genelabel.side <- match.arg(genelabel.side)
   color_piptrack_by <- match.arg(color_piptrack_by)
 
-  finemapstats <- as(finemapstats, 'GRanges')
   seqlevelsStyle(finemapstats) <- 'UCSC'
 
   if( min(finemapstats$pval) >=0 && max(finemapstats$pval) <= 1 ){

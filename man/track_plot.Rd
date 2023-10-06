@@ -32,9 +32,9 @@ track_plot(
 )
 }
 \arguments{
-\item{finemapstats}{A data frame of finemapping summary statistics}
+\item{finemapstats}{A GRanges object of processed finemapping summary statistics}
 
-\item{region}{A GRanges object or data frame for the genomic range to plot}
+\item{region}{The genomic region to visualize in the format of "chr:start-end".}
 
 \item{gene.annots}{A GRanges object of gene annotations}
 
