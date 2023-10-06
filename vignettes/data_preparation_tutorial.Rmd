@@ -71,7 +71,7 @@ This '.rds' file could be used for downstream analyses when attached with
 
 We provided a `bigSNP` object of the reference genotype panel from 
 the 1000 Genomes (1KG) European population. If you are in the He lab at UChicago, 
-you can load the bigSNP object from RCC as below.
+you can load the `bigSNP` object from RCC as below.
 ```{r load-bigSNP, eval=FALSE, message=FALSE}
 library(bigsnpr)
 bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')

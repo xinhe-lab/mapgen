@@ -68,7 +68,7 @@ Load fine-mapping summary statistics from the AFib study
 
 Keep SNPs with PIP > 1e-5, rename columns, and save as a GRanges object.
 ```{r load-finemapping-res}
-finemapstats <- readRDS(system.file("extdata", "AF.finemapping.result.rds", package = "mapgen"))
+finemapstats <- readRDS(system.file("extdata", "AF.finemapping.sumstats.rds", package = "mapgen"))
 finemapstats <- process_finemapping_sumstats(finemapstats, 
                                              snp = 'snp', 
                                              chr = 'chr', 
@@ -76,11 +76,11 @@ finemapstats <- process_finemapping_sumstats(finemapstats,
                                              pip = 'susie_pip', 
                                              pval = 'pval', 
                                              zscore = 'zscore', 
-                                             cs = 'CS', 
+                                             cs = 'cs', 
                                              locus = 'locus',  
                                              pip.thresh = 1e-5)
 
-# For simplicity, only keep the following columns in finemapping result
+# For simplicity, only keep the following columns in the steps below
 cols.to.keep <- c('snp','chr','pos', 'pip', 'pval', 'zscore', 'cs', 'locus')
 finemapstats <- finemapstats[, cols.to.keep]
 head(finemapstats, 3)
@@ -90,7 +90,6 @@ We included basic genomic annotations (hg19) in the package.
 
 ```{r load-annotations}
 genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
-summary(genomic.annots)
 ```
 
 The genomic annotations could be generated using a `GTF` file with the 
@@ -139,24 +138,30 @@ genomic.annots$enhancer_regions <- genomic.annots$OCRs[genomic.annots$OCRs$peakT
 
 Considering the fact that PC-HiC and HiC loops may miss contacts between close regions
 due to technical reasons, 
-we also consider enhancer regions (based on OCRs) within 20 kb of active promoters. 
+we also consider enhancer regions (based on OCRs) within 20 kb of active promoters
+as "nearby interactions". 
 ```{r nearby-20kb}
-nearby20kb <- get_nearby_interactions(genomic.annots$enhancer_regions,
-                                      genomic.annots$active_promoters, 
-                                      max.dist = 20000)
+nearby20kb <- nearby_interactions(genomic.annots$enhancer_regions,
+                                  genomic.annots$active_promoters, 
+                                  max.dist = 20000)
 ```
 
-We include ABC, PC-HiC and nearby interactions (20kb) in the "enhancer loop" category.
+Include ABC, PC-HiC and nearby interactions in the "enhancer loop" category.
 ```{r}
 genomic.annots$enhancer_loops <- list(ABC = ABC, pcHiC = pcHiC, nearby20kb = nearby20kb)
+```
+
+Included annotation categories:
+```{r}
+summary(genomic.annots)
 ```
 
 ### Run gene mapping
 
 Parameter settings: 
 
-* intron.mode = FALSE (do not assign intronic SNPs to the genes containing the introns).
-* d0 = 50000 (distance weight parameter: 50kb by default).
+* `intron.mode = FALSE` (do not assign intronic SNPs to the genes containing the introns).
+* `d0 = 50000` (distance weight parameter, 50 kb by default).
 
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
 gene.mapping.res <- compute_gene_pip(finemapstats, genomic.annots, intron.mode = FALSE, d0 = 50000)

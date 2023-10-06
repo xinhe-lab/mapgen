@@ -104,11 +104,6 @@ txdb <- loadDb(file.path(trackdata.dir, "gencode.v19.annotation.gtf.sqlite"))
 If you are in Xin He lab at UChicago, you can access the gene annotations and 
 `TxDb` database in the directory: `/project2/xinhe/shared_data/gencode/` from RCC. 
 
-Load gene mapping result
-```{r load-gene-mapping-res}
-genemapping.res <- readRDS(file.path(trackdata.dir, "aFib.genemapping.res.rds"))
-```
-
 You will need the `bigsnpr` package if you want to visualize R^2 between SNPs
 using a reference panel in `bigSNP` object. 
 
