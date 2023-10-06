@@ -31,11 +31,11 @@ library(mapgen)
 
 ## Tutorials
 
-### 1. [Data preparation](https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html)
+### [Data preparation](https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html)
 
-Prepare input data: GWAS summary statistics, LD reference panel, etc.
+Prepare input data: GWAS summary statistics, LD information, etc.
 
-### 2. [Enrichment analysis](https://xinhe-lab.github.io/mapgen/articles/enrichment_tutorial.html)
+### [Enrichment analysis](https://xinhe-lab.github.io/mapgen/articles/enrichment_tutorial.html)
 
 Assess the enrichment of genetic signals of a trait of interest in
 functional annotations using `TORUS`.
@@ -43,7 +43,7 @@ functional annotations using `TORUS`.
 \*Please install [TORUS](https://github.com/xqwen/torus) software
 package, if you need to run enrichment analysis.
 
-### 3. [Fine-mapping](https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html)
+### [Fine-mapping](https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html)
 
 Perform Bayesian statistical fine-mapping using `SuSiE` on
 trait-associated loci, using a informative prior that favors variants
@@ -52,10 +52,19 @@ located in enriched annotations.
 \*Please install [susieR](https://github.com/stephenslab/susieR)
 package, if you need to run fine-mapping with GWAS summary statistics.
 
-### 4. [Gene mapping](https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html)
+### [Gene mapping](https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html)
 
 Infer causal genes at each locus based on fine-mapping result and
-genomic annotations, including gene annotations, chromatin loops, etc.
+genomic annotations.
+
+### [PIP partitioning by annotation categories](https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html)
+
+Partitioning finemapping PIPs by annotation categories.
+
+### [Making track plots](https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html)
+
+Making track plots of GWAS, finemapping, and annotation data using
+`Gviz` package.
 
 ## Reference
 

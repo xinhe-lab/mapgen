@@ -25,7 +25,13 @@
     <loc>https://xinhe-lab.github.io/mapgen/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/articles/make_trackplots.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/articles/track_plot_tutorial.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/authors.html</loc>
@@ -164,5 +170,8 @@
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/sum_pip_regions.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/track_plot.html</loc>
   </url>
 </urlset>

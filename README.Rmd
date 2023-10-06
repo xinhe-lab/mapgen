@@ -40,11 +40,11 @@ library(mapgen)
 
 ## Tutorials
 
-### 1. [Data preparation][data-preparation-tutorial]
+### [Data preparation][data-preparation-tutorial]
   
-  Prepare input data: GWAS summary statistics, LD reference panel, etc.
+  Prepare input data: GWAS summary statistics, LD information, etc.
   
-### 2. [Enrichment analysis][enrichment-tutorial]
+### [Enrichment analysis][enrichment-tutorial]
   
   Assess the enrichment of genetic signals of a trait of interest in functional 
   annotations using `TORUS`.
@@ -52,7 +52,7 @@ library(mapgen)
   *Please install [TORUS](https://github.com/xqwen/torus) software package,
 if you need to run enrichment analysis. 
 
-### 3. [Fine-mapping][finemapping-tutorial]
+### [Fine-mapping][finemapping-tutorial]
   
   Perform Bayesian statistical fine-mapping using `SuSiE` on trait-associated loci, 
   using a informative prior that favors variants located in enriched annotations. 
@@ -60,14 +60,18 @@ if you need to run enrichment analysis.
   *Please install [susieR](https://github.com/stephenslab/susieR) package, 
   if you need to run fine-mapping with GWAS summary statistics. 
 
-### 4. [Gene mapping][gene-mapping-tutorial]
+### [Gene mapping][gene-mapping-tutorial]
   
   Infer causal genes at each locus based on fine-mapping result and genomic 
-  annotations, including gene annotations, chromatin loops, etc. 
+  annotations. 
 
-```{r workflow.overview, include=FALSE, echo=FALSE, fig.cap="", out.width = '80%'}
-knitr::include_graphics("man/figures/workflow.overview.png")
-```
+### [PIP partitioning by annotation categories][partition-pip-tutorial]
+
+  Partitioning finemapping PIPs by annotation categories.
+
+### [Making track plots][track-plot-tutorial]
+
+  Making track plots of GWAS, finemapping, and annotation data using `Gviz` package.
 
 ## Reference
 
@@ -78,7 +82,6 @@ and genes of atrial fibrillation. _Nat Commun._ 2023 Aug 17;14(1):4999.
 doi: 10.1038/s41467-023-40505-5. PMID: 37591828; PMCID: PMC10435551.
 
 
-
 [mapgen-github]: https://github.com/xinhe-lab/mapgen
 [tutorials]: https://xinhe-lab.github.io/mapgen/articles/index.html
 [data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
@@ -86,4 +89,5 @@ doi: 10.1038/s41467-023-40505-5. PMID: 37591828; PMCID: PMC10435551.
 [finemapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html
 [gene-mapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html
 [partition-pip-tutorial]: https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html
+[track-plot-tutorial]: https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html
 

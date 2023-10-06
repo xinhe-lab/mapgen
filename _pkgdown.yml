@@ -17,10 +17,12 @@ navbar:
         href: articles/data_preparation_tutorial.html
       - text: Enrichment analysis
         href: articles/enrichment_tutorial.html
-      - text: Functional fine-mapping
+      - text: Fine-mapping
         href: articles/finemapping_tutorial.html
-      - text: Partition fine-mapping PIPs by annotation categories
-        href: articles/partition_pip_tutorial.html
       - text: Gene mapping
         href: articles/gene_mapping_tutorial.html
+      - text: Partition fine-mapping PIPs by annotation categories
+        href: articles/partition_pip_tutorial.html
+      - text: Making track plots
+        href: articles/track_plot_tutorial.html
 

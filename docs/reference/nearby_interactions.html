@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
       </span>
     </div>
 
@@ -38,13 +38,16 @@
       <a href="../articles/enrichment_tutorial.html">Enrichment analysis</a>
     </li>
     <li>
-      <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
+      <a href="../articles/finemapping_tutorial.html">Fine-mapping</a>
+    </li>
+    <li>
+      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
     <li>
       <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
     </li>
     <li>
-      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
+      <a href="../articles/track_plot_tutorial.html">Making track plots</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -63,7 +66,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get nearby interactions for enhancer regions near promoters</h1>
-    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/annots.R" class="external-link"><code>R/annots.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/gene_mapping.R" class="external-link"><code>R/gene_mapping.R</code></a></small>
     <div class="hidden name"><code>nearby_interactions.Rd</code></div>
     </div>
 
@@ -72,12 +75,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nearby_interactions</span><span class="op">(</span><span class="va">enhancers</span>, <span class="va">promoters</span>, max.dist <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nearby_interactions</span><span class="op">(</span><span class="va">enhancer_regions</span>, <span class="va">promoters</span>, max.dist <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>enhancers</dt>
+    <dl><dt>enhancer_regions</dt>
 <dd><p>A GRanges object of enhancer regions</p></dd>
 
 

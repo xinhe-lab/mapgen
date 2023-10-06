@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
       </span>
     </div>
 
@@ -56,13 +56,16 @@
       <a href="../articles/enrichment_tutorial.html">Enrichment analysis</a>
     </li>
     <li>
-      <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
+      <a href="../articles/finemapping_tutorial.html">Fine-mapping</a>
+    </li>
+    <li>
+      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
     <li>
       <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
     </li>
     <li>
-      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
+      <a href="../articles/track_plot_tutorial.html">Making track plots</a>
     </li>
   </ul>
 </li>
@@ -183,8 +186,8 @@ object and save as a ‘.rds’ file. This ‘.rds’ file could be used for
 downstream analyses when attached with .</p>
 <p>We provided a <code>bigSNP</code> object of the reference genotype
 panel from the 1000 Genomes (1KG) European population. If you are in the
-He lab at UChicago, you can load the bigSNP object from RCC as
-below.</p>
+He lab at UChicago, you can load the <code>bigSNP</code> object from RCC
+as below.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span></span>
 <span><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://privefl.github.io/bigsnpr/reference/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></span></code></pre></div>

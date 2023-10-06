@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.2.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
       </span>
     </div>
 
@@ -38,13 +38,16 @@
       <a href="../articles/enrichment_tutorial.html">Enrichment analysis</a>
     </li>
     <li>
-      <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
+      <a href="../articles/finemapping_tutorial.html">Fine-mapping</a>
+    </li>
+    <li>
+      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
     </li>
     <li>
       <a href="../articles/partition_pip_tutorial.html">Partition fine-mapping PIPs by annotation categories</a>
     </li>
     <li>
-      <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
+      <a href="../articles/track_plot_tutorial.html">Making track plots</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -70,10 +73,6 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="annotate_snps_binary.html">annotate_snps_binary()</a></code> </p>
-        </td>
-        <td><p>Assigns SNPs with annotations based on overlap</p></td>
-      </tr><tr><td>
           <p><code><a href="assign_snp_locus.html">assign_snp_locus()</a></code> </p>
         </td>
         <td><p>Assign GWAS SNPs to LD blocks</p></td>
@@ -98,10 +97,6 @@
         </td>
         <td><p>Find the nearest genes for top SNPs in each locus.</p></td>
       </tr><tr><td>
-          <p><code><a href="finemapping_annot_trackplot.html">finemapping_annot_trackplot()</a></code> </p>
-        </td>
-        <td><p>Make gene track plot using Gviz</p></td>
-      </tr><tr><td>
           <p><code><a href="gene_cs.html">gene_cs()</a></code> </p>
         </td>
         <td><p>Obtain credible gene sets from SNP-level gene mapping table</p></td>
@@ -118,10 +113,6 @@
         </td>
         <td><p>Get locus level gene PIP</p></td>
       </tr><tr><td>
-          <p><code><a href="get_nearby_interactions.html">get_nearby_interactions()</a></code> </p>
-        </td>
-        <td><p>Get nearby interactions for enhancer regions near promoters</p></td>
-      </tr><tr><td>
           <p><code><a href="make_genomic_annots.html">make_genomic_annots()</a></code> </p>
         </td>
         <td><p>Make genomic annotations from a GTF file</p></td>
@@ -133,6 +124,10 @@
           <p><code><a href="merge_susie_sumstats.html">merge_susie_sumstats()</a></code> </p>
         </td>
         <td><p>merges SuSiE results with original summary statistics data frame</p></td>
+      </tr><tr><td>
+          <p><code><a href="nearby_interactions.html">nearby_interactions()</a></code> </p>
+        </td>
+        <td><p>Get nearby interactions for enhancer regions near promoters</p></td>
       </tr><tr><td>
           <p><code><a href="partition_pip_annots.html">partition_pip_annots()</a></code> </p>
         </td>
@@ -181,7 +176,11 @@ input data for SuSiE</p></td>
       </tr><tr><td>
           <p><code><a href="structure_plot.html">structure_plot()</a></code> </p>
         </td>
-        <td><p>Make a structure plot</p></td>
+        <td><p>Make a structure plot of partitioned PIP by locus</p></td>
+      </tr><tr><td>
+          <p><code><a href="track_plot.html">track_plot()</a></code> </p>
+        </td>
+        <td><p>Make gene track plot using Gviz</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
