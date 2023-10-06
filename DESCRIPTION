@@ -30,10 +30,12 @@ Suggests:
     susieR,
     bigsnpr,
     data.table,
+    GenomicFeatures,
     AnnotationDbi,
     org.Hs.eg.db,
     Gviz,
-    GenomicInteractions
+    GenomicInteractions,
+    bedtoolsr
 Remotes: PhanstielLab/bedtoolsr
 biocViews: Genetics, GenomeAnnotation, Sequencing, Software
 Roxygen: list(markdown = TRUE)
