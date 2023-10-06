@@ -15,5 +15,7 @@ make_genomic_annots(gtf_file, add_splice_junctions = FALSE)
 A list of GRanges objects of genomic annotations
 }
 \description{
-Make genomic annotations from a GTF file
+Make genomic annotations from a GTF file.
+Please install the \code{bedtoolsr} package from
+https://github.com/PhanstielLab/bedtoolsr
 }

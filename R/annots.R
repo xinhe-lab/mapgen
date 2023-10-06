@@ -1,5 +1,9 @@
 
 #' @title Make genomic annotations from a GTF file
+#' @description
+#' Make genomic annotations from a GTF file.
+#' Please install the `bedtoolsr` package from
+#' https://github.com/PhanstielLab/bedtoolsr
 #'
 #' @param gtf_file Path to the GTF file
 #' @param add_splice_junctions If TRUE, add splice junctions in the result
