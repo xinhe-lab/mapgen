@@ -61,7 +61,7 @@ genomic annotations.
 
 Partitioning finemapping PIPs by annotation categories.
 
-### [Making track plots](https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html)
+### [Making track plots](https://xinhe-lab.github.io/mapgen/articles/track_plot_tutorial.html)
 
 Making track plots of GWAS, finemapping, and annotation data using
 `Gviz` package.

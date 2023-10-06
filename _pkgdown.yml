@@ -21,7 +21,7 @@ navbar:
         href: articles/finemapping_tutorial.html
       - text: Gene mapping
         href: articles/gene_mapping_tutorial.html
-      - text: Partition fine-mapping PIPs by annotation categories
+      - text: PIP partitioning by annotation categories
         href: articles/partition_pip_tutorial.html
       - text: Making track plots
         href: articles/track_plot_tutorial.html
