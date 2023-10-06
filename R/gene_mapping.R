@@ -394,21 +394,6 @@ get_locus_level_gene_pip <- function(gene.mapping.res){
   return(locus.gene.pip.df)
 }
 
-#' @title Get nearby interactions for enhancer regions near promoters
-#'
-#' @param enhancer_regions A GRanges object of enhancer regions
-#' @param promoters A GRanges object of promoters
-#' @param max.dist Max distance betweeen enhancer regions and promoters (default: 20kb)
-#' @return A GRanges object of nearby interactions
-#' @export
-nearby_interactions <- function(enhancer_regions, promoters, max.dist = 20000){
-  nearby.interactions <- plyranges::join_overlap_inner(enhancer_regions,
-                                                       promoters,
-                                                       maxgap = max.dist)
-  return(nearby.interactions)
-}
-
-
 #' @title Find the nearest genes for top SNPs in each locus.
 #'
 #' @param top.snps A GRanges object of the GWAS summary statistics for the top SNPs

@@ -16,7 +16,7 @@ process_ABC(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0)
 extracted from the "name" column. Otherwise, use the original (narrow)
 regions provided in the ABC scores data.}
 
-\item{flank}{Integer. Expand bases around ABC elements (default = 0).}
+\item{flank}{Integer. Extend bases on both sides of the ABC elements (default = 0).}
 }
 \value{
 a GRanges object with processed ABC scores, with genomic coordinates
