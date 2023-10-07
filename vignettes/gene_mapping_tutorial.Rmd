@@ -114,21 +114,40 @@ genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$prom
 
 Enhancer loops:
 
-We used promoter-capture HiC (PC-HiC) data from cardiomyocytes (CMs).
+We need chromatin loop data, such as PC-HiC or ABC scores, 
+with the following columns, and save as a GRanges object.
+  
+  * chr: chromosome of the regulatory element
+  * start: start position of the regulatory element
+  * end: end position of the regulatory element
+  * promoter_chr: chromosome of the gene promoter
+  * promoter_start: start position of the gene promoter or TSS position
+  * promoter_end: end position of the gene promoter or TSS position
+  * gene_name: target gene name
+  * score: numeric interaction score (optional)
+
+**Promoter-capture HiC (PC-HiC)**
+
+Here we use promoter-capture HiC (PC-HiC) data from cardiomyocytes (CMs).
+You may skip this if you do not have relevant PC-HiC data.
 ```{r load-pcHiC}
 pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "mapgen"))
+pcHiC <- pcHiC[pcHiC$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
+head(pcHiC, 3)
 ```
 
-You can use your own PC-HiC data using process_pcHiC(). 
-You may skip this if you do not have relevant PC-HiC data.
+**ABC scores**
 
-We used ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
+The `process_ABC()` function processes a data frame of ABC scores 
+from Nasser *et al.* *Nature* 2021, and converts it to a GRanges object.
+
+Here we use ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
 You may skip this if you do not have relevant ABC scores.
-```{r process_ABC}
-ABC <- readRDS(system.file("extdata", "ABC.heart.ventricle.ENCODE.rds", package = "mapgen"))
-# process_ABC() process a data frame of ABC scores and converts to a GRanges object.
+```{r process_ABC, message=FALSE}
+ABC <- readr::read_tsv(system.file("extdata", "heart.ventricle.ENCODE.ABC.tsv.gz", package = "mapgen"))
 ABC <- process_ABC(ABC, full.element = TRUE)
 ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
+head(ABC, 3)
 ```
 
 Enhancer regions
@@ -149,11 +168,6 @@ nearby20kb <- nearby_interactions(genomic.annots$enhancer_regions,
 Include ABC, PC-HiC and nearby interactions in the "enhancer loop" category.
 ```{r}
 genomic.annots$enhancer_loops <- list(ABC = ABC, pcHiC = pcHiC, nearby20kb = nearby20kb)
-```
-
-Included annotation categories:
-```{r}
-summary(genomic.annots)
 ```
 
 ### Run gene mapping
