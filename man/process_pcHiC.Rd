@@ -4,7 +4,7 @@
 \alias{process_pcHiC}
 \title{Process PC-HiC data and save as a GRanges object}
 \usage{
-process_pcHiC(pcHiC, score.thresh = 0, flank = 0)
+process_pcHiC(pcHiC, gene.annots, score.thresh = 0, flank = 0)
 }
 \arguments{
 \item{pcHiC}{A data frame of PC-HiC data,
@@ -12,6 +12,8 @@ with columns of enhancer"Promoter" and
 "Interacting_fragment". Interacting_fragment should contains
 chr, start and end positions of the fragments interacting with promoters
 e.g. "chr.start.end" or "chr:start-end".}
+
+\item{gene.annots}{If provided, restrict to genes in gene.annots}
 
 \item{score.thresh}{Numeric. Threshold of interaction scores.
 (default = 0).}

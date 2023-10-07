@@ -6,6 +6,7 @@
 #' "Interacting_fragment". Interacting_fragment should contains
 #' chr, start and end positions of the fragments interacting with promoters
 #' e.g. "chr.start.end" or "chr:start-end".
+#' @param gene.annots If provided, restrict to genes in gene.annots
 #' @param score.thresh Numeric. Threshold of interaction scores.
 #' (default = 0).
 #' @param flank  Integer. Extend bases on both sides of the regulatory elements
@@ -15,7 +16,7 @@
 #' @return A GRanges object with processed PC-HiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_pcHiC <- function(pcHiC, score.thresh = 0, flank = 0){
+process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
 
   pcHiC <- pcHiC %>% dplyr::select(Promoter, Interacting_fragment)
   # separate genes connecting to the same fragment
@@ -25,16 +26,22 @@ process_pcHiC <- function(pcHiC, score.thresh = 0, flank = 0){
 
   pcHiC <- pcHiC %>%
     tidyr::separate(Interacting_fragment, c('chr', 'start', 'end')) %>%
-    dplyr::mutate(start = as.numeric(start), end = as.numeric(end)) %>%
-    dplyr::filter(score >= score.thresh)
+    dplyr::mutate(start = as.integer(start), end = as.integer(end))
 
-  if(flank > 0){
-    pcHiC$start <- pcHiC$start - flank
-    pcHiC$end <- pcHiC$end + flank
+  if(!missing(gene.annots)){
+    pcHiC <- pcHiC[pcHiC$gene_name %in% gene.annots$gene_name, ]
   }
 
-  columns <- c('chr', 'start', 'end', 'promoter_chr', 'promoter_start', 'promoter_end',
-               'gene_name', 'score')
+  if(score.thresh > 0){
+    pcHiC <- pcHiC %>% dplyr::filter(score >= score.thresh)
+  }
+
+  if(flank > 0){
+    pcHiC <- pcHiC %>% dplyr::mutate(start = start - as.integer(flank),
+                                     end = end + as.integer(flank))
+  }
+
+  columns <- c('chr', 'start', 'end', 'promoter_start', 'promoter_end', 'gene_name', 'score')
   pcHiC <- pcHiC %>% dplyr::select(columns)
 
   pcHiC.gr <- GenomicRanges::makeGRangesFromDataFrame(pcHiC, keep.extra.columns = TRUE)
@@ -47,42 +54,47 @@ process_pcHiC <- function(pcHiC, score.thresh = 0, flank = 0){
 #' @title Process ABC scores and save as a GRanges object
 #'
 #' @param ABC A data frame of ABC scores from Nasser et al. Nature 2021 paper
-#' @param ABC.thresh Numeric. Threshold of ABC scores.
-#' (default = 0.015, as in Nasser et al. Nature 2021 paper).
+#' @param gene.annots If provided, restrict to genes in gene.annots
 #' @param full.element Logical; if TRUE, use full length of ABC elements
 #' extracted from the "name" column. Otherwise, use the original (narrow)
 #' regions provided in the ABC scores data.
+#' @param score.thresh Numeric. Threshold of ABC scores.
+#' (default = 0.015, as in Nasser et al. Nature 2021 paper).
 #' @param flank  Integer. Extend bases on both sides of the ABC elements (default = 0).
 #' @import GenomicRanges
 #' @import tidyverse
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_ABC <- function(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0){
+process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0.015, flank = 0){
 
   if(full.element){
     ABC <- ABC %>%
       tidyr::separate(name, c(NA, 'element_region'), sep = '\\|', remove = FALSE) %>%
       tidyr::separate(element_region, c(NA, 'element_location'), sep = '\\:') %>%
       tidyr::separate(element_location, c('element_start', 'element_end'), sep = '\\-') %>%
-      dplyr::mutate(start = as.numeric(element_start), end = as.numeric(element_end))
+      dplyr::mutate(start = as.numeric(element_start), end = as.numeric(element_end),
+                    promoter_start = TargetGeneTSS,
+                    promoter_end = TargetGeneTSS)
   }
 
   ABC <- ABC %>%
-    dplyr::rename(gene_name = TargetGene) %>%
-    dplyr::filter(ABC.Score >= ABC.thresh)
+    dplyr::rename(gene_name = TargetGene, score = ABC.Score)
 
-  if(flank > 0){
-    ABC$start <- ABC$start - flank
-    ABC$end <- ABC$end + flank
+  if(!missing(gene.annots)){
+    ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ]
   }
 
-  ABC$promoter_chr <- ABC$chr
-  ABC$promoter_start <- ABC$TargetGeneTSS
-  ABC$promoter_end <- ABC$TargetGeneTSS
-  ABC$score <- ABC$ABC.Score
+  if(score.thresh > 0){
+    ABC <- ABC %>% dplyr::filter(score >= score.thresh)
+  }
 
-  columns <- c('chr', 'start', 'end', 'promoter_chr', 'promoter_start', 'promoter_end', 'gene_name', 'score')
+  if(flank > 0){
+    ABC <- ABC %>% dplyr::mutate(start = start - as.integer(flank),
+                                 end = end + as.integer(flank))
+  }
+
+  columns <- c('chr', 'start', 'end', 'promoter_start', 'promoter_end', 'gene_name', 'score')
   ABC <- ABC %>% dplyr::select(columns)
 
   ABC.gr <- GenomicRanges::makeGRangesFromDataFrame(ABC, keep.extra.columns = TRUE)
@@ -105,6 +117,7 @@ process_narrowpeaks <- function(peak.file){
 #'
 #' @param loops A data frame of chromatin loops, with columns:
 #' "chr", "start", "end", "gene_name", and "score" (optional).
+#' @param gene.annots If provided, restrict to genes in gene.annots
 #' @param score.thresh Numeric. Threshold of interaction scores.
 #' (default = 0).
 #' @param flank  Integer. Extend bases on both sides of the regulatory elements
@@ -112,21 +125,26 @@ process_narrowpeaks <- function(peak.file){
 #' @return A GRanges object with processed chromatin loops,
 #' with genomic coordinates of the regulatory elements and gene names.
 #' @export
-process_loop_data <- function(loops, score.thresh = 0, flank = 0){
+process_loop_data <- function(loops, gene.annots, score.thresh = 0, flank = 0){
 
   loops <- as.data.frame(loops)
 
-  loops.gr <- GenomicRanges::makeGRangesFromDataFrame(loops,
-                                                      keep.extra.columns = TRUE)
-  loops.gr <- loops.gr[, c('gene_name', 'score')]
-  loops.gr <- loops.gr[loops.gr$score >= score.thresh]
-
-  if(flank > 0){
-    start(loops.gr) <- start(loops.gr) - flank
-    end(loops.gr) <- end(loops.gr) + flank
+  if(!missing(gene.annots)){
+    loops <- loops[loops$gene_name %in% gene.annots$gene_name, ]
   }
 
+  if(score.thresh > 0){
+    loops <- loops %>% dplyr::filter(score >= score.thresh)
+  }
+
+  if(flank > 0){
+    loops <- loops %>% dplyr::mutate(start = start - as.integer(flank),
+                                 end = end + as.integer(flank))
+  }
+
+  loops.gr <- GenomicRanges::makeGRangesFromDataFrame(loops, keep.extra.columns = TRUE)
   GenomeInfoDb::seqlevelsStyle(loops.gr) <- 'UCSC'
+
   return(loops.gr)
 }
 

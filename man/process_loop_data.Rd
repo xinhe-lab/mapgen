@@ -4,11 +4,13 @@
 \alias{process_loop_data}
 \title{Process chromatin loop data and save as a GRanges object}
 \usage{
-process_loop_data(loops, score.thresh = 0, flank = 0)
+process_loop_data(loops, gene.annots, score.thresh = 0, flank = 0)
 }
 \arguments{
 \item{loops}{A data frame of chromatin loops, with columns:
 "chr", "start", "end", "gene_name", and "score" (optional).}
+
+\item{gene.annots}{If provided, restrict to genes in gene.annots}
 
 \item{score.thresh}{Numeric. Threshold of interaction scores.
 (default = 0).}
