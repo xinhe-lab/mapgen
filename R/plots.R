@@ -111,8 +111,9 @@ gene_manhattan_plot <- function(gene.pip.res,
 #' @description Making a structure plot of partitioned PIP by locus
 #' This function is adapted from the 'fastTopics' package
 #' https://stephenslab.github.io/fastTopics/
-#' @param mat A matrix of input data,
-#' rows are loci, columns are annotation categories
+#' @param mat A matrix of the proportion of PIPs partitioned to
+#' each annotation category,
+#' rows are loci, columns are annotation categories.
 #' @param categories annotation categories
 #' @param colors Colors of the structure plot categories
 #' @param ticks Labels of x-axis
@@ -120,17 +121,18 @@ gene_manhattan_plot <- function(gene.pip.res,
 #' @param highlight Highlight a locus
 #' @import ggplot2
 #' @export
-structure_plot <- function (mat,
-                            categories,
-                            colors,
-                            ticks = NULL,
-                            font.size = 9,
-                            highlight = NULL,
-                            xlab = 'Locus',
-                            ylab = 'Proportion',
-                            legend.title = 'Category'){
+pip_structure_plot <- function(mat,
+                               categories,
+                               colors,
+                               ticks = NULL,
+                               font.size = 9,
+                               highlight = NULL,
+                               xlab = 'Locus',
+                               ylab = 'Proportion',
+                               legend.title = 'Category'){
 
   mat <- na.omit(as.matrix(mat))
+
   n <- nrow(mat)
   k <- length(categories)
   dat <- data.frame(sample   = rep(1:n,times = k),
@@ -347,12 +349,12 @@ track_plot <- function(finemapstats,
       seqlevelsStyle(counts.gr) <- 'UCSC'
       seqlevels(counts.gr, pruning.mode = 'coarse') <- paste0('chr',1:22)
       counts.track <- Gviz::DataTrack(range = counts.gr,
-                                          type = 'h',
-                                          genome = genome,
-                                          col = counts.color[i],
-                                          name = x,
-                                          showAxis=FALSE,
-                                          ylim = counts.ylim)
+                                      type = 'h',
+                                      genome = genome,
+                                      col = counts.color[i],
+                                      name = x,
+                                      showAxis=FALSE,
+                                      ylim = counts.ylim)
 
       Gviz::displayPars(counts.track) <- dpars.data
       counts.track
@@ -440,13 +442,13 @@ track_plot <- function(finemapstats,
 
       if(!is.null(filter_loop_genes)){
         cat(sprintf('Only show %s loops linked to gene: %s \n',
-            x, paste(filter_loop_genes, collapse = ',')))
+                    x, paste(filter_loop_genes, collapse = ',')))
         loops.obj <- loops.obj[which(loops.obj$anchor1.gene %in% filter_loop_genes),]
       }
 
       if(!is.null(filter_loop_snps)){
         cat(sprintf('Only show %s loops linked to SNP: %s \n',
-            x, paste(filter_loop_snps, collapse = ',')))
+                    x, paste(filter_loop_snps, collapse = ',')))
         highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter_loop_snps]
         loops.obj <- subsetByOverlaps(loops.obj, highlighted.snps.gr)
       }
