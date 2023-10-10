@@ -42,7 +42,7 @@ sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas.sumst
                                                            torus_prior = torus.res$snp_prior)
 ```
 
-We could limit loci with GWAS p-value cutoff (e.g. by setting \code{pval.thresh = 5e-8}),
+We could limit loci with GWAS p-value cutoff (e.g. 5e-8),
 or by FDR cutoff from running `run_torus()` with `option = "fdr"`. 
 
 ## Fine-mapping

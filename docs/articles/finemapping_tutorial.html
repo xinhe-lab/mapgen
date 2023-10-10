@@ -133,8 +133,8 @@ summary statistics.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sumstats.for.susie</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_susie_data_with_torus_result.html">prepare_susie_data_with_torus_result</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">gwas.sumstats</span>, </span>
 <span>                                                           torus_prior <span class="op">=</span> <span class="va">torus.res</span><span class="op">$</span><span class="va">snp_prior</span><span class="op">)</span></span></code></pre></div>
-<p>We could limit loci with GWAS p-value cutoff (e.g. by setting ), or
-by FDR cutoff from running <code><a href="../reference/run_torus.html">run_torus()</a></code> with
+<p>We could limit loci with GWAS p-value cutoff (e.g. 5e-8), or by FDR
+cutoff from running <code><a href="../reference/run_torus.html">run_torus()</a></code> with
 <code>option = "fdr"</code>.</p>
 </div>
 <div class="section level2">

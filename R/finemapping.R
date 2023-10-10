@@ -17,8 +17,7 @@
 prepare_susie_data_with_torus_result <- function(sumstats,
                                                  torus_prior,
                                                  torus_fdr,
-                                                 fdr.thresh = 0.1,
-                                                 pval.thresh = 5e-8){
+                                                 fdr.thresh = 0.1){
 
   # Check for required columns in sumstats
   required.cols <- c('chr','pos','snp','pval','locus','bigSNP_index')
@@ -36,26 +35,12 @@ prepare_susie_data_with_torus_result <- function(sumstats,
   if(!missing(torus_fdr)){
     # Select loci by FDR from TORUS
     cat('Select loci by TORUS FDR <', fdr.thresh, '\n')
-    selected.loci <- torus_fdr$region_id[torus_fdr$fdr < fdr.thresh]
+    selected.loci <- unique(torus_fdr$region_id[torus_fdr$fdr < fdr.thresh])
     if(length(selected.loci) == 0){
-      message('No loci selected. Please double check!')
+      stop('No loci selected!')
+    }else{
+      sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
     }
-    sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
-  }
-
-  if(!missing(pval.thresh)){
-    # Select loci by pval
-    cat('Select loci by pval <', pval.thresh, '\n')
-    if( min(sumstats$pval) >= 0 && max(sumstats$pval) <= 1 ){
-      cat("Convert GWAS p-value to -log10(pvalue). \n")
-      sumstats$pval <- -log10(sumstats$pval)
-    }
-    sig.sumstats <- sumstats %>% dplyr::filter(pval > -log10(pval.thresh))
-    selected.loci <- unique(sig.sumstats$locus)
-    if(length(selected.loci) == 0){
-      message('No loci selected. Please double check!')
-    }
-    sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
   }
 
   # Add SNP-level priors
