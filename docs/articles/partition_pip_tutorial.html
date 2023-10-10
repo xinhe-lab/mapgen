@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -185,7 +185,7 @@ annotation category.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">categories</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"OCRs"</span>, <span class="st">"UTRs"</span>, <span class="st">"Exons"</span>, <span class="st">"Introns"</span>, <span class="st">"others"</span><span class="op">)</span></span>
 <span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>OCRs <span class="op">=</span> <span class="st">"#E18727FF"</span>, UTRs <span class="op">=</span> <span class="st">"#238b45"</span>, Exons <span class="op">=</span>  <span class="st">"#bee6af"</span>, Introns <span class="op">=</span> <span class="st">"#B09C85FF"</span>, others <span class="op">=</span> <span class="st">"#aaaaaa"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/pip_structure_plot.html">pip_structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
 <p><img src="partition_pip_tutorial_files/figure-html/structure-plot-annots-1.png" width="960"></p>
 </div>
 <div class="section level3">
@@ -249,7 +249,7 @@ cell type category.</p>
 <span>                <span class="st">"Myeloid"</span>, <span class="st">"Pericyte"</span>, <span class="st">"Shared 2-3"</span>, <span class="st">"Shared 4+"</span><span class="op">)</span></span>
 <span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#b22222"</span>, <span class="st">"#8DD3C7"</span>, <span class="st">"#BEBADA"</span>, <span class="st">"#FB8072"</span>, </span>
 <span>            <span class="st">"#80B1D3"</span>, <span class="st">"#B3DE69"</span>, <span class="st">"royalblue"</span>, <span class="st">"#003C86"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/structure_plot.html">structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/pip_structure_plot.html">pip_structure_plot</a></span><span class="op">(</span><span class="va">prop.pip.mat</span>, categories <span class="op">=</span> <span class="va">categories</span>, colors <span class="op">=</span> <span class="va">colors</span><span class="op">)</span></span></code></pre></div>
 <p><img src="partition_pip_tutorial_files/figure-html/structure-plot-OCRs-1.png" width="960"></p>
 </div>
 </div>
