@@ -64,7 +64,9 @@ Load R packages
 library(mapgen)
 ```
 
-Load fine-mapping summary statistics from the AFib study
+#### Fine-mapping summary statistics 
+
+Here we use fine-mapping summary statistics from our AFib study.
 
 Keep SNPs with PIP > 1e-5, rename columns, and save as a GRanges object.
 ```{r load-finemapping-res}
@@ -85,6 +87,8 @@ cols.to.keep <- c('snp','chr','pos', 'pip', 'pval', 'zscore', 'cs', 'locus')
 finemapstats <- finemapstats[, cols.to.keep]
 head(finemapstats, 3)
 ```
+
+#### genomic annotations
 
 We included basic genomic annotations (hg19) in the package.
 
@@ -112,7 +116,7 @@ genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$prom
                                                              minoverlap = 100)
 ```
 
-Enhancer loops:
+#### Enhancer loops
 
 We need chromatin loop data, such as PC-HiC or ABC scores, 
 with the following columns, and save as a GRanges object.
@@ -144,7 +148,7 @@ from Nasser *et al.* *Nature* 2021, and converts it to a GRanges object.
 Here we use ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
 You may skip this if you do not have relevant ABC scores.
 ```{r process_ABC, message=FALSE}
-ABC <- readr::read_tsv(system.file("extdata", "heart.ventricle.ENCODE.ABC.tsv.gz", package = "mapgen"))
+ABC <- data.table::fread(system.file("extdata", "heart_ventricle-ENCODE_ABC.tsv.gz", package = "mapgen"))
 ABC <- process_ABC(ABC, full.element = TRUE)
 ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
 head(ABC, 3)
@@ -175,6 +179,7 @@ genomic.annots$enhancer_loops <- list(ABC = ABC, pcHiC = pcHiC, nearby20kb = nea
 Parameter settings: 
 
 * `intron.mode = FALSE` (do not assign intronic SNPs to the genes containing the introns).
+If `intron.mode = TRUE`, it assigns intronic SNPs to genes containing the introns.
 * `d0 = 50000` (distance weight parameter, 50 kb by default).
 
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}

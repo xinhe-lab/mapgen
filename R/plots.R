@@ -426,13 +426,16 @@ track_plot <- function(finemapstats,
         loops.gr <- loops.gr[loops.gr$gene_name %in% gene.annots$gene_name]
       }
 
-      loops_promoters.gr <- GRanges(seqnames = loops.gr$promoter_chr,
-                                    ranges = IRanges(start = loops.gr$promoter_start, end = loops.gr$promoter_end),
+      loops_promoters.gr <- GRanges(seqnames = seqnames(loops.gr),
+                                    ranges = IRanges(start = loops.gr$promoter_start,
+                                                     end = loops.gr$promoter_end),
                                     score = loops.gr$score,
                                     gene = loops.gr$gene_name)
       loops_enhancers.gr <- GRanges(seqnames = seqnames(loops.gr),
-                                    ranges = IRanges(start = start(loops.gr), end = end(loops.gr)))
-      loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = loops_promoters.gr, anchor2 = loops_enhancers.gr)
+                                    ranges = IRanges(start = start(loops.gr),
+                                                     end = end(loops.gr)))
+      loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = loops_promoters.gr,
+                                                            anchor2 = loops_enhancers.gr)
       loops.obj$counts <- round(loops.obj$anchor1.score)
 
       if(!is.null(filter_loop_genes)){

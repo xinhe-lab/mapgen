@@ -54,18 +54,16 @@ gene.annots <- genomic.annots$genes
 Load promoter-capture HiC (PC-HiC) data from cardiomyocytes (CMs).
 ```{r load-pcHiC}
 pcHiC <- readRDS(system.file("extdata", "pcHiC.CM.gr.rds", package = "mapgen"))
+pcHiC <- pcHiC[pcHiC$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
 ```
 
-Load ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021). 
-```{r process_ABC}
-ABC <- readRDS(system.file("extdata", "ABC.heart.ventricle.ENCODE.rds", package = "mapgen"))
-# process_ABC() process a data frame of ABC scores and converts to a GRanges object.
+Load ABC scores from heart ventricle (from Nasser *et al.* *Nature* 2021).
+```{r process_ABC, message=FALSE}
+ABC <- data.table::fread(system.file("extdata", "heart_ventricle-ENCODE_ABC.tsv.gz", package = "mapgen"))
 ABC <- process_ABC(ABC, full.element = TRUE)
 ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ] # restrict to protein coding genes
-ABC$promoter_chr <- seqnames(ABC)
-ABC$promoter_start <- ABC$TargetGeneTSS
-ABC$promoter_end <- ABC$TargetGeneTSS
-ABC$score <- ABC$ABC.Score * 100
+ABC$score <- ABC$score * 100 # scale to visualize the ABC scores
+head(ABC, 3)
 ```
 
 Load H3K27ac and DHS `.bed` files.
@@ -141,7 +139,8 @@ track_plot(finemapstats,
            counts.color = c("red", "green", "purple"),
            peaks.color = c("navy", "blue"),
            loops.color = "gray", 
-           genelabel.side = "left")
+           genelabel.side = "left",
+           verbose = TRUE)
 ```
 
 
@@ -153,7 +152,7 @@ counts <- list("CM" = CM_counts, "Endo" = Endo_counts, "Fibro" = Fibro_counts)
 peaks <- list("H3K27ac" = H3K27ac_peaks, "DHS" = DHS_peaks)
 loops <- list("ABC" = ABC)
 
-track_plot(finemapstats,
+track_plot(finemapstats, 
            region = "chr15:73610000-73700000",
            gene.annots,
            bigSNP = bigSNP,
@@ -167,7 +166,8 @@ track_plot(finemapstats,
            counts.color = c("red", "green", "purple"),
            peaks.color = c("navy", "blue"),
            loops.color = "gray", 
-           genelabel.side = "above")
+           genelabel.side = "above",
+           verbose = TRUE)
 ```
 
 [GENCODE]: https://www.gencodegenes.org
