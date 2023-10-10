@@ -17,7 +17,7 @@ navbar:
         href: articles/data_preparation_tutorial.html
       - text: Enrichment analysis
         href: articles/enrichment_tutorial.html
-      - text: Fine-mapping
+      - text: Functional fine-mapping
         href: articles/finemapping_tutorial.html
       - text: Gene mapping
         href: articles/gene_mapping_tutorial.html

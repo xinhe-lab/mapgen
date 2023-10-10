@@ -6,14 +6,17 @@
 #' @param intron.mode Logical. If TRUE, assign intronic SNPs to genes containing the introns.
 #' @param d0 A scaling parameter used for computing weight based on SNP-gene distance.
 #' Weight = exp(-dist/d0). Default = 50000 (50kb).
+#' @param exon.weight Weight for exon (and promoter) categories (default = 1).
+#' @param loop.weight Weight for chromatin loop categories (default = 1).
 #' @param cols.to.keep columns to keep in the SNP gene weights
-#' @import GenomicRanges
-#' @return A data frame of SNP-level view of gene mapping result
+#' @return A data frame of gene mapping result
 #' @export
 compute_gene_pip <- function(finemapstats,
                              genomic.annots,
                              intron.mode = FALSE,
                              d0 = 50000,
+                             exon.weight = 1,
+                             loop.weight = 1,
                              cols.to.keep = c(names(mcols(finemapstats)), 'gene_name', 'category', 'weight', 'frac_pip', 'gene_pip')) {
 
   cat('Map SNPs to genes and assign weights ...\n')
@@ -22,12 +25,15 @@ compute_gene_pip <- function(finemapstats,
 
   ## Exon and active promoters category
   if(!is.null(genomic.annots$active_promoters)){
-    exons_active_promoters <- list(exons=genomic.annots$exons,
+    exons_promoters <- list(exons=genomic.annots$exons,
                                    active_promoters=genomic.annots$active_promoters)
+  }else if(!is.null(genomic.annots$promoters)){
+    exons_promoters <- list(exons=genomic.annots$exons,
+                                   promoters=genomic.annots$active_promoters)
   }else{
-    exons_active_promoters <- list(exons=genomic.annots$exons)
+    exons_promoters <- list(exons=genomic.annots$exons)
   }
-  exons_active_promoters <- lapply(exons_active_promoters, function(x){x <- x[,'gene_name']})
+  exons_promoters <- lapply(exons_promoters, function(x){x <- x[,'gene_name']})
 
   ## Enhancer loops category
   enhancer_loops <- genomic.annots$enhancer_loops
@@ -36,7 +42,7 @@ compute_gene_pip <- function(finemapstats,
   }
 
   ## Introns and UTRs category
-  if(intron.mode) {
+  if(intron.mode){
     intron_utrs <- list(introns=genomic.annots$introns,
                         UTRs=genomic.annots$UTRs)
   }else{
@@ -47,14 +53,14 @@ compute_gene_pip <- function(finemapstats,
   # Assign SNPs to genes by hierarchical model
 
   ## Hierarchy level 1: first assign SNPs in exons and active promoters.
-  if(!is.null(exons_active_promoters)){
-    cat('Assign SNPs in exons and active promoters ...\n')
-    exons_active_promoters_assignment <- lapply(exons_active_promoters,
+  if(!is.null(exons_promoters)){
+    cat('Assign SNPs in exons and promoters ...\n')
+    exons_promoters_assignment <- lapply(exons_promoters,
                                                 function(x){plyranges::join_overlap_inner(x, finemapstats)})
-    snps.in <- unique(unlist(GenomicRanges::GRangesList(exons_active_promoters_assignment))$snp)
+    snps.in <- unique(unlist(GenomicRanges::GRangesList(exons_promoters_assignment))$snp)
     finemapstats <- finemapstats[!(finemapstats$snp %in% snps.in),]
   }else{
-    exons_active_promoters_assignment <- NULL
+    exons_promoters_assignment <- NULL
   }
 
   ## Hierarchy level 2: assign SNPs in enhancers
@@ -108,7 +114,7 @@ compute_gene_pip <- function(finemapstats,
 
   cat('Compute gene PIP ... \n')
   # Combine results from different categories
-  snp.assignment.list <- c(exons_active_promoters_assignment,
+  snp.assignment.list <- c(exons_promoters_assignment,
                            enhancer_loops_assignment,
                            enhancer_regions_by_distance,
                            intron_utr_assignment,
@@ -123,17 +129,24 @@ compute_gene_pip <- function(finemapstats,
 
   weights.mat <- Reduce(dplyr::bind_rows, mat.list)
 
-  # Assign weight = 1 for high confidence categories.
-  high_confidence_categories <- c(names(exons_active_promoters_assignment),
-                                  names(enhancer_loops_assignment),
-                                  names(intron_utr_assignment))
+  # Assign weights for different categories.
+  gene_categories <- c(names(exons_promoters_assignment),
+                             names(intron_utr_assignment))
+
+  loop_categories <- names(enhancer_loops_assignment)
 
   distance_categories <- c(names(enhancer_regions_by_distance),
                            names(intergenic_by_distance))
 
+  # cat('weight =', exon.weight, 'for:', gene_categories, '\n')
   weights.mat <- weights.mat %>%
-    dplyr::mutate(weight = ifelse(category %in% high_confidence_categories, 1, weight))
+    dplyr::mutate(weight = ifelse(category %in% gene_categories, exon.weight, weight))
 
+  # cat('weight =', loop.weight, 'for:', loop_categories, '\n')
+  weights.mat <- weights.mat %>%
+    dplyr::mutate(weight = ifelse(category %in% loop_categories, loop.weight, weight))
+
+  # cat('distance weight for:', distance_categories, '\n')
   weights.mat <- weights.mat %>%
     dplyr::mutate(category = ifelse(category %in% distance_categories, 'distance', category)) %>%
     dplyr::arrange(category) %>%
@@ -165,6 +178,8 @@ compute_gene_pip <- function(finemapstats,
   gene.mapping.res <- gene.mapping.res %>%
     dplyr::select(all_of(cols.to.keep)) %>%
     as.data.frame()
+
+  cat("Done.")
 
   return(gene.mapping.res)
 }
@@ -393,21 +408,6 @@ get_locus_level_gene_pip <- function(gene.mapping.res){
 
   return(locus.gene.pip.df)
 }
-
-#' @title Get nearby interactions for enhancer regions near promoters
-#'
-#' @param enhancer_regions A GRanges object of enhancer regions
-#' @param promoters A GRanges object of promoters
-#' @param max.dist Max distance betweeen enhancer regions and promoters (default: 20kb)
-#' @return A GRanges object of nearby interactions
-#' @export
-nearby_interactions <- function(enhancer_regions, promoters, max.dist = 20000){
-  nearby.interactions <- plyranges::join_overlap_inner(enhancer_regions,
-                                                       promoters,
-                                                       maxgap = max.dist)
-  return(nearby.interactions)
-}
-
 
 #' @title Find the nearest genes for top SNPs in each locus.
 #'

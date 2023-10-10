@@ -4,19 +4,27 @@
 \alias{process_ABC}
 \title{Process ABC scores and save as a GRanges object}
 \usage{
-process_ABC(ABC, ABC.thresh = 0.015, full.element = FALSE, flank = 0)
+process_ABC(
+  ABC,
+  gene.annots,
+  full.element = FALSE,
+  score.thresh = 0.015,
+  flank = 0
+)
 }
 \arguments{
 \item{ABC}{A data frame of ABC scores from Nasser et al. Nature 2021 paper}
 
-\item{ABC.thresh}{Numeric. Threshold of ABC scores.
-(default = 0.015, as in Nasser et al. Nature 2021 paper).}
+\item{gene.annots}{If provided, restrict to genes in gene.annots}
 
 \item{full.element}{Logical; if TRUE, use full length of ABC elements
 extracted from the "name" column. Otherwise, use the original (narrow)
 regions provided in the ABC scores data.}
 
-\item{flank}{Integer. Expand bases around ABC elements (default = 0).}
+\item{score.thresh}{Numeric. Threshold of ABC scores.
+(default = 0.015, as in Nasser et al. Nature 2021 paper).}
+
+\item{flank}{Integer. Extend bases on both sides of the ABC elements (default = 0).}
 }
 \value{
 a GRanges object with processed ABC scores, with genomic coordinates

@@ -124,6 +124,9 @@
     <loc>https://xinhe-lab.github.io/mapgen/reference/partition_pip_regions.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/pip_structure_plot.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/pipe.html</loc>
   </url>
   <url>
@@ -140,6 +143,9 @@
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/process_gwas_sumstats.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/process_loop_data.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/process_narrowpeaks.html</loc>

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -56,7 +56,7 @@
       <a href="../articles/enrichment_tutorial.html">Enrichment analysis</a>
     </li>
     <li>
-      <a href="../articles/finemapping_tutorial.html">Fine-mapping</a>
+      <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
     </li>
     <li>
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
@@ -145,38 +145,49 @@ regions, histone modification data, etc.</li>
 <p>Load promoter-capture HiC (PC-HiC) data from cardiomyocytes
 (CMs).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pcHiC.CM.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pcHiC.CM.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="va">pcHiC</span><span class="op">[</span><span class="va">pcHiC</span><span class="op">$</span><span class="va">gene_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="va">gene.annots</span><span class="op">$</span><span class="va">gene_name</span>, <span class="op">]</span> <span class="co"># restrict to protein coding genes</span></span></code></pre></div>
 <p>Load ABC scores from heart ventricle (from Nasser <em>et al.</em>
 <em>Nature</em> 2021).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ABC.heart.ventricle.ENCODE.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co"># process_ABC() process a data frame of ABC scores and converts to a GRanges object.</span></span>
+<code class="sourceCode R"><span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"heart_ventricle-ENCODE_ABC.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_ABC.html">process_ABC</a></span><span class="op">(</span><span class="va">ABC</span>, full.element <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="va">ABC</span><span class="op">[</span><span class="va">ABC</span><span class="op">$</span><span class="va">gene_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="va">gene.annots</span><span class="op">$</span><span class="va">gene_name</span>, <span class="op">]</span> <span class="co"># restrict to protein coding genes</span></span>
-<span><span class="va">ABC</span><span class="op">$</span><span class="va">promoter_chr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GenomeInfoDb/man/seqinfo.html" class="external-link">seqnames</a></span><span class="op">(</span><span class="va">ABC</span><span class="op">)</span></span>
-<span><span class="va">ABC</span><span class="op">$</span><span class="va">promoter_start</span> <span class="op">&lt;-</span> <span class="va">ABC</span><span class="op">$</span><span class="va">TargetGeneTSS</span></span>
-<span><span class="va">ABC</span><span class="op">$</span><span class="va">promoter_end</span> <span class="op">&lt;-</span> <span class="va">ABC</span><span class="op">$</span><span class="va">TargetGeneTSS</span></span>
-<span><span class="va">ABC</span><span class="op">$</span><span class="va">score</span> <span class="op">&lt;-</span> <span class="va">ABC</span><span class="op">$</span><span class="va">ABC.Score</span> <span class="op">*</span> <span class="fl">100</span></span></code></pre></div>
+<span><span class="va">ABC</span><span class="op">$</span><span class="va">score</span> <span class="op">&lt;-</span> <span class="va">ABC</span><span class="op">$</span><span class="va">score</span> <span class="op">*</span> <span class="fl">100</span> <span class="co"># scale to visualize the ABC scores</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ABC</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## GRanges object with 3 ranges and 4 metadata columns:</span></span>
+<span><span class="co">##       seqnames        ranges strand | promoter_start promoter_end   gene_name</span></span>
+<span><span class="co">##          &lt;Rle&gt;     &lt;IRanges&gt;  &lt;Rle&gt; |      &lt;integer&gt;    &lt;integer&gt; &lt;character&gt;</span></span>
+<span><span class="co">##   [1]     chr1 888243-888743      * |         894679       894679       NOC2L</span></span>
+<span><span class="co">##   [2]     chr1 908361-908861      * |         895966       895966      KLHL17</span></span>
+<span><span class="co">##   [3]     chr1 908361-908861      * |         901876       901876     PLEKHN1</span></span>
+<span><span class="co">##           score</span></span>
+<span><span class="co">##       &lt;numeric&gt;</span></span>
+<span><span class="co">##   [1]    1.5224</span></span>
+<span><span class="co">##   [2]    1.7673</span></span>
+<span><span class="co">##   [3]    4.1100</span></span>
+<span><span class="co">##   -------</span></span>
+<span><span class="co">##   seqinfo: 23 sequences from an unspecified genome; no seqlengths</span></span></code></pre>
 <p>Load H3K27ac and DHS <code>.bed</code> files.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trackdata.dir</span> <span class="op">&lt;-</span> <span class="st">"../../mapgen_tutorial_data/trackplot/"</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trackdata.dir</span> <span class="op">&lt;-</span> <span class="st">"../../mapgen_tutorial_data/trackplot/"</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">H3K27ac_peaks</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"H3K27ac.heart.concat.hg19.bed.gz"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">DHS_peaks</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"FetalHeart_E083.DNase.hg19.narrowPeak.bed.gz"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Load ATAC-seq counts data (the data should be in <code>wig</code>,
 <code>bigWig/bw</code>, <code>bedGraph</code>, or <code>bam</code>
 format)</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CM_counts</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"Cardiomyocyte.atac.hg19.bedGraph.gz"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">Endo_counts</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"Endothelial.atac.hg19.bedGraph.gz"</span><span class="op">)</span><span class="op">)</span> </span>
 <span><span class="va">Fibro_counts</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"Fibroblast.atac.hg19.bedGraph.gz"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>You can build a <code>TxDb</code> database (“.sqlite”) using gene
 annotations (GTF format) from <a href="https://www.gencodegenes.org" class="external-link">GENCODE</a>,</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">txdb_gtf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GenomicFeatures/man/makeTxDbFromGFF.html" class="external-link">makeTxDbFromGFF</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">'gencode.v19.annotation.gtf.gz'</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"gtf"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">saveDb</a></span><span class="op">(</span><span class="va">txdb_gtf</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"gencode.v19.annotation.gtf.sqlite"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We can use to use the <code>TxDb</code> database.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">txdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">loadDb</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"gencode.v19.annotation.gtf.sqlite"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>If you are in Xin He lab at UChicago, you can access the gene
 annotations and <code>TxDb</code> database in the directory:
@@ -188,43 +199,17 @@ visualize R^2 between SNPs using a reference panel in
 panel from the 1000 Genomes (1KG) European population.</p>
 <p>If you are in the He lab at UChicago, you can load the
 <code>bigSNP</code> object from RCC as below.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span> <span class="co"># loading reference genotype for LD calculation</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span> <span class="co"># loading reference genotype for LD calculation</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://privefl.github.io/bigsnpr/reference/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="make-track-plots">Make track plots<a class="anchor" aria-label="anchor" href="#make-track-plots"></a>
 </h2>
-<p>Plot CALU locus in the genomic region “chr7:128375000-128425000”</p>
-<p>Highlight topSNP “rs55985730”</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"CM"</span> <span class="op">=</span> <span class="va">CM_counts</span>, <span class="st">"Endo"</span> <span class="op">=</span> <span class="va">Endo_counts</span>, <span class="st">"Fibro"</span> <span class="op">=</span> <span class="va">Fibro_counts</span><span class="op">)</span></span>
-<span><span class="va">peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"H3K27ac"</span> <span class="op">=</span> <span class="va">H3K27ac_peaks</span>, <span class="st">"DHS"</span> <span class="op">=</span> <span class="va">DHS_peaks</span><span class="op">)</span></span>
-<span><span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"PC-HiC"</span> <span class="op">=</span> <span class="va">pcHiC</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/track_plot.html">track_plot</a></span><span class="op">(</span><span class="va">finemapstats</span>,</span>
-<span>           region <span class="op">=</span> <span class="st">"chr7:128375000-128425000"</span>,</span>
-<span>           <span class="va">gene.annots</span>,</span>
-<span>           bigSNP <span class="op">=</span> <span class="va">bigSNP</span>,</span>
-<span>           txdb <span class="op">=</span> <span class="va">txdb</span>,</span>
-<span>           counts <span class="op">=</span> <span class="va">counts</span>,</span>
-<span>           peaks <span class="op">=</span> <span class="va">peaks</span>,</span>
-<span>           loops <span class="op">=</span> <span class="va">loops</span>,</span>
-<span>           genome <span class="op">=</span> <span class="st">"hg19"</span>,</span>
-<span>           filter_loop_genes <span class="op">=</span> <span class="st">"CALU"</span>,</span>
-<span>           highlight_snps <span class="op">=</span> <span class="st">"topSNP"</span>, </span>
-<span>           counts.color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"green"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
-<span>           peaks.color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"navy"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span>
-<span>           loops.color <span class="op">=</span> <span class="st">"gray"</span>, </span>
-<span>           genelabel.side <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Only show PC-HiC loops linked to gene: CALU </span></span>
-<span><span class="co">## Making gene track object using txdb database ...</span></span>
-<span><span class="co">## Highlight SNP: rs55985730</span></span></code></pre>
-<p><img src="track_plot_tutorial_files/figure-html/make-CALU-trackplot-1.png" width="1152"></p>
 <p>Plot HCN4 locus in the genomic region “chr15:73610000-73700000”</p>
-<p>Highlight topSNP “rs7172038”</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p>Highlight SNP “rs7172038”</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"CM"</span> <span class="op">=</span> <span class="va">CM_counts</span>, <span class="st">"Endo"</span> <span class="op">=</span> <span class="va">Endo_counts</span>, <span class="st">"Fibro"</span> <span class="op">=</span> <span class="va">Fibro_counts</span><span class="op">)</span></span>
 <span><span class="va">peaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"H3K27ac"</span> <span class="op">=</span> <span class="va">H3K27ac_peaks</span>, <span class="st">"DHS"</span> <span class="op">=</span> <span class="va">DHS_peaks</span><span class="op">)</span></span>
 <span><span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ABC"</span> <span class="op">=</span> <span class="va">ABC</span><span class="op">)</span></span>
@@ -243,10 +228,20 @@ panel from the 1000 Genomes (1KG) European population.</p>
 <span>           counts.color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"green"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
 <span>           peaks.color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"navy"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span>
 <span>           loops.color <span class="op">=</span> <span class="st">"gray"</span>, </span>
-<span>           genelabel.side <span class="op">=</span> <span class="st">"above"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Only show ABC loops linked to gene: HCN4 </span></span>
+<span>           genelabel.side <span class="op">=</span> <span class="st">"above"</span>,</span>
+<span>           verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## 463 snps included.</span></span>
+<span><span class="co">## Color SNPs in PIP track by loci. </span></span>
+<span><span class="co">## Adding CM track...</span></span>
+<span><span class="co">## Adding Endo track...</span></span>
+<span><span class="co">## Adding Fibro track...</span></span>
+<span><span class="co">## Adding H3K27ac track...</span></span>
+<span><span class="co">## Adding DHS track...</span></span>
+<span><span class="co">## Adding ABC track...</span></span>
+<span><span class="co">## Only show ABC loops linked to gene: HCN4 </span></span>
 <span><span class="co">## Making gene track object using txdb database ...</span></span>
-<span><span class="co">## Highlight SNP: rs7172038</span></span></code></pre>
+<span><span class="co">## Highlight SNP: rs7172038 </span></span>
+<span><span class="co">## Making track plot ...</span></span></code></pre>
 <p><img src="track_plot_tutorial_files/figure-html/make-HCN4-trackplot-1.png" width="1152"></p>
 </div>
   </div>

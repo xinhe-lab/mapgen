@@ -111,7 +111,9 @@ gene_manhattan_plot <- function(gene.pip.res,
 #' @description Making a structure plot of partitioned PIP by locus
 #' This function is adapted from the 'fastTopics' package
 #' https://stephenslab.github.io/fastTopics/
-#' @param mat matrix of input data, rows are loci, columns are annotation categories
+#' @param mat A matrix of the proportion of PIPs partitioned to
+#' each annotation category,
+#' rows are loci, columns are annotation categories.
 #' @param categories annotation categories
 #' @param colors Colors of the structure plot categories
 #' @param ticks Labels of x-axis
@@ -119,17 +121,18 @@ gene_manhattan_plot <- function(gene.pip.res,
 #' @param highlight Highlight a locus
 #' @import ggplot2
 #' @export
-structure_plot <- function (mat,
-                            categories,
-                            colors,
-                            ticks = NULL,
-                            font.size = 9,
-                            highlight = NULL,
-                            xlab = 'Locus',
-                            ylab = 'Proportion',
-                            legend.title = 'Category'){
+pip_structure_plot <- function(mat,
+                               categories,
+                               colors,
+                               ticks = NULL,
+                               font.size = 9,
+                               highlight = NULL,
+                               xlab = 'Locus',
+                               ylab = 'Proportion',
+                               legend.title = 'Category'){
 
   mat <- na.omit(as.matrix(mat))
+
   n <- nrow(mat)
   k <- length(categories)
   dat <- data.frame(sample   = rep(1:n,times = k),
@@ -162,8 +165,8 @@ structure_plot <- function (mat,
 
 #' @title Make gene track plot using Gviz
 #'
-#' @param finemapstats A data frame of finemapping summary statistics
-#' @param region A GRanges object or data frame for the genomic range to plot
+#' @param finemapstats A GRanges object of processed finemapping summary statistics
+#' @param region The genomic region to visualize in the format of "chr:start-end".
 #' @param gene.annots A GRanges object of gene annotations
 #' @param bigSNP A `bigsnpr` object attached via bigsnpr::snp_attach()
 #' @param txdb A `txdb` object of gene annotations
@@ -217,7 +220,6 @@ track_plot <- function(finemapstats,
   genelabel.side <- match.arg(genelabel.side)
   color_piptrack_by <- match.arg(color_piptrack_by)
 
-  finemapstats <- as(finemapstats, 'GRanges')
   seqlevelsStyle(finemapstats) <- 'UCSC'
 
   if( min(finemapstats$pval) >=0 && max(finemapstats$pval) <= 1 ){
@@ -347,12 +349,12 @@ track_plot <- function(finemapstats,
       seqlevelsStyle(counts.gr) <- 'UCSC'
       seqlevels(counts.gr, pruning.mode = 'coarse') <- paste0('chr',1:22)
       counts.track <- Gviz::DataTrack(range = counts.gr,
-                                          type = 'h',
-                                          genome = genome,
-                                          col = counts.color[i],
-                                          name = x,
-                                          showAxis=FALSE,
-                                          ylim = counts.ylim)
+                                      type = 'h',
+                                      genome = genome,
+                                      col = counts.color[i],
+                                      name = x,
+                                      showAxis=FALSE,
+                                      ylim = counts.ylim)
 
       Gviz::displayPars(counts.track) <- dpars.data
       counts.track
@@ -426,24 +428,27 @@ track_plot <- function(finemapstats,
         loops.gr <- loops.gr[loops.gr$gene_name %in% gene.annots$gene_name]
       }
 
-      loops_promoters.gr <- GRanges(seqnames = loops.gr$promoter_chr,
-                                    ranges = IRanges(start = loops.gr$promoter_start, end = loops.gr$promoter_end),
+      loops_promoters.gr <- GRanges(seqnames = seqnames(loops.gr),
+                                    ranges = IRanges(start = loops.gr$promoter_start,
+                                                     end = loops.gr$promoter_end),
                                     score = loops.gr$score,
                                     gene = loops.gr$gene_name)
       loops_enhancers.gr <- GRanges(seqnames = seqnames(loops.gr),
-                                    ranges = IRanges(start = start(loops.gr), end = end(loops.gr)))
-      loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = loops_promoters.gr, anchor2 = loops_enhancers.gr)
+                                    ranges = IRanges(start = start(loops.gr),
+                                                     end = end(loops.gr)))
+      loops.obj <- GenomicInteractions::GenomicInteractions(anchor1 = loops_promoters.gr,
+                                                            anchor2 = loops_enhancers.gr)
       loops.obj$counts <- round(loops.obj$anchor1.score)
 
       if(!is.null(filter_loop_genes)){
         cat(sprintf('Only show %s loops linked to gene: %s \n',
-            x, paste(filter_loop_genes, collapse = ',')))
+                    x, paste(filter_loop_genes, collapse = ',')))
         loops.obj <- loops.obj[which(loops.obj$anchor1.gene %in% filter_loop_genes),]
       }
 
       if(!is.null(filter_loop_snps)){
         cat(sprintf('Only show %s loops linked to SNP: %s \n',
-            x, paste(filter_loop_snps, collapse = ',')))
+                    x, paste(filter_loop_snps, collapse = ',')))
         highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter_loop_snps]
         loops.obj <- subsetByOverlaps(loops.obj, highlighted.snps.gr)
       }

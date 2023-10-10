@@ -18,7 +18,7 @@ This function assumes L = 1. ONLY ONE CREDIBLE SET PER LOCUS!"><!-- mathjax --><
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@ This function assumes L = 1. ONLY ONE CREDIBLE SET PER LOCUS!"><!-- mathjax --><
       <a href="../articles/enrichment_tutorial.html">Enrichment analysis</a>
     </li>
     <li>
-      <a href="../articles/finemapping_tutorial.html">Fine-mapping</a>
+      <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
     </li>
     <li>
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
@@ -83,13 +83,20 @@ This function assumes L = 1. ONLY ONE CREDIBLE SET PER LOCUS!</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>susie_results</dt>
-<dd><p>data frame containing SuSiE finemapping result</p></dd>
+<dd><p>A data frame containing SuSiE finemapping result</p></dd>
 
 
 <dt>sumstats</dt>
-<dd><p>data frame containing summary statistics</p></dd>
+<dd><p>A data frame containing summary statistics</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
+<p>A data frame with summary statistics and two additional columns
+of 'susie_pip' and 'cs' information.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

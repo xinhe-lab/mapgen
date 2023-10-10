@@ -87,7 +87,7 @@ We can make a structure plot to show the proportion of PIPs in each annotation c
 ```{r structure-plot-annots, fig.width=10, fig.height=2.5}
 categories <- c("OCRs", "UTRs", "Exons", "Introns", "others")
 colors <- c(OCRs = "#E18727FF", UTRs = "#238b45", Exons =  "#bee6af", Introns = "#B09C85FF", others = "#aaaaaa")
-structure_plot(prop.pip.mat, categories = categories, colors = colors)
+pip_structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```
 
 ### Partition PIPs into disjoint OCRs for different cell types
@@ -128,5 +128,5 @@ categories <- c("Cardiomyocyte", "Endothelial", "Fibroblast", "Lymphoid",
                 "Myeloid", "Pericyte", "Shared 2-3", "Shared 4+")
 colors <- c("#b22222", "#8DD3C7", "#BEBADA", "#FB8072", 
             "#80B1D3", "#B3DE69", "royalblue", "#003C86")
-structure_plot(prop.pip.mat, categories = categories, colors = colors)
+pip_structure_plot(prop.pip.mat, categories = categories, colors = colors)
 ```

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@
       <a href="../articles/enrichment_tutorial.html">Enrichment analysis</a>
     </li>
     <li>
-      <a href="../articles/finemapping_tutorial.html">Fine-mapping</a>
+      <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
     </li>
     <li>
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
@@ -75,16 +75,31 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_pcHiC</span><span class="op">(</span><span class="va">pcHiC</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_pcHiC</span><span class="op">(</span><span class="va">pcHiC</span>, <span class="va">gene.annots</span>, score.thresh <span class="op">=</span> <span class="fl">0</span>, flank <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>pcHiC</dt>
-<dd><p>A data frame of PC-HiC data, with columns named "Promoter" and
+<dd><p>A data frame of PC-HiC data,
+with columns of enhancer"Promoter" and
 "Interacting_fragment". Interacting_fragment should contains
 chr, start and end positions of the fragments interacting with promoters
 e.g. "chr.start.end" or "chr:start-end".</p></dd>
+
+
+<dt>gene.annots</dt>
+<dd><p>If provided, restrict to genes in gene.annots</p></dd>
+
+
+<dt>score.thresh</dt>
+<dd><p>Numeric. Threshold of interaction scores.
+(default = 0).</p></dd>
+
+
+<dt>flank</dt>
+<dd><p>Integer. Extend bases on both sides of the regulatory elements
+(default = 0).</p></dd>
 
 </dl></div>
     <div id="value">

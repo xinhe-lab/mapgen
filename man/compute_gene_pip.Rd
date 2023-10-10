@@ -9,6 +9,8 @@ compute_gene_pip(
   genomic.annots,
   intron.mode = FALSE,
   d0 = 50000,
+  exon.weight = 1,
+  loop.weight = 1,
   cols.to.keep = c(names(mcols(finemapstats)), "gene_name", "category", "weight",
     "frac_pip", "gene_pip")
 )
@@ -23,10 +25,14 @@ compute_gene_pip(
 \item{d0}{A scaling parameter used for computing weight based on SNP-gene distance.
 Weight = exp(-dist/d0). Default = 50000 (50kb).}
 
+\item{exon.weight}{Weight for exon (and promoter) categories (default = 1).}
+
+\item{loop.weight}{Weight for chromatin loop categories (default = 1).}
+
 \item{cols.to.keep}{columns to keep in the SNP gene weights}
 }
 \value{
-A data frame of SNP-level view of gene mapping result
+A data frame of gene mapping result
 }
 \description{
 Compute gene PIPs based on fine-mapping result and functional annotations.

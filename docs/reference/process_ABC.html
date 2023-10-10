@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
@@ -38,7 +38,7 @@
       <a href="../articles/enrichment_tutorial.html">Enrichment analysis</a>
     </li>
     <li>
-      <a href="../articles/finemapping_tutorial.html">Fine-mapping</a>
+      <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
     </li>
     <li>
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
@@ -75,7 +75,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_ABC</span><span class="op">(</span><span class="va">ABC</span>, ABC.thresh <span class="op">=</span> <span class="fl">0.015</span>, full.element <span class="op">=</span> <span class="cn">FALSE</span>, flank <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">process_ABC</span><span class="op">(</span></span>
+<span>  <span class="va">ABC</span>,</span>
+<span>  <span class="va">gene.annots</span>,</span>
+<span>  full.element <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  score.thresh <span class="op">=</span> <span class="fl">0.015</span>,</span>
+<span>  flank <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -84,9 +90,8 @@
 <dd><p>A data frame of ABC scores from Nasser et al. Nature 2021 paper</p></dd>
 
 
-<dt>ABC.thresh</dt>
-<dd><p>Numeric. Threshold of ABC scores.
-(default = 0.015, as in Nasser et al. Nature 2021 paper).</p></dd>
+<dt>gene.annots</dt>
+<dd><p>If provided, restrict to genes in gene.annots</p></dd>
 
 
 <dt>full.element</dt>
@@ -95,8 +100,13 @@ extracted from the "name" column. Otherwise, use the original (narrow)
 regions provided in the ABC scores data.</p></dd>
 
 
+<dt>score.thresh</dt>
+<dd><p>Numeric. Threshold of ABC scores.
+(default = 0.015, as in Nasser et al. Nature 2021 paper).</p></dd>
+
+
 <dt>flank</dt>
-<dd><p>Integer. Expand bases around ABC elements (default = 0).</p></dd>
+<dd><p>Integer. Extend bases on both sides of the ABC elements (default = 0).</p></dd>
 
 </dl></div>
     <div id="value">

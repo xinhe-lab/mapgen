@@ -52,7 +52,7 @@ library(mapgen)
   *Please install [TORUS](https://github.com/xqwen/torus) software package,
 if you need to run enrichment analysis. 
 
-### [Fine-mapping][finemapping-tutorial]
+### [Functional fine-mapping][finemapping-tutorial]
   
   Perform Bayesian statistical fine-mapping using `SuSiE` on trait-associated loci, 
   using a informative prior that favors variants located in enriched annotations. 
