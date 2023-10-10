@@ -184,8 +184,6 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 #' @param maxL Maximum number of credible sets (default = 10).
 #' If filterCS is TRUE, it will only keep SNPs with credible set (CS) number >= 1
 #' and <= `maxL`.
-#' @import GenomicRanges
-#' @import tidyverse
 #' @return A GRanges object with cleaned and filtered fine-mapping summary statistics
 #' @export
 process_finemapping_sumstats <- function(finemapstats,

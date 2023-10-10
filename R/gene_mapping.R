@@ -7,8 +7,7 @@
 #' @param d0 A scaling parameter used for computing weight based on SNP-gene distance.
 #' Weight = exp(-dist/d0). Default = 50000 (50kb).
 #' @param cols.to.keep columns to keep in the SNP gene weights
-#' @import GenomicRanges
-#' @return A data frame of SNP-level view of gene mapping result
+#' @return A data frame of gene mapping result
 #' @export
 compute_gene_pip <- function(finemapstats,
                              genomic.annots,

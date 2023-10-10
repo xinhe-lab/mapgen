@@ -26,7 +26,7 @@ Weight = exp(-dist/d0). Default = 50000 (50kb).}
 \item{cols.to.keep}{columns to keep in the SNP gene weights}
 }
 \value{
-A data frame of SNP-level view of gene mapping result
+A data frame of gene mapping result
 }
 \description{
 Compute gene PIPs based on fine-mapping result and functional annotations.

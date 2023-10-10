@@ -11,8 +11,6 @@
 #' (default = 0).
 #' @param flank  Integer. Extend bases on both sides of the regulatory elements
 #' (default = 0).
-#' @import GenomicRanges
-#' @import tidyverse
 #' @return A GRanges object with processed PC-HiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
@@ -29,7 +27,7 @@ process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
     dplyr::mutate(start = as.integer(start), end = as.integer(end))
 
   if(!missing(gene.annots)){
-    pcHiC <- pcHiC[pcHiC$gene_name %in% gene.annots$gene_name, ]
+    pcHiC <- pcHiC %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
   if(score.thresh > 0){
@@ -61,8 +59,6 @@ process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
 #' @param score.thresh Numeric. Threshold of ABC scores.
 #' (default = 0.015, as in Nasser et al. Nature 2021 paper).
 #' @param flank  Integer. Extend bases on both sides of the ABC elements (default = 0).
-#' @import GenomicRanges
-#' @import tidyverse
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
@@ -78,11 +74,10 @@ process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0
                     promoter_end = TargetGeneTSS)
   }
 
-  ABC <- ABC %>%
-    dplyr::rename(gene_name = TargetGene, score = ABC.Score)
+  ABC <- ABC %>% dplyr::rename(gene_name = TargetGene, score = ABC.Score)
 
   if(!missing(gene.annots)){
-    ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ]
+    ABC <- ABC %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
   if(score.thresh > 0){
@@ -103,16 +98,6 @@ process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0
   return(ABC.gr)
 }
 
-# Load ENCODE narrow peak data and convert to a GRanges object
-process_narrowpeaks <- function(peak.file){
-  if( !file.exists(peak.file) ){stop('narrowpeak file is not availble!')}
-  peaks <- data.table::fread(peak.file)
-  colnames(peaks) <- c('chr', 'start', 'end', 'name', 'score', 'strand', 'signalValue', 'pValue', 'qValue', 'peak')
-  peaks.gr <- GenomicRanges::makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
-  GenomeInfoDb::seqlevelsStyle(peaks.gr) <- 'UCSC'
-  return(peaks.gr)
-}
-
 #' @title Process chromatin loop data and save as a GRanges object
 #'
 #' @param loops A data frame of chromatin loops, with columns:
@@ -130,7 +115,7 @@ process_loop_data <- function(loops, gene.annots, score.thresh = 0, flank = 0){
   loops <- as.data.frame(loops)
 
   if(!missing(gene.annots)){
-    loops <- loops[loops$gene_name %in% gene.annots$gene_name, ]
+    loops <- loops %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
   if(score.thresh > 0){
@@ -170,6 +155,16 @@ nearby_interactions <- function(enhancer_regions, promoters, max.dist = 20000){
   nearby.interactions <- nearby.interactions[, columns]
 
   return(nearby.interactions)
+}
+
+# Load ENCODE narrow peak data and convert to a GRanges object
+process_narrowpeaks <- function(peak.file){
+  if( !file.exists(peak.file) ){stop('narrowpeak file is not availble!')}
+  peaks <- data.table::fread(peak.file)
+  colnames(peaks) <- c('chr', 'start', 'end', 'name', 'score', 'strand', 'signalValue', 'pValue', 'qValue', 'peak')
+  peaks.gr <- GenomicRanges::makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
+  GenomeInfoDb::seqlevelsStyle(peaks.gr) <- 'UCSC'
+  return(peaks.gr)
 }
 
 
