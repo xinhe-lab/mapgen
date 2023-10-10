@@ -138,15 +138,15 @@ compute_gene_pip <- function(finemapstats,
   distance_categories <- c(names(enhancer_regions_by_distance),
                            names(intergenic_by_distance))
 
-  cat(sprintf("Assign weight = %.2f to exon/promoter categories.\n", exon.weight))
+  # cat('weight =', exon.weight, 'for:', gene_categories, '\n')
   weights.mat <- weights.mat %>%
     dplyr::mutate(weight = ifelse(category %in% gene_categories, exon.weight, weight))
 
-  cat(sprintf("Assign weight = %.2f to loop categories.\n", loop.weight))
+  # cat('weight =', loop.weight, 'for:', loop_categories, '\n')
   weights.mat <- weights.mat %>%
     dplyr::mutate(weight = ifelse(category %in% loop_categories, loop.weight, weight))
 
-  cat(sprintf("Assign distance weight (d0 = %d) to distance categories.\n", d0))
+  # cat('distance weight for:', distance_categories, '\n')
   weights.mat <- weights.mat %>%
     dplyr::mutate(category = ifelse(category %in% distance_categories, 'distance', category)) %>%
     dplyr::arrange(category) %>%

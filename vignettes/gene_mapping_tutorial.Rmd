@@ -178,14 +178,14 @@ genomic.annots$enhancer_loops <- list(ABC = ABC, pcHiC = pcHiC, nearby20kb = nea
 
 Parameter settings: 
 
-* `intron.mode = FALSE` (do not assign intronic SNPs to the genes containing the introns).
-If `intron.mode = TRUE`, it assigns intronic SNPs to genes containing the introns.
-* `d0 = 50000` (distance weight parameter, 50 kb by default).
-* `exon.weight` Weight for exon (and promoter) categories (default = 1).
-* `loop.weight` Weight for chromatin loop categories (default = 1).
+* `intron.mode`: If `TRUE`, assign intronic SNPs to genes containing the introns.
+* `d0`: distance weight parameter (default: 50000).
+* `exon.weight`: weight for exon (and promoter) categories (default = 1).
+* `loop.weight`: weight for chromatin loop categories (default = 1).
 
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
-gene.mapping.res <- compute_gene_pip(finemapstats, genomic.annots, intron.mode = FALSE, d0 = 50000,
+gene.mapping.res <- compute_gene_pip(finemapstats, genomic.annots, 
+                                     intron.mode = FALSE, d0 = 50000,
                                      exon.weight = 1, loop.weight = 1)
 head(gene.mapping.res)
 ```

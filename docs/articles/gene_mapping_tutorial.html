@@ -300,21 +300,20 @@ category.</p>
 <p>Parameter settings:</p>
 <ul>
 <li>
-<code>intron.mode = FALSE</code> (do not assign intronic SNPs to the
-genes containing the introns). If <code>intron.mode = TRUE</code>, it
-assigns intronic SNPs to genes containing the introns.</li>
+<code>intron.mode</code>: If <code>TRUE</code>, assign intronic SNPs
+to genes containing the introns.</li>
 <li>
-<code>d0 = 50000</code> (distance weight parameter, 50 kb by
-default).</li>
+<code>d0</code>: distance weight parameter (default: 50000).</li>
 <li>
-<code>exon.weight</code> Weight for exon (and promoter) categories
+<code>exon.weight</code>: weight for exon (and promoter) categories
 (default = 1).</li>
 <li>
-<code>loop.weight</code> Weight for chromatin loop categories
+<code>loop.weight</code>: weight for chromatin loop categories
 (default = 1).</li>
 </ul>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gene.mapping.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_gene_pip.html">compute_gene_pip</a></span><span class="op">(</span><span class="va">finemapstats</span>, <span class="va">genomic.annots</span>, intron.mode <span class="op">=</span> <span class="cn">FALSE</span>, d0 <span class="op">=</span> <span class="fl">50000</span>,</span>
+<code class="sourceCode R"><span><span class="va">gene.mapping.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_gene_pip.html">compute_gene_pip</a></span><span class="op">(</span><span class="va">finemapstats</span>, <span class="va">genomic.annots</span>, </span>
+<span>                                     intron.mode <span class="op">=</span> <span class="cn">FALSE</span>, d0 <span class="op">=</span> <span class="fl">50000</span>,</span>
 <span>                                     exon.weight <span class="op">=</span> <span class="fl">1</span>, loop.weight <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Map SNPs to genes and assign weights ...</span></span>
 <span><span class="co">## Assign SNPs in exons and promoters ...</span></span>
@@ -324,9 +323,6 @@ default).</li>
 <span><span class="co">## Assign SNPs in UTRs (not in enhancer regions) to the UTR genes ... </span></span>
 <span><span class="co">## Assign the rest of SNPs (intergenic) to genes by distance weighting ...</span></span>
 <span><span class="co">## Compute gene PIP ... </span></span>
-<span><span class="co">## Assign weight = 1.00 to exon/promoter categories.</span></span>
-<span><span class="co">## Assign weight = 1.00 to loop categories.</span></span>
-<span><span class="co">## Assign distance weight (d0 = 50000) to distance categories.</span></span>
 <span><span class="co">## Done.</span></span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gene.mapping.res</span><span class="op">)</span></span></code></pre></div>
