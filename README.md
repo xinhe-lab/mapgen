@@ -43,7 +43,7 @@ functional annotations using `TORUS`.
 \*Please install [TORUS](https://github.com/xqwen/torus) software
 package, if you need to run enrichment analysis.
 
-### [Fine-mapping](https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html)
+### [Functional fine-mapping](https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html)
 
 Perform Bayesian statistical fine-mapping using `SuSiE` on
 trait-associated loci, using a informative prior that favors variants

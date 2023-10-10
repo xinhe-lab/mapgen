@@ -117,42 +117,15 @@ bigSNP <- snp_attach(rdsfile = "../../mapgen_tutorial_data/bigsnpr/EUR_variable_
 
 ## Make track plots
 
-Plot CALU locus in the genomic region "chr7:128375000-128425000"
-
-Highlight topSNP "rs55985730"
-```{r make-CALU-trackplot, fig.width=12, fig.height=8, message=FALSE}
-counts <- list("CM" = CM_counts, "Endo" = Endo_counts, "Fibro" = Fibro_counts)
-peaks <- list("H3K27ac" = H3K27ac_peaks, "DHS" = DHS_peaks)
-loops <- list("PC-HiC" = pcHiC)
-
-track_plot(finemapstats,
-           region = "chr7:128375000-128425000",
-           gene.annots,
-           bigSNP = bigSNP,
-           txdb = txdb,
-           counts = counts,
-           peaks = peaks,
-           loops = loops,
-           genome = "hg19",
-           filter_loop_genes = "CALU",
-           highlight_snps = "topSNP", 
-           counts.color = c("red", "green", "purple"),
-           peaks.color = c("navy", "blue"),
-           loops.color = "gray", 
-           genelabel.side = "left",
-           verbose = TRUE)
-```
-
-
 Plot HCN4 locus in the genomic region "chr15:73610000-73700000"
 
-Highlight topSNP "rs7172038"
+Highlight SNP "rs7172038"
 ```{r make-HCN4-trackplot, fig.width=12, fig.height=8, message=FALSE}
 counts <- list("CM" = CM_counts, "Endo" = Endo_counts, "Fibro" = Fibro_counts)
 peaks <- list("H3K27ac" = H3K27ac_peaks, "DHS" = DHS_peaks)
 loops <- list("ABC" = ABC)
 
-track_plot(finemapstats, 
+track_plot(finemapstats,
            region = "chr15:73610000-73700000",
            gene.annots,
            bigSNP = bigSNP,
