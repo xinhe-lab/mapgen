@@ -1,7 +1,7 @@
 Package: mapgen
 Title: Multi-function software that performs enrichment, functionally-informed 
     genetic fine-mapping and gene mapping
-Version: 0.5.3
+Version: 0.5.3.9000
 URL: https://github.com/xinhe-lab/mapgen
 Authors@R: c(
     person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
