@@ -142,25 +142,26 @@ run_finemapping <- function(sumstats,
 #' @title merges SuSiE results with original summary statistics data frame
 #' @description  merges SuSiE results with original summary statistics data frame
 #' This function assumes L = 1. ONLY ONE CREDIBLE SET PER LOCUS!
-#' @param susie_results data frame containing SuSiE finemapping result
-#' @param sumstats data frame containing summary statistics
-#'
+#' @param susie_results A data frame containing SuSiE finemapping result
+#' @param sumstats A data frame containing summary statistics
+#' @return A data frame with summary statistics and two additional columns
+#' of 'susie_pip' and 'cs' information.
 #' @export
 merge_susie_sumstats <- function(susie_results, sumstats){
 
-  sumstats$susie_pip <- 0
-  sumstats$CS <- 0
+  sumstats$susie_pip <- NA
+  sumstats$cs <- NA
   loci <- names(susie_results)
 
   for(l in loci){
     n.snps <- length(susie_results[[l]]$pip)
-    sumstats[sumstats$locus == as.numeric(l), 'susie_pip'] <- susie_results[[l]]$pip
+    sumstats[sumstats$locus == l, 'susie_pip'] <- susie_results[[l]]$pip
 
     snps.in.cs <- rep(0, n.snps)
     if(!is.null(susie_results[[l]]$sets$cs)){
       snps.in.cs[unlist(susie_results[[l]]$sets$cs$L1)] <- 1
     }
-    sumstats[sumstats$locus == as.numeric(l), 'cs'] <- snps.in.cs
+    sumstats[sumstats$locus == l, 'cs'] <- snps.in.cs
   }
 
   return(sumstats)

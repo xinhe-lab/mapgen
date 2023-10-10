@@ -7,9 +7,13 @@
 merge_susie_sumstats(susie_results, sumstats)
 }
 \arguments{
-\item{susie_results}{data frame containing SuSiE finemapping result}
+\item{susie_results}{A data frame containing SuSiE finemapping result}
 
-\item{sumstats}{data frame containing summary statistics}
+\item{sumstats}{A data frame containing summary statistics}
+}
+\value{
+A data frame with summary statistics and two additional columns
+of 'susie_pip' and 'cs' information.
 }
 \description{
 merges SuSiE results with original summary statistics data frame
