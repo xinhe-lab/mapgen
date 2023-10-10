@@ -181,25 +181,34 @@ Parameter settings:
 * `intron.mode = FALSE` (do not assign intronic SNPs to the genes containing the introns).
 If `intron.mode = TRUE`, it assigns intronic SNPs to genes containing the introns.
 * `d0 = 50000` (distance weight parameter, 50 kb by default).
+* `exon.weight` Weight for exon (and promoter) categories (default = 1).
+* `loop.weight` Weight for chromatin loop categories (default = 1).
 
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
-gene.mapping.res <- compute_gene_pip(finemapstats, genomic.annots, intron.mode = FALSE, d0 = 50000)
+gene.mapping.res <- compute_gene_pip(finemapstats, genomic.annots, intron.mode = FALSE, d0 = 50000,
+                                     exon.weight = 1, loop.weight = 1)
 head(gene.mapping.res)
+```
+
+```{r, include=FALSE, eval=FALSE}
+table(gene.mapping.res$category)
 ```
 
 Gene-level result table
 ```{r extract_gene_level_result, message=FALSE}
 gene.pip.res <- extract_gene_level_result(gene.mapping.res, gene.annots)
 head(gene.pip.res)
+cat(sprintf("%d genes with PIP >= 0.8", 
+            length(gene.pip.res$gene_name[gene.pip.res$gene_pip >= 0.8])))
 ```
 
-Obtain 80% credible gene sets
+80% credible gene sets
 ```{r gene-cs}
 gene.cs <- gene_cs(gene.mapping.res, by.locus = TRUE, gene.cs.coverage = 0.8)
 head(gene.cs)
 ```
 
-Gene Manhattan plot
+### Gene Manhattan plot
 
 label genes with gene PIP > 0.8.
 ```{r gene-manhattan-plot, fig.width=8, fig.height=5, warning=FALSE}
