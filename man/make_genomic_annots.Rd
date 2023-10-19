@@ -4,18 +4,17 @@
 \alias{make_genomic_annots}
 \title{Make genomic annotations from a GTF file}
 \usage{
-make_genomic_annots(gtf_file, add_splice_junctions = FALSE)
+make_genomic_annots(gtf_file, promoter.dist = 2000L)
 }
 \arguments{
 \item{gtf_file}{Path to the GTF file}
 
-\item{add_splice_junctions}{If TRUE, add splice junctions in the result}
+\item{promoter.dist}{Bases (default: 2000) upstream of transcription start site as promoter regions}
 }
 \value{
 A list of GRanges objects of genomic annotations
 }
 \description{
-Make genomic annotations from a GTF file.
-Please install the \code{bedtoolsr} package from
-https://github.com/PhanstielLab/bedtoolsr
+Make genomic annotations (genes, exons, introns, UTRs, promoters)
+from a GTF file.
 }

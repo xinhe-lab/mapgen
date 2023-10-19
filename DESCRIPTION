@@ -24,6 +24,7 @@ Imports:
     ggrepel,
     ggrastr,
     processx,
+    vroom,
     cowplot
 Suggests: 
     susieR,
@@ -35,7 +36,6 @@ Suggests:
     Gviz,
     GenomicInteractions,
     bedtoolsr
-Remotes: PhanstielLab/bedtoolsr
 biocViews: Genetics, GenomeAnnotation, SingleCell, Software
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
