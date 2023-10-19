@@ -90,21 +90,21 @@ head(finemapstats, 3)
 
 #### genomic annotations
 
-We included basic genomic annotations (hg19) in the package.
-
-```{r load-annotations}
-genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
+You can download gene annotations (GTF file) from [GENCODE][GENCODE], 
+then make gene annotations using the GTF file. 
+```{r, eval=FALSE}
+genomic.annots <- make_genomic_annots(gtf_file)
 ```
 
-The genomic annotations could be generated using a `GTF` file with the 
-`make_genomic_annots()` function.
+We included gene annotations (hg19) in the package.
 
-gene annotations
-```{r}
+```{r load-gene-annotations}
+genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
+
 gene.annots <- genomic.annots$genes
 ```
 
-Load open chromatin regions (OCRs) 
+#### Open chromatin regions (OCRs) 
 ```{r load-OCRs}
 genomic.annots$OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 ```

@@ -30,6 +30,10 @@ library(org.Hs.eg.db) # match gene ID to gene symbol
 library(mapgen)
 ```
 
+```{r}
+trackdata.dir <- "../../mapgen_tutorial_data/trackplot/"
+```
+
 Load fine-mapping summary statistics from the AFib study
 ```{r load-finemapping-res}
 finemapstats <- readRDS(system.file("extdata", "AF.finemapping.sumstats.rds", package = "mapgen"))
@@ -45,7 +49,19 @@ finemapstats <- process_finemapping_sumstats(finemapstats,
                                              pip.thresh = 0)
 ```
 
-Load gene annotations (hg19) included in the package
+Load gene annotations (hg19) included in the package.
+
+You can download gene annotations (GTF file) from [GENCODE][GENCODE], 
+then make gene annotations using the `make_genomic_annots()` function with GTF file. 
+```{r, eval=TRUE, include=FALSE}
+gtf_file <- '../../mapgen_tutorial_data/trackplot/gencode.v19.annotation.gtf.gz'
+```
+
+```{r, eval=FALSE}
+# gtf_file <- '/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'
+genomic.annots <- make_genomic_annots(gtf_file)
+```
+
 ```{r load-annotations}
 genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
 gene.annots <- genomic.annots$genes
@@ -67,10 +83,6 @@ head(ABC, 3)
 ```
 
 Load H3K27ac and DHS `.bed` files.
-```{r}
-trackdata.dir <- "../../mapgen_tutorial_data/trackplot/"
-```
-
 ```{r load-bed-files}
 H3K27ac_peaks <- rtracklayer::import(file.path(trackdata.dir, "H3K27ac.heart.concat.hg19.bed.gz"))
 DHS_peaks <- rtracklayer::import(file.path(trackdata.dir, "FetalHeart_E083.DNase.hg19.narrowPeak.bed.gz"))
@@ -89,13 +101,16 @@ txdb_gtf <- makeTxDbFromGFF(file.path(trackdata.dir, 'gencode.v19.annotation.gtf
 saveDb(txdb_gtf, file.path(trackdata.dir, "gencode.v19.annotation.gtf.sqlite"))
 ```
 
-We can use \code{loadDb()} to use the `TxDb` database.
+We can use \code{loadDb()} to load the `TxDb` database.
 ```{r load-txdb-obj}
 txdb <- loadDb(file.path(trackdata.dir, "gencode.v19.annotation.gtf.sqlite"))
 ```
 
 If you are in Xin He lab at UChicago, you can access the gene annotations and 
 `TxDb` database in the directory: `/project2/xinhe/shared_data/gencode/` from RCC. 
+```{r load-txdb-obj, eval=FALSE}
+txdb <- loadDb("/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.sqlite")
+```
 
 You will need the `bigsnpr` package if you want to visualize R^2 between SNPs
 using a reference panel in `bigSNP` object. 
