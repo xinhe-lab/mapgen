@@ -49,19 +49,17 @@ finemapstats <- process_finemapping_sumstats(finemapstats,
                                              pip.thresh = 0)
 ```
 
-Load gene annotations (hg19) included in the package.
+Load gene annotations.
 
 You can download gene annotations (GTF file) from [GENCODE][GENCODE], 
-then make gene annotations using the `make_genomic_annots()` function with GTF file. 
-```{r, eval=TRUE, include=FALSE}
-gtf_file <- '../../mapgen_tutorial_data/trackplot/gencode.v19.annotation.gtf.gz'
-```
+and make gene annotations using the `make_genomic_annots()` function with GTF file. 
 
 ```{r, eval=FALSE}
-# gtf_file <- '/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'
+gtf_file <- '/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'
 genomic.annots <- make_genomic_annots(gtf_file)
 ```
 
+Here we load the gene annotations (hg19) included in the package.
 ```{r load-annotations}
 genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
 gene.annots <- genomic.annots$genes
@@ -107,20 +105,21 @@ txdb <- loadDb(file.path(trackdata.dir, "gencode.v19.annotation.gtf.sqlite"))
 ```
 
 If you are in Xin He lab at UChicago, you can access the gene annotations and 
-`TxDb` database in the directory: `/project2/xinhe/shared_data/gencode/` from RCC. 
-```{r load-txdb-obj, eval=FALSE}
+`TxDb` database from RCC. 
+```{r, eval=FALSE}
 txdb <- loadDb("/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.sqlite")
 ```
 
-You will need the `bigsnpr` package if you want to visualize R^2 between SNPs
+You will need the `bigsnpr` package if you want to visualize r^2 between SNPs
 using a reference panel in `bigSNP` object. 
+
+```{r, message=FALSE, warning=FALSE}
+library(bigsnpr) # loading reference genotype for LD calculation
+```
 
 We provided a `bigSNP` object of the reference genotype panel from the 1000 Genomes (1KG) European population. 
 
 If you are in the He lab at UChicago, you can load the `bigSNP` object from RCC as below.
-```{r, message=FALSE, warning=FALSE}
-library(bigsnpr) # loading reference genotype for LD calculation
-```
 
 ```{r load-bigSNP, eval=FALSE, message=FALSE}
 bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
