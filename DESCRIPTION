@@ -4,7 +4,7 @@ Title: Multi-function software that performs enrichment, functionally-informed
 Version: 0.5.5
 URL: https://github.com/xinhe-lab/mapgen
 Authors@R: c(
-    person("Kaixuan", "Luo", email = "kevinlkx@gmail.com", role = c("aut", "cre")),
+    person("Kaixuan", "Luo", email = "kaixuan@uchicago.edu", role = c("aut", "cre")),
     person("Alan", "Selewa", email = "selewa@uchicago.edu", role = c("aut")),
     person("Xin", "He", role = c("aut", "cph"), email = "xinhe@uchicago.edu"))
 Description: Performs enrichment, functionally-informed genetic fine-mapping 
@@ -34,8 +34,7 @@ Suggests:
     AnnotationDbi,
     org.Hs.eg.db,
     Gviz,
-    GenomicInteractions,
-    bedtoolsr
+    GenomicInteractions
 biocViews: Genetics, GenomeAnnotation, SingleCell, Software
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
