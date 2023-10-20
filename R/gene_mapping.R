@@ -23,62 +23,60 @@ compute_gene_pip <- function(finemapstats,
 
   # Define gene mapping categories
 
-  ## Exon and active promoters category
-  if(!is.null(genomic.annots$active_promoters)){
+  ## Exons and promoters category
+  exons_promoters <- genomic.annots$exons_promoters
+  if(is.null(exons_promoters)){
     exons_promoters <- list(exons=genomic.annots$exons,
-                                   active_promoters=genomic.annots$active_promoters)
-  }else if(!is.null(genomic.annots$promoters)){
-    exons_promoters <- list(exons=genomic.annots$exons,
-                                   promoters=genomic.annots$active_promoters)
-  }else{
-    exons_promoters <- list(exons=genomic.annots$exons)
+                            promoters=genomic.annots$promoters)
   }
-  exons_promoters <- lapply(exons_promoters, function(x){x <- x[,'gene_name']})
 
   ## Enhancer loops category
   enhancer_loops <- genomic.annots$enhancer_loops
-  if(!is.null(enhancer_loops)){
-    enhancer_loops <- lapply(enhancer_loops, function(x){x <- x[,'gene_name']})
-  }
+
+  ## Enhancer regions category
+  enhancer_regions <- genomic.annots$enhancer_regions
 
   ## Introns and UTRs category
   if(intron.mode){
-    intron_utrs <- list(introns=genomic.annots$introns,
-                        UTRs=genomic.annots$UTRs)
+    introns_UTRs <- list(introns=genomic.annots$introns,
+                         UTRs=genomic.annots$UTRs)
   }else{
-    intron_utrs <- list(UTRs=genomic.annots$UTRs)
+    introns_UTRs <- list(UTRs=genomic.annots$UTRs)
   }
-  intron_utrs <- lapply(intron_utrs, function(x){x <- x[,'gene_name']})
 
   # Assign SNPs to genes by hierarchical model
 
   ## Hierarchy level 1: first assign SNPs in exons and active promoters.
   if(!is.null(exons_promoters)){
     cat('Assign SNPs in exons and promoters ...\n')
+    exons_promoters <- lapply(exons_promoters, function(x){x <- x[,'gene_name']})
     exons_promoters_assignment <- lapply(exons_promoters,
-                                                function(x){plyranges::join_overlap_inner(x, finemapstats)})
+                                         function(x){plyranges::join_overlap_inner(x, finemapstats)})
     snps.in <- unique(unlist(GenomicRanges::GRangesList(exons_promoters_assignment))$snp)
     finemapstats <- finemapstats[!(finemapstats$snp %in% snps.in),]
   }else{
+    cat('Category of exons/promoters not available! \n')
     exons_promoters_assignment <- NULL
   }
 
   ## Hierarchy level 2: assign SNPs in enhancers
   ## Hierarchy level 2A: assign SNPs in enhancers to linked genes through enhancer loops.
-  if(length(enhancer_loops) > 0){
+  if(!is.null(enhancer_loops) > 0){
     cat('Assign SNPs to linked genes through enhancer loops ...\n')
     cat('Enhancer loops include:', paste(names(enhancer_loops), collapse=', '), '\n')
+    enhancer_loops <- lapply(enhancer_loops, function(x){x <- x[,'gene_name']})
     enhancer_loops_assignment <- lapply(enhancer_loops, function(x){plyranges::join_overlap_inner(x, finemapstats)})
     snps.in <- unique(unlist(GenomicRanges::GRangesList(enhancer_loops_assignment))$snp)
     finemapstats <- finemapstats[!(finemapstats$snp %in% snps.in),]
   }else{
+    cat('Category of enhancer loops not available! \n')
     enhancer_loops_assignment <- NULL
   }
 
   ## Hierarchy level 2B: assign the rest of SNPs in enhancer regions to genes by distance weighting.
-  if(!is.null(genomic.annots$enhancer_regions)){
+  if(!is.null(enhancer_regions)){
     cat('Assign SNPs in enhancer regions to genes by distance weighting ...\n')
-    finemapstats_in_enhancer_regions <- IRanges::subsetByOverlaps(finemapstats, genomic.annots$enhancer_regions)
+    finemapstats_in_enhancer_regions <- IRanges::subsetByOverlaps(finemapstats, enhancer_regions)
     enhancer_regions_by_distance <- list(
       enhancer_regions = compute_distance_weight(finemapstats_in_enhancer_regions,
                                                  genomic.annots$promoters,
@@ -86,20 +84,23 @@ compute_gene_pip <- function(finemapstats,
     snps.in <- finemapstats_in_enhancer_regions$snp
     finemapstats <- finemapstats[!(finemapstats$snp %in% snps.in),]
   }else{
+    cat('Category of enhancer regions not available! \n')
     enhancer_regions_by_distance <- NULL
   }
 
   ## Hierarchy level 3: assign SNPs in introns/UTRs (excluding enhancer regions).
-  if(!is.null(intron_utrs)){
-    cat('Assign SNPs in UTRs (not in enhancer regions) to the UTR genes ... \n')
+  if(!is.null(introns_UTRs)){
+    cat('Assign SNPs in UTRs (excluding enhancer regions) to the UTR genes ... \n')
     if(intron.mode){
-      cat('Assign SNPs in introns (not in enhancer regions) to genes containing the introns ...\n')
+      cat('Assign SNPs in introns (excluding enhancer regions) to genes containing the introns ...\n')
     }
-    intron_utr_assignment <- lapply(intron_utrs, function(x){plyranges::join_overlap_inner(x, finemapstats)})
-    snps.in <- unique(unlist(GenomicRanges::GRangesList(intron_utr_assignment))$snp)
+    introns_UTRs <- lapply(introns_UTRs, function(x){x <- x[,'gene_name']})
+    introns_UTRs_assignment <- lapply(introns_UTRs, function(x){plyranges::join_overlap_inner(x, finemapstats)})
+    snps.in <- unique(unlist(GenomicRanges::GRangesList(introns_UTRs_assignment))$snp)
     finemapstats <- finemapstats[!(finemapstats$snp %in% snps.in),]
   }else{
-    intron_utr_assignment <- NULL
+    cat('Category of introns/UTRs not available! \n')
+    introns_UTRs_assignment <- NULL
   }
 
   ## Hierarchy level 4: assign the rest of SNPs (intergenic) to genes by distance weighting.
@@ -109,6 +110,7 @@ compute_gene_pip <- function(finemapstats,
       intergenic = compute_distance_weight(finemapstats, genomic.annots$promoters,
                                            d0 = d0, type = 'promoter'))
   }else{
+    cat('Category of intergenic SNPs not available! \n')
     intergenic_snps_genes_by_distance <- NULL
   }
 
@@ -117,7 +119,7 @@ compute_gene_pip <- function(finemapstats,
   snp.assignment.list <- c(exons_promoters_assignment,
                            enhancer_loops_assignment,
                            enhancer_regions_by_distance,
-                           intron_utr_assignment,
+                           introns_UTRs_assignment,
                            intergenic_by_distance)
 
   # Assign weights to SNP-gene pairs
@@ -131,7 +133,7 @@ compute_gene_pip <- function(finemapstats,
 
   # Assign weights for different categories.
   gene_categories <- c(names(exons_promoters_assignment),
-                             names(intron_utr_assignment))
+                       names(introns_UTRs_assignment))
 
   loop_categories <- names(enhancer_loops_assignment)
 

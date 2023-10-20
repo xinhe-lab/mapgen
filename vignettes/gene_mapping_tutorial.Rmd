@@ -8,8 +8,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, eval=TRUE)
 ```
 
-## Gene mapping procedure
-
 Despite our fine-mapping efforts, there remained considerable uncertainty of 
 causal variants in most loci. Even if the causal variants are known, 
 assigning target genes can be difficult due to long-range regulation of enhancers. 
@@ -32,30 +30,27 @@ the set of genes that capture the causal signal at a locus with high probability
 The weights of SNP-gene pairs reflect the strength of biological evidence 
 linking SNPs to genes. 
 For a SNP in an exon/promoter or in a regulatory region linked to a particular gene 
-("enhancer loops"), 
-we assign a weight of 1 to that gene. 
-When a SNP cannot be linked to any gene 
-in these ways, its target genes are assigned using a distance weighted function
+("enhancer loops"), we assign a weight of 1 to that gene. 
+
+When a SNP cannot be linked to any gene in these ways, 
+its target genes are assigned using a distance weighted function
 so that nearby genes receive higher weights. 
 
 See the Methods section in our paper for details.
-
 
 ```{r gene-mapping-diagram, echo=FALSE, fig.cap="Schematic of gene-level PIP calculation. s: SNP, g: gene", out.width = '75%'}
 knitr::include_graphics("../man/figures/gene.mapping.diagram.png")
 ```
 
-## Gene mapping tutorial
-
 In this tutorial, we show the gene mapping procedure using the fine-mapping result 
 from our AFib study.
 
-### Input data
+## Input data
 
 Our gene mapping procedure takes the following input data:
 
 * Fine-mapping summary statistics.
-* Gene annotations, exons, introns, UTRs, etc.
+* Gene annotations, exons, promoters, introns, UTRs, etc.
 * Functional annotation data, including: ABC scores, PC-HiC loops,
 open chromatin regions (OCRs), etc. 
 
@@ -64,7 +59,7 @@ Load R packages
 library(mapgen)
 ```
 
-#### Fine-mapping summary statistics 
+### Fine-mapping summary statistics 
 
 Here we use fine-mapping summary statistics from our AFib study.
 
@@ -88,16 +83,27 @@ finemapstats <- finemapstats[, cols.to.keep]
 head(finemapstats, 3)
 ```
 
-#### genomic annotations
+### Genomic annotations
+
+To link SNPs to genes, we use a hierarchical approach to assign the following 
+genomic annotation categories: 
+
+1. Exons/(active) promoters category
+2. Enhancer loops category (ABC, PC-HiC, etc.)
+3. Enhancer regions category (open chromatin regions, etc.)
+4. Introns/UTRs category
+
+#### Gene annotations
 
 You can download gene annotations (GTF file) from [GENCODE][GENCODE], 
 then make gene annotations using the GTF file. 
 ```{r, eval=FALSE}
+gtf_file <- '/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'
 genomic.annots <- make_genomic_annots(gtf_file)
 ```
 
-We included gene annotations (hg19) in the package.
-
+We included gene annotations (hg19) in the package, downloaded from 
+[GENCODE release 19][GENCODE V19].
 ```{r load-gene-annotations}
 genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", package = "mapgen"))
 
@@ -106,29 +112,42 @@ gene.annots <- genomic.annots$genes
 
 #### Open chromatin regions (OCRs) 
 ```{r load-OCRs}
-genomic.annots$OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
+OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 ```
 
-We defined active promoters as promoters overlapping with OCRs (overlap at least 100 bp). 
+#### Exons/promoters category
+
+In this example, we include exons and active promoters in this category for gene mapping.
+We defined active promoters as promoters overlapping with OCRs (overlap at least 100 bp).
 ```{r active-promoters}
-genomic.annots$active_promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, 
-                                                             genomic.annots$OCRs, 
-                                                             minoverlap = 100)
+active_promoters <- IRanges::subsetByOverlaps(genomic.annots$promoters, 
+                                              OCRs, 
+                                              minoverlap = 100)
 ```
 
-#### Enhancer loops
+```{r exons-promoters-category}
+genomic.annots$exons_promoters <- list(exons = genomic.annots$exons, 
+                                       active_promoters = active_promoters)
+```
+
+If you don't have OCR data, you can simply use exons and promoters.  
+```{r exons-promoters-category-2, eval=FALSE}
+genomic.annots$exons_promoters <- list(exons = genomic.annots$exons, 
+                                       promoters = genomic.annots$promoters)
+```
+
+#### Enhancer loops category
 
 We need chromatin loop data, such as PC-HiC or ABC scores, 
 with the following columns, and save as a GRanges object.
-  
-  * chr: chromosome of the regulatory element
-  * start: start position of the regulatory element
-  * end: end position of the regulatory element
-  * promoter_chr: chromosome of the gene promoter
-  * promoter_start: start position of the gene promoter or TSS position
-  * promoter_end: end position of the gene promoter or TSS position
-  * gene_name: target gene name
-  * score: numeric interaction score (optional)
+
+* chr: chromosome of the regulatory element
+* start: start position of the regulatory element
+* end: end position of the regulatory element
+* promoter_start: start position of the gene promoter or TSS position
+* promoter_end: end position of the gene promoter or TSS position
+* gene_name: target gene name
+* score: numeric interaction score (optional)
 
 **Promoter-capture HiC (PC-HiC)**
 
@@ -154,39 +173,51 @@ ABC <- ABC[ABC$gene_name %in% gene.annots$gene_name, ] # restrict to protein cod
 head(ABC, 3)
 ```
 
-Enhancer regions
+#### Enhancer regions
+
+Here we define enhancer regions by OCRs. You can also use histone mark data to define enhancer regions. 
+
 ```{r enhancer-regions}
-genomic.annots$enhancer_regions <- genomic.annots$OCRs[genomic.annots$OCRs$peakType!="Promoter",]
+genomic.annots$enhancer_regions <- OCRs[OCRs$peakType!="Promoter",]
 ```
 
 Considering the fact that PC-HiC and HiC loops may miss contacts between close regions
 due to technical reasons, 
-we also consider enhancer regions (based on OCRs) within 20 kb of active promoters
+here we also consider enhancer regions within 20 kb of active promoters
 as "nearby interactions". 
 ```{r nearby-20kb}
 nearby20kb <- nearby_interactions(genomic.annots$enhancer_regions,
-                                  genomic.annots$active_promoters, 
+                                  active_promoters, 
                                   max.dist = 20000)
 ```
 
-Include ABC, PC-HiC and nearby interactions in the "enhancer loop" category.
+We include ABC, PC-HiC and nearby interactions in the "enhancer loop" category.
 ```{r}
 genomic.annots$enhancer_loops <- list(ABC = ABC, pcHiC = pcHiC, nearby20kb = nearby20kb)
 ```
 
+```{r}
+summary(genomic.annots)
+```
+
 ### Run gene mapping
 
-Parameter settings: 
+Parameters: 
 
-* `intron.mode`: If `TRUE`, assign intronic SNPs to genes containing the introns.
-* `d0`: distance weight parameter (default: 50000).
-* `exon.weight`: weight for exon (and promoter) categories (default = 1).
-* `loop.weight`: weight for chromatin loop categories (default = 1).
+* finemapstats: A GRanges object of processed fine-mapping result.
+* genomic.annots: A list of GRanges objects of different annotation categories.
+* intron.mode: If `TRUE`, assign intronic SNPs to genes containing the introns.
+* d0: distance weight parameter (default: 50000).
+* exon.weight: weight for exons/promoters (default = 1).
+* loop.weight: weight for enhancer loops (default = 1).
 
 ```{r run-gene-mapping, message=FALSE, warning=FALSE}
-gene.mapping.res <- compute_gene_pip(finemapstats, genomic.annots, 
-                                     intron.mode = FALSE, d0 = 50000,
-                                     exon.weight = 1, loop.weight = 1)
+gene.mapping.res <- compute_gene_pip(finemapstats, 
+                                     genomic.annots, 
+                                     intron.mode = FALSE, 
+                                     d0 = 50000,
+                                     exon.weight = 1, 
+                                     loop.weight = 1)
 head(gene.mapping.res)
 ```
 
@@ -215,3 +246,5 @@ label genes with gene PIP > 0.8.
 gene_manhattan_plot(gene.pip.res, gene.pip.thresh = 0.8)
 ```
 
+[GENCODE]: https://www.gencodegenes.org
+[GENCODE V19]: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz
