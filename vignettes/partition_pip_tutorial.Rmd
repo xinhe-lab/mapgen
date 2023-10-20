@@ -47,12 +47,12 @@ genomic.annots <- readRDS(system.file("extdata", "genomic.annots.hg19.rds", pack
 
 Load cell-type specific open chromatin regions (OCRs) (hg19).
 ```{r load-all-OCRs}
-genomic.annots$OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
+OCRs <- readRDS(system.file("extdata", "OCRs.hg19.gr.rds", package = "mapgen"))
 ```
 
 Create a list of the annotations, with priority in the order of OCRs, UTRS, Exons, and Introns.
 ```{r create-annots.list}
-annots.list <- list(OCRs = genomic.annots$OCRs,
+annots.list <- list(OCRs = OCRs,
                     UTRs = genomic.annots$UTRs,
                     Exons = genomic.annots$exons,
                     Introns = genomic.annots$introns)
