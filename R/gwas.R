@@ -35,16 +35,12 @@ process_gwas_sumstats <- function(sumstats,
                                      chr=chr, pos=pos, beta=beta, se=se,
                                      a0=a0, a1=a1, snp=snp, pval=pval)
 
-  if(missing(LD_Blocks)){
-    cat('Skipped assigning SNPs to LD blocks. \n')
-  }else{
+  if(!missing(LD_Blocks)){
     cat('Assigning GWAS SNPs to LD blocks...\n')
     cleaned.sumstats <- assign_snp_locus(cleaned.sumstats, LD_Blocks)
   }
 
-  if(missing(bigSNP)){
-    cat('Skipped matching GWAS with bigSNP reference panel. \n')
-  }else{
+  if(!missing(bigSNP)){
     cat('Matching GWAS with bigSNP reference panel...\n')
     cleaned.sumstats <- match_gwas_bigsnp(cleaned.sumstats, bigSNP)
   }
@@ -207,4 +203,43 @@ match_gwas_bigsnp <- function(sumstats,
     dplyr::mutate(zscore = beta/se)
 
   return(matched.sumstats)
+}
+
+
+#' Load UKBB LD reference matrix and variant information
+#'
+#' @param LD_Blocks A data frame of LD blocks
+#' @param locus locus ID
+#' @param LDREF.dir Directory of UKBB LD reference files
+#' @param prefix prefix name of the UKBB LD reference files
+#'
+#' @return A list, containing LD (correlation) matrix R and
+#' a data frame with information of the variants in the LD matrix.
+#' @export
+load_UKBB_LDREF <- function(LD_Blocks, locus, LDREF.dir, prefix = "ukb_b37_0.1"){
+  if(!locus %in% LD_Blocks$locus){
+    stop("locus is not in LD_blocks!")
+  }
+  LD_Block <- LD_Blocks[LD_Blocks$locus == locus, ]
+  LD.file <- sprintf("%s_chr%d.R_snp.%d_%d", prefix, LD_Block$chr, LD_Block$start, LD_Block$end)
+  R <- readRDS(file.path(LDREF.dir, paste0(LD.file, ".RDS")))
+  var_info <- data.table::fread(file.path(LDREF.dir, paste0(LD.file, ".Rvar")))
+  res <- list(R = R, var_info = var_info)
+}
+
+#' Match GWAS sumstats with LD reference files. Only keep variants included in
+#' LD reference.
+#'
+#' @param sumstats A data frame of GWAS summary statistics.
+#' @param R LD matrix
+#' @param var_info Variant information for the LD matrix.
+#'
+#' @return A list, containing matched GWAS summary statistics and LD matrix.
+#' @export
+match_gwas_LDREF <- function(sumstats, R, var_info){
+  sumstats <- sumstats[sumstats$snp %in% var_info$id,]
+  LDREF.index <- na.omit(match(sumstats$snp, var_info$id))
+  R <- R[LDREF.index, LDREF.index]
+  stopifnot(nrow(sumstats) == nrow(R))
+  return(list(sumstats = sumstats, R = R))
 }

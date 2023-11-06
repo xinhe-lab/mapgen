@@ -40,6 +40,9 @@
     <loc>https://xinhe-lab.github.io/mapgen/index.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/LD_diagnosis_rss.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/annotate_snps_binary.html</loc>
   </url>
   <url>
@@ -100,10 +103,16 @@
     <loc>https://xinhe-lab.github.io/mapgen/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/load_UKBB_LDREF.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/make_genomic_annots.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/make_structure_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/match_gwas_LDREF.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/match_gwas_bigsnp.html</loc>

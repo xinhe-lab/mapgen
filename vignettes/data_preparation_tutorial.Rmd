@@ -48,7 +48,7 @@ the indices of the LD blocks.
 We provided the LD blocks from `LDetect` for the 1000 Genomes (1KG) European population (in hg19).
 ```{r load-LD-blocks}
 LD_blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
-head(as.data.frame(LD_blocks), 3)
+head(LD_blocks, 3)
 ```
 
 _* You can skip this if you only need to run enrichment analysis._
