@@ -35,16 +35,12 @@ process_gwas_sumstats <- function(sumstats,
                                      chr=chr, pos=pos, beta=beta, se=se,
                                      a0=a0, a1=a1, snp=snp, pval=pval)
 
-  if(missing(LD_Blocks)){
-    cat('Skipped assigning SNPs to LD blocks. \n')
-  }else{
+  if(!missing(LD_Blocks)){
     cat('Assigning GWAS SNPs to LD blocks...\n')
     cleaned.sumstats <- assign_snp_locus(cleaned.sumstats, LD_Blocks)
   }
 
-  if(missing(bigSNP)){
-    cat('Skipped matching GWAS with bigSNP reference panel. \n')
-  }else{
+  if(!missing(bigSNP)){
     cat('Matching GWAS with bigSNP reference panel...\n')
     cleaned.sumstats <- match_gwas_bigsnp(cleaned.sumstats, bigSNP)
   }
