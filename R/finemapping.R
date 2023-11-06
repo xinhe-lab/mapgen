@@ -313,3 +313,24 @@ run_susie_rss <- function(sumstats,
   return(res)
 
 }
+
+#' Perform diagnosis to check the consistency between the z-scores and LD matrix,
+#' and detect problematic z-scores (e.g. allele switch issue)
+#'
+#' @param z z scores.
+#' @param R LD correlation matrix.
+#' @param n The sample size. (Optional, but highly recommended.)
+#'
+#' @return a data frame of expected z-scores and test statistics
+#' from \code{susieR::kriging_rss}.
+#' @export
+LD_diagnosis_rss <- function(z, R, n){
+  cat('Estimate consistency between the z-scores and LD matrix in susie_rss model using regularized LD ...\n')
+  lambda <- susieR::estimate_s_rss(z = z, R = R, n = n)
+  cat('Estimated lambda =', lambda, '\n')
+
+  cat('Compute expected z-scores based on conditional distribution of other z-scores ...\n')
+  condz <- suppressWarnings(susieR::kriging_rss(z = z, R = R, n = n, s = lambda))
+
+  return(condz)
+}
