@@ -246,5 +246,12 @@ label genes with gene PIP > 0.8.
 gene_manhattan_plot(gene.pip.res, gene.pip.thresh = 0.8)
 ```
 
+_Note_: in some cases where a gene spans two nearby LD blocks 
+and/or is linked to SNPs in multiple credible sets (L > 1), 
+the gene PIP may exceed 1, 
+which can be interpreted as the expected number of causal variants targeting the gene
+(see Methods of our paper for details).
+
+
 [GENCODE]: https://www.gencodegenes.org
 [GENCODE V19]: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz

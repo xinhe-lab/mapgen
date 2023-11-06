@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.7</span>
       </span>
     </div>
 
@@ -422,6 +422,11 @@ containing the introns.</li>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/gene_manhattan_plot.html">gene_manhattan_plot</a></span><span class="op">(</span><span class="va">gene.pip.res</span>, gene.pip.thresh <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="gene_mapping_tutorial_files/figure-html/gene-manhattan-plot-1.png" width="768"></p>
+<p><em>Note</em>: in some cases where a gene spans two nearby LD blocks
+and/or is linked to SNPs in multiple credible sets (L &gt; 1), the gene
+PIP may exceed 1, which can be interpreted as the expected number of
+causal variants targeting the gene (see Methods of our paper for
+details).</p>
 </div>
 </div>
   </div>
