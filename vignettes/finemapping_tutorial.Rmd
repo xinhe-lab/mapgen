@@ -99,5 +99,16 @@ finemap.sumstats <- merge_susie_sumstats(susie.res, sumstats.for.susie)
 We now have a new column called `susie_pip`, which is the probability of a SNP 
 being causal estimated using `SuSiE`.
 
+_Note_: Inconsistencies between GWAS z-scores and the LD reference could 
+potentially inflate PIPs from SuSiE finemapping. It would be helpful to 
+check potential LD mismatch issue, for example using [DENTIST][DENTIST] or 
+the [diagnostic][diagnostic-susie-rss] from susie_rss, which has also been
+incorporated here in the function `LD_diagnosis_rss()`.
+
+So to be conservative, you could use `L = 1` if you have "out-of-sample" LD reference, 
+and focus on the loci with significant GWAS signals (e.g. `pval < 5e-8`).
+
 [data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
 [enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
+[DENTIST]: https://doi.org/10.1038/s41467-021-27438-7
+[diagnostic-susie-rss]: https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html
