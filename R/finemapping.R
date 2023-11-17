@@ -325,11 +325,11 @@ run_susie_rss <- function(sumstats,
 #' from \code{susieR::kriging_rss}.
 #' @export
 LD_diagnosis_rss <- function(z, R, n){
-  cat('Estimate consistency between the z-scores and LD matrix in susie_rss model using regularized LD ...\n')
+  cat('Estimate consistency between the z-scores and reference LD matrix ...\n')
   lambda <- susieR::estimate_s_rss(z = z, R = R, n = n)
   cat('Estimated lambda =', lambda, '\n')
 
-  cat('Compute expected z-scores based on conditional distribution of other z-scores ...\n')
+  cat('Compute expected z-scores based on conditional distribution of z-scores ...\n')
   condz <- suppressWarnings(susieR::kriging_rss(z = z, R = R, n = n, s = lambda))
 
   return(condz)
