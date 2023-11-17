@@ -14,8 +14,10 @@ process_gwas_sumstats(
   a1 = "a1",
   snp = "snp",
   pval = "pval",
+  remove_indels = TRUE,
   LD_Blocks,
-  bigSNP
+  bigSNP,
+  ...
 )
 }
 \arguments{
@@ -37,6 +39,8 @@ you will need to transform it to log(Odds Ratio)).}
 \item{snp}{Name of the SNP ID (rsID) column.}
 
 \item{pval}{Name of the p-value column.}
+
+\item{remove_indels}{If TRUE, remove indels}
 
 \item{LD_Blocks}{A data frame of LD blocks with four columns,
 'chr', 'start', 'end', and 'locus' (LD block indices).}

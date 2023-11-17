@@ -12,7 +12,8 @@
 #' @param a1 Column name of the association/effect allele.
 #' @param snp Name of the SNP ID (rsID) column.
 #' @param pval Name of the p-value column.
-##' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+#' @param remove_indels If TRUE, remove indels
+#' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
 #' containing the reference genotype panel.
 #' @param LD_Blocks A data frame of LD blocks with four columns,
 #' 'chr', 'start', 'end', and 'locus' (LD block indices).
@@ -27,13 +28,16 @@ process_gwas_sumstats <- function(sumstats,
                                   a1 = 'a1',
                                   snp = 'snp',
                                   pval = 'pval',
+                                  remove_indels = TRUE,
                                   LD_Blocks,
-                                  bigSNP){
+                                  bigSNP,
+                                  ...){
 
   cat('Cleaning summary statistics...\n')
   cleaned.sumstats <- clean_sumstats(sumstats,
                                      chr=chr, pos=pos, beta=beta, se=se,
-                                     a0=a0, a1=a1, snp=snp, pval=pval)
+                                     a0=a0, a1=a1, snp=snp, pval=pval,
+                                     remove_indels=remove_indels)
 
   if(!missing(LD_Blocks)){
     cat('Assigning GWAS SNPs to LD blocks...\n')
@@ -42,7 +46,7 @@ process_gwas_sumstats <- function(sumstats,
 
   if(!missing(bigSNP)){
     cat('Matching GWAS with bigSNP reference panel...\n')
-    cleaned.sumstats <- match_gwas_bigsnp(cleaned.sumstats, bigSNP)
+    cleaned.sumstats <- match_gwas_bigsnp(cleaned.sumstats, bigSNP, ...)
   }
 
   return(cleaned.sumstats)
@@ -78,7 +82,8 @@ clean_sumstats <- function(sumstats,
                            a0 = 'a0',
                            a1 = 'a1',
                            snp = 'snp',
-                           pval = 'pval'){
+                           pval = 'pval',
+                           remove_indels = TRUE){
 
   cols.to.keep <- c(chr, pos, beta, se, a0, a1, snp, pval)
 
@@ -111,8 +116,10 @@ clean_sumstats <- function(sumstats,
   cleaned.sumstats$a1 <- toupper(cleaned.sumstats$a1)
 
   # Keep SNPs only, remove indels
-  nucs <- c('A','C','T','G')
-  cleaned.sumstats <- cleaned.sumstats %>% dplyr::filter(a0 %in% nucs, a1 %in% nucs)
+  if(remove_indels){
+    nucs <- c('A','C','T','G')
+    cleaned.sumstats <- cleaned.sumstats %>% dplyr::filter(a0 %in% nucs, a1 %in% nucs)
+  }
 
   # Sort by chromosome and position
   cleaned.sumstats <- cleaned.sumstats %>% dplyr::arrange(chr, pos)
@@ -168,7 +175,8 @@ assign_snp_locus <- function(sumstats, LD_Blocks){
 #' Match by ("chr", "a0", "a1") and ("pos" or "rsid"),
 #' accounting for possible strand flips and reverse reference alleles (opposite effects).
 #'
-#' @param sumstats  A data frame of GWAS summary statistics
+#' @param sumstats  A data frame of GWAS summary statistics,
+#' with columns "chr", "pos", "a0", "a1" and "beta".
 #' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
 #' containing the reference genotype panel.
 #' @param strand_flip Whether to try to flip strand? (default is TRUE).

@@ -13,7 +13,8 @@ clean_sumstats(
   a0 = "a0",
   a1 = "a1",
   snp = "snp",
-  pval = "pval"
+  pval = "pval",
+  remove_indels = TRUE
 )
 }
 \arguments{

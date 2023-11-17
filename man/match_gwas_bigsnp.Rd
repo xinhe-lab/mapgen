@@ -13,7 +13,8 @@ match_gwas_bigsnp(
 )
 }
 \arguments{
-\item{sumstats}{A data frame of GWAS summary statistics}
+\item{sumstats}{A data frame of GWAS summary statistics,
+with columns "chr", "pos", "a0", "a1" and "beta".}
 
 \item{bigSNP}{a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
 containing the reference genotype panel.}
