@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.7.9000</span>
       </span>
     </div>
 
@@ -185,6 +185,16 @@ result:</p>
 <p>We now have a new column called <code>susie_pip</code>, which is the
 probability of a SNP being causal estimated using
 <code>SuSiE</code>.</p>
+<p><em>Note</em>: Inconsistencies between GWAS z-scores and the LD
+reference could potentially inflate PIPs from SuSiE finemapping. It
+would be helpful to check potential LD mismatch issue, for example using
+<a href="https://doi.org/10.1038/s41467-021-27438-7" class="external-link">DENTIST</a> or the
+<a href="https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html" class="external-link">diagnostic</a>
+from susie_rss, which has also been incorporated here in the function
+<code><a href="../reference/LD_diagnosis_rss.html">LD_diagnosis_rss()</a></code>.</p>
+<p>So to be conservative, you could use <code>L = 1</code> if you have
+“out-of-sample” LD reference, and focus on the loci with significant
+GWAS signals (e.g. <code>pval &lt; 5e-8</code>).</p>
 </div>
   </div>
 

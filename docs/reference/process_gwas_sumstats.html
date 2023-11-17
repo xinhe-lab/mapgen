@@ -18,7 +18,7 @@ the index in the bigSNP object of each SNP, and the LD block locus."><!-- mathja
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.7.9000</span>
       </span>
     </div>
 
@@ -87,8 +87,10 @@ the index in the bigSNP object of each SNP, and the LD block locus.</p>
 <span>  a1 <span class="op">=</span> <span class="st">"a1"</span>,</span>
 <span>  snp <span class="op">=</span> <span class="st">"snp"</span>,</span>
 <span>  pval <span class="op">=</span> <span class="st">"pval"</span>,</span>
+<span>  remove_indels <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">LD_Blocks</span>,</span>
-<span>  <span class="va">bigSNP</span></span>
+<span>  <span class="va">bigSNP</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -129,6 +131,10 @@ you will need to transform it to log(Odds Ratio)).</p></dd>
 
 <dt>pval</dt>
 <dd><p>Name of the p-value column.</p></dd>
+
+
+<dt>remove_indels</dt>
+<dd><p>If TRUE, remove indels</p></dd>
 
 
 <dt>LD_Blocks</dt>
