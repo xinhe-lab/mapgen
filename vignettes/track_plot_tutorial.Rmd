@@ -31,12 +31,8 @@ library(mapgen)
 ```
 
 If you are in Xin He lab at U Chicago, you can access the example data on RCC:
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 trackdata.dir <- "/project2/xinhe/shared_data/mapgen/example_data/trackplot"
-```
-
-```{r, include=FALSE}
-trackdata.dir <- "../../mapgen_tutorial_data/trackplot/"
 ```
 
 ### Fine-mapping summary statistics 
@@ -83,13 +79,9 @@ txdb <- makeTxDbFromGFF(gtf_file, format = "gtf")
 saveDb(txdb, "gencode.v19.annotation.gtf.sqlite")
 ```
 
-```{r load-txdb-obj, include=FALSE}
-txdb <- loadDb(file.path(trackdata.dir, "gencode.v19.annotation.gtf.sqlite"))
-```
-
 If you are in Xin He lab at UChicago, you can access the gene annotations and 
 `TxDb` database from RCC. 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 gtf_file <- '/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'
 txdb <- loadDb("/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.sqlite")
 ```
@@ -138,13 +130,9 @@ the SNPs in the GWAS track will be plotted in the same color.
 library(bigsnpr) # loading reference genotype for LD calculation
 ```
 
-```{r load-bigSNP-2, include=FALSE, message=FALSE}
-bigSNP <- bigsnpr::snp_attach(rdsfile = "../../mapgen_tutorial_data/bigsnpr/EUR_variable_1kg.rds")
-```
-
 If you are in the He lab at UChicago, you can load the `bigSNP` object 
 from the 1000 Genomes (1KG) European population. 
-```{r load-bigSNP, eval=FALSE}
+```{r load-bigSNP, eval=TRUE}
 bigSNP <- bigsnpr::snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
 

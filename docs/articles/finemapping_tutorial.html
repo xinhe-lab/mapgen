@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.7.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
       </span>
     </div>
 
@@ -57,6 +57,9 @@
     </li>
     <li>
       <a href="../articles/finemapping_tutorial.html">Functional fine-mapping</a>
+    </li>
+    <li>
+      <a href="../articles/finemapping_ukbb_ld_diagnosis.html">Fine-mapping and LD diagnosis with UK Biobank reference LD matrices</a>
     </li>
     <li>
       <a href="../articles/gene_mapping_tutorial.html">Gene mapping</a>
@@ -164,13 +167,10 @@ object.</p>
 <span>                             priortype <span class="op">=</span> <span class="st">'torus'</span>, </span>
 <span>                             L <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p>If you have the LD matrices, you can provide those instead of using
-the bigSNP object. The LD matrices should be a list of LD (R) matrices
-for the loci in sumstats.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">susie.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span>sumstats <span class="op">=</span> <span class="va">sumstats.for.susie</span>, </span>
-<span>                             LD_matrices <span class="op">=</span> <span class="va">LD_matrices</span>, </span>
-<span>                             priortype <span class="op">=</span> <span class="st">'torus'</span>, </span>
-<span>                             L <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+the bigSNP object.</p>
+<p>We have pre-computed the LD matrices of European samples from UK
+Biobank. They can be downloaded [here][UKBB_LD]. See the <a href="https://xinhe-lab.github.io/mapgen/articles/finemapping_ukbb_ld_diagnosis.html">Fine-mapping
+and LD diagnosis tutorial</a> for details.</p>
 <p>We did not provide sample size (n) for this toy example, but it is
 highly encouraged to provide that (set argument <code>n</code> = sample
 size) in the real data analysis.</p>
@@ -180,7 +180,7 @@ patterns.</p>
 <p><code>susie.res</code> is a list of <code>SuSiE</code> results, one
 for each locus. We can merge GWAS summary statistics with SuSiE
 result:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">finemap.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span><span class="va">susie.res</span>, <span class="va">sumstats.for.susie</span><span class="op">)</span></span></code></pre></div>
 <p>We now have a new column called <code>susie_pip</code>, which is the
 probability of a SNP being causal estimated using
@@ -190,8 +190,8 @@ reference could potentially inflate PIPs from SuSiE finemapping. It
 would be helpful to check potential LD mismatch issue, for example using
 <a href="https://doi.org/10.1038/s41467-021-27438-7" class="external-link">DENTIST</a> or the
 <a href="https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html" class="external-link">diagnostic</a>
-from susie_rss, which has also been incorporated here in the function
-<code><a href="../reference/LD_diagnosis_rss.html">LD_diagnosis_rss()</a></code>.</p>
+from <code>susie_rss</code>. See the <a href="https://xinhe-lab.github.io/mapgen/articles/finemapping_ukbb_ld_diagnosis.html">Fine-mapping
+and LD diagnosis tutorial</a> for details.</p>
 <p>So to be conservative, you could use <code>L = 1</code> if you have
 “out-of-sample” LD reference, and focus on the loci with significant
 GWAS signals (e.g. <code>pval &lt; 5e-8</code>).</p>
