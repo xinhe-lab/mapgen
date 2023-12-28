@@ -7,7 +7,9 @@
 assign_snp_locus(sumstats, LD_Blocks)
 }
 \arguments{
-\item{sumstats}{A data frame of GWAS summary statistics.}
+\item{sumstats}{A data frame of GWAS summary statistics.
+It is required to have the following columns:
+chr, pos, snp (rsID).}
 
 \item{LD_Blocks}{A data frame of LD blocks with four columns,
 'chr', 'start', 'end', and 'locus' (LD block indices).}
