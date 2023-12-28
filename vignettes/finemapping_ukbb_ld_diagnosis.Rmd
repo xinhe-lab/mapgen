@@ -8,9 +8,17 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE, eval=TRUE)
 ```
 
+Inconsistencies between GWAS z-scores and the LD reference could 
+potentially inflate PIPs from SuSiE finemapping. It would be helpful to 
+check potential LD mismatch issue, for example using [DENTIST][DENTIST] or 
+the [diagnostic][diagnostic-susie-rss] from `susie_rss`.
+
 In this tutorial, we show an example of performing fine-mapping and
-LD mismatch diagnosis (using SuSiE RSS) 
-with precomputed LD matrices from UK Biobank reference.
+LD mismatch diagnosis (using `susie_rss`) 
+with pre-computed LD matrices from UK Biobank reference.
+
+We have pre-computed the LD matrices of European samples from UK Biobank. 
+They can be downloaded [here][UKBB_LD].
 
 Load the packages. 
 ```{r load-packages, eval=TRUE, message=FALSE}
@@ -64,8 +72,10 @@ match variants between GWAS and LD reference
 ```{r load-LDREF}
 locus <- sig.loci[2]
 gwas.sumstats.locus <- gwas.sumstats[gwas.sumstats$locus == locus, ]
-LDREF <- load_UKBB_LDREF(LD_blocks, locus = locus, 
-                         LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", prefix = "ukb_b37_0.1")
+LDREF <- load_UKBB_LDREF(LD_blocks, 
+                         locus = locus, 
+                         LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
+                         prefix = "ukb_b37_0.1")
 matched.sumstat.LD <- match_gwas_LDREF(gwas.sumstats.locus, LDREF$R, LDREF$var_info)
 sumstats.locus <- matched.sumstat.LD$sumstats
 R.locus <- matched.sumstat.LD$R
@@ -178,3 +188,6 @@ condz <- LD_diagnosis_susie_rss(sumstats.locus.filtered$zscore, R = R.locus.filt
 condz$plot
 ```
 
+[DENTIST]: https://doi.org/10.1038/s41467-021-27438-7
+[diagnostic-susie-rss]: https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html
+[UKBB_LD]: https://uchicago.box.com/s/jqocacd2fulskmhoqnasrknbt59x3xkn
