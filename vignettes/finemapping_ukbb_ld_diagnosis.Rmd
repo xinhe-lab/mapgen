@@ -44,7 +44,7 @@ head(LD_blocks, 3)
 ```
 
 Process GWAS summary statistics 
-```{r}
+```{r process-GWAS}
 gwas.sumstats <- process_gwas_sumstats(gwas.sumstats, 
                                        chr='chr', 
                                        pos='pos', 
@@ -57,18 +57,17 @@ gwas.sumstats <- process_gwas_sumstats(gwas.sumstats,
                                        LD_Blocks=LD_blocks)
 ```
 
-Select GWAS significant loci with -log10(pval) < 5e-8
+Select GWAS significant loci (pval < 5e-8)
 ```{r select-gwas}
 if(max(gwas.sumstats$pval) <= 1){
   gwas.sumstats <- gwas.sumstats %>% dplyr::mutate(pval = -log10(pval))
 }
 
 sig.loci <- gwas.sumstats %>% dplyr::filter(pval > -log10(5e-8)) %>% dplyr::pull(locus) %>% unique()
-cat(length(sig.loci), "significant loci.\n")
 ```
 
-We choose one example locus, load UKBB reference LD matrix, and
-match variants between GWAS and LD reference
+Choose one example locus, load UKBB reference LD matrix, and
+match variants between GWAS and LD reference.
 ```{r load-LDREF}
 locus <- sig.loci[2]
 gwas.sumstats.locus <- gwas.sumstats[gwas.sumstats$locus == locus, ]
@@ -81,14 +80,13 @@ sumstats.locus <- matched.sumstat.LD$sumstats
 R.locus <- matched.sumstat.LD$R
 ```
 
-We run finemapping with precomputed UKBB LD matrices (we use uniform prior in this tutorial)
+We run finemapping with pre-computed UKBB LD matrices (we use uniform prior in this tutorial)
 ```{r}
 # LD_matrices is a list of loci to be finemapped
 LD_matrices <- list(R.locus)
 names(LD_matrices) <- locus
 
 susie.locus.res <- run_finemapping(sumstats.locus, LD_matrices = LD_matrices, priortype = 'uniform', n = n, L = 10)
-susie.locus.res[[1]]$sets
 susie_plot(susie.locus.res[[1]], y='PIP')
 
 susie.locus.sumstats <- merge_susie_sumstats(susie.locus.res, sumstats.locus)
@@ -110,8 +108,7 @@ flip_index <- sample(which(sumstats.locus$zscore > 2), 10)
 sumstats.locus.flip <- sumstats.locus
 sumstats.locus.flip$zscore[flip_index] <- -sumstats.locus$zscore[flip_index]
 
-sumstats.locus.flip[flip_index, ]
-cat(length(flip_index), "Allele switched variants:", sort(sumstats.locus.flip$snp[flip_index]), "\n")
+cat(length(flip_index), "allele flipped variants:\n", sort(sumstats.locus.flip$snp[flip_index]), "\n")
 ```
 
 Then, we run fine-mapping including variants with flipped alleles.
@@ -120,8 +117,6 @@ LD_matrices <- list(R.locus)
 names(LD_matrices) <- locus
 
 susie.locus.res <- run_finemapping(sumstats.locus.flip, LD_matrices = LD_matrices, priortype = 'uniform', n = n, L = 10)
-
-susie.locus.res[[1]]$sets
 
 susie_plot(susie.locus.res[[1]], y='PIP')
 
@@ -134,10 +129,10 @@ condz <- LD_diagnosis_susie_rss(sumstats.locus.flip$zscore, R = R.locus, n = n)
 # condz$plot
 ```
 
-Detect possible allele switched variants (logLR > 2 and abs(z) > 2).
+Detect possible allele flipped variants (logLR > 2 and abs(z) > 2).
 ```{r diagnosis}
 detected_index <- which(condz$conditional_dist$logLR > 2 & abs(condz$conditional_dist$z) > 2)
-cat(sprintf("Detected %d variants with possible allele switched", length(detected_index)), "\n")
+cat(sprintf("Detected %d variants with possible allele flipping", length(detected_index)), "\n")
 cat("Possible allele switched variants:", sort(sumstats.locus.flip$snp[detected_index]), "\n")
 
 condz$conditional_dist$flipped <- 0
@@ -156,13 +151,13 @@ condz$conditional_dist[union(flip_index, detected_index),]
 ggplot(condz$conditional_dist, aes(x = condmean, y = z, col = factor(flipped))) +
   geom_point() +
   scale_colour_manual(values = c("0" = "black", "1" = "red")) + 
-  labs(x = "Expected", y = "Observed z scores", color = "Allele flipped") + 
+  labs(x = "Expected value", y = "Observed z scores", color = "Simulated allele flipping") + 
   theme_bw()
 
 ggplot(condz$conditional_dist, aes(x = condmean, y = z, col = factor(detected))) +
   geom_point() +
   scale_colour_manual(values = c("0" = "black", "1" = "red")) + 
-  labs(x = "Expected", y = "Observed z scores", color = "Possible allele switched") + 
+  labs(x = "Expected value", y = "Observed z scores", color = "Detected allele flipping") + 
   theme_bw()
 ```
 
@@ -174,8 +169,6 @@ LD_matrices <- list(R.locus.filtered)
 names(LD_matrices) <- locus
 
 susie.locus.res <- run_finemapping(sumstats.locus.filtered, LD_matrices = LD_matrices, priortype = 'uniform', n = n, L = 10)
-
-susie.locus.res[[1]]$sets
 
 susie_plot(susie.locus.res[[1]], y='PIP')
 
