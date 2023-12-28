@@ -19,6 +19,8 @@ navbar:
         href: articles/enrichment_tutorial.html
       - text: Functional fine-mapping
         href: articles/finemapping_tutorial.html
+      - text: Fine-mapping and LD diagnosis with UK Biobank reference LD matrices
+        href: articles/finemapping_ukbb_ld_diagnosis.html
       - text: Gene mapping
         href: articles/gene_mapping_tutorial.html
       - text: PIP partitioning by annotation categories

@@ -87,6 +87,7 @@ doi: 10.1038/s41467-023-40505-5. PMID: 37591828; PMCID: PMC10435551.
 [data-preparation-tutorial]: https://xinhe-lab.github.io/mapgen/articles/data_preparation_tutorial.html
 [enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_tutorial.html
 [finemapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/finemapping_tutorial.html
+[finemapping-ukbb-ld-diagnosis-tutorial]: https://xinhe-lab.github.io/mapgen/articles/finemapping_ukbb_ld_diagnosis.html
 [gene-mapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html
 [partition-pip-tutorial]: https://xinhe-lab.github.io/mapgen/articles/partition_pip_tutorial.html
 [track-plot-tutorial]: https://xinhe-lab.github.io/mapgen/articles/track_plot_tutorial.html
