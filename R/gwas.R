@@ -134,6 +134,8 @@ clean_sumstats <- function(sumstats,
 
 #' @title Assign GWAS SNPs to LD blocks
 #' @param sumstats A data frame of GWAS summary statistics.
+#' It is required to have the following columns:
+#' chr, pos, snp (rsID).
 #' @param LD_Blocks A data frame of LD blocks with four columns,
 #' 'chr', 'start', 'end', and 'locus' (LD block indices).
 #' @return A data frame with summary statistics with assigned locus ID.
