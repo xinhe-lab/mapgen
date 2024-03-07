@@ -97,6 +97,9 @@
     <loc>https://xinhe-lab.github.io/mapgen/reference/gene_view_summary.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/get_UKBB_region_info.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/get_gene_cs.html</loc>
   </url>
   <url>
@@ -104,6 +107,9 @@
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/get_nearby_interactions.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/harmonize_sumstats_LD.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/index.html</loc>
@@ -169,6 +175,9 @@
     <loc>https://xinhe-lab.github.io/mapgen/reference/process_pcHiC.html</loc>
   </url>
   <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/read_LD.html</loc>
+  </url>
+  <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/run_finemapping.html</loc>
   </url>
   <url>
@@ -191,6 +200,9 @@
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/sum_pip_regions.html</loc>
+  </url>
+  <url>
+    <loc>https://xinhe-lab.github.io/mapgen/reference/susie_finemap_region.html</loc>
   </url>
   <url>
     <loc>https://xinhe-lab.github.io/mapgen/reference/track_plot.html</loc>

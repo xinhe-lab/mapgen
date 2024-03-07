@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -90,12 +90,11 @@
 
       
 
-      </header><div class="row">
+      </header><script src="track_plot_tutorial_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Tutorial for making track plots</h1>
-                        <h4 data-toc-skip class="author">Kaixuan
-Luo</h4>
+                        <h4 data-toc-skip class="author">Kaixuan Luo</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/vignettes/track_plot_tutorial.Rmd" class="external-link"><code>vignettes/track_plot_tutorial.Rmd</code></a></small>
@@ -111,13 +110,9 @@ Luo</h4>
 <ul>
 <li>Fine-mapping summary statistics.</li>
 <li>Gene annotations.</li>
-<li>Functional annotation data, e.g.: chromatin loops, open chromatin
-regions, histone modification data, etc.</li>
+<li>Functional annotation data, e.g.: chromatin loops, open chromatin regions, histone modification data, etc.</li>
 </ul>
-<p>Please have the following Bioconductor packages installed:
-<code>GenomicFeatures</code>, <code>rtracklayer</code>,
-<code>Gviz</code>, <code>GenomicInteractions</code>,
-<code>AnnotationDbi</code>, <code>org.Hs.eg.db</code>.</p>
+<p>Please have the following Bioconductor packages installed: <code>GenomicFeatures</code>, <code>rtracklayer</code>, <code>Gviz</code>, <code>GenomicInteractions</code>, <code>AnnotationDbi</code>, <code>org.Hs.eg.db</code>.</p>
 <p>Load packages</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/GenomicFeatures" class="external-link">GenomicFeatures</a></span><span class="op">)</span> <span class="co">#  Making and manipulating annotations</span></span>
@@ -127,15 +122,13 @@ regions, histone modification data, etc.</li>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/AnnotationDbi" class="external-link">AnnotationDbi</a></span><span class="op">)</span> <span class="co"># match gene ID to gene symbol</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">org.Hs.eg.db</span><span class="op">)</span> <span class="co"># match gene ID to gene symbol</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/xinhe-lab/mapgen" class="external-link">mapgen</a></span><span class="op">)</span></span></code></pre></div>
-<p>If you are in Xin He lab at U Chicago, you can access the example
-data on RCC:</p>
+<p>If you are in Xin He lab at U Chicago, you can access the example data on RCC:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trackdata.dir</span> <span class="op">&lt;-</span> <span class="st">"/project2/xinhe/shared_data/mapgen/example_data/trackplot"</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="fine-mapping-summary-statistics">Fine-mapping summary statistics<a class="anchor" aria-label="anchor" href="#fine-mapping-summary-statistics"></a>
 </h3>
-<p>Here we use the fine-mapping summary statistics from the AFib
-study.</p>
+<p>Here we use the fine-mapping summary statistics from the AFib study.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">finemapstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"AF.finemapping.sumstats.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">finemapstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_finemapping_sumstats.html">process_finemapping_sumstats</a></span><span class="op">(</span><span class="va">finemapstats</span>, </span>
@@ -153,15 +146,11 @@ study.</p>
 <div class="section level3">
 <h3 id="gene-annotations">Gene annotations<a class="anchor" aria-label="anchor" href="#gene-annotations"></a>
 </h3>
-<p>You can download gene annotations (GTF file) from <a href="https://www.gencodegenes.org" class="external-link">GENCODE</a>, and make gene
-annotations using the <code><a href="../reference/make_genomic_annots.html">make_genomic_annots()</a></code> function with
-the GTF file.</p>
+<p>You can download gene annotations (GTF file) from <a href="https://www.gencodegenes.org" class="external-link">GENCODE</a>, and make gene annotations using the <code><a href="../reference/make_genomic_annots.html">make_genomic_annots()</a></code> function with the GTF file.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gtf_file</span> <span class="op">&lt;-</span> <span class="st">'/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'</span></span>
 <span><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_genomic_annots.html">make_genomic_annots</a></span><span class="op">(</span><span class="va">gtf_file</span><span class="op">)</span></span></code></pre></div>
-<p>We included gene annotations (hg19) in the package, downloaded from
-<a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz" class="external-link">GENCODE
-release 19</a>.</p>
+<p>We included gene annotations (hg19) in the package, downloaded from <a href="https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz" class="external-link">GENCODE release 19</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">genomic.annots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"genomic.annots.hg19.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">gene.annots</span> <span class="op">&lt;-</span> <span class="va">genomic.annots</span><span class="op">$</span><span class="va">genes</span></span></code></pre></div>
@@ -169,14 +158,12 @@ release 19</a>.</p>
 <div class="section level3">
 <h3 id="txdb-database">TxDb database<a class="anchor" aria-label="anchor" href="#txdb-database"></a>
 </h3>
-<p>We can build a <code>TxDb</code> database (“.sqlite”) using the GTF
-file, and use to load the <code>TxDb</code> database.</p>
+<p>We can build a <code>TxDb</code> database (“.sqlite”) using the GTF file, and use  to load the <code>TxDb</code> database.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gtf_file</span> <span class="op">&lt;-</span> <span class="st">'/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'</span></span>
 <span><span class="va">txdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/GenomicFeatures/man/makeTxDbFromGFF.html" class="external-link">makeTxDbFromGFF</a></span><span class="op">(</span><span class="va">gtf_file</span>, format <span class="op">=</span> <span class="st">"gtf"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">saveDb</a></span><span class="op">(</span><span class="va">txdb</span>, <span class="st">"gencode.v19.annotation.gtf.sqlite"</span><span class="op">)</span></span></code></pre></div>
-<p>If you are in Xin He lab at UChicago, you can access the gene
-annotations and <code>TxDb</code> database from RCC.</p>
+<p>If you are in Xin He lab at UChicago, you can access the gene annotations and <code>TxDb</code> database from RCC.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gtf_file</span> <span class="op">&lt;-</span> <span class="st">'/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.gz'</span></span>
 <span><span class="va">txdb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/AnnotationDbi/man/AnnotationDb-class.html" class="external-link">loadDb</a></span><span class="op">(</span><span class="st">"/project2/xinhe/shared_data/gencode/gencode.v19.annotation.gtf.sqlite"</span><span class="op">)</span></span></code></pre></div>
@@ -184,13 +171,11 @@ annotations and <code>TxDb</code> database from RCC.</p>
 <div class="section level3">
 <h3 id="genomic-annotations">Genomic annotations<a class="anchor" aria-label="anchor" href="#genomic-annotations"></a>
 </h3>
-<p>Load promoter-capture HiC (PC-HiC) data from cardiomyocytes
-(CMs).</p>
+<p>Load promoter-capture HiC (PC-HiC) data from cardiomyocytes (CMs).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pcHiC.CM.gr.rds"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">pcHiC</span> <span class="op">&lt;-</span> <span class="va">pcHiC</span><span class="op">[</span><span class="va">pcHiC</span><span class="op">$</span><span class="va">gene_name</span> <span class="op"><a href="https://rdrr.io/pkg/BiocGenerics/man/match.html" class="external-link">%in%</a></span> <span class="va">gene.annots</span><span class="op">$</span><span class="va">gene_name</span>, <span class="op">]</span> <span class="co"># restrict to protein coding genes</span></span></code></pre></div>
-<p>Load ABC scores from heart ventricle (from Nasser <em>et al.</em>
-<em>Nature</em> 2021).</p>
+<p>Load ABC scores from heart ventricle (from Nasser <em>et al.</em> <em>Nature</em> 2021).</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html" class="external-link">fread</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"heart_ventricle-ENCODE_ABC.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"mapgen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ABC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_ABC.html">process_ABC</a></span><span class="op">(</span><span class="va">ABC</span>, full.element <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -214,9 +199,7 @@ annotations and <code>TxDb</code> database from RCC.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">H3K27ac_peaks</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"H3K27ac.heart.concat.hg19.bed.gz"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">DHS_peaks</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"FetalHeart_E083.DNase.hg19.narrowPeak.bed.gz"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Load ATAC-seq counts data (the data should be in <code>wig</code>,
-<code>bigWig/bw</code>, <code>bedGraph</code>, or <code>bam</code>
-format)</p>
+<p>Load ATAC-seq counts data (the data should be in <code>wig</code>, <code>bigWig/bw</code>, <code>bedGraph</code>, or <code>bam</code> format)</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">CM_counts</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"Cardiomyocyte.atac.hg19.bedGraph.gz"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">Endo_counts</span> <span class="op">&lt;-</span> <span class="fu">rtracklayer</span><span class="fu">::</span><span class="fu">import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">trackdata.dir</span>, <span class="st">"Endothelial.atac.hg19.bedGraph.gz"</span><span class="op">)</span><span class="op">)</span> </span>
@@ -225,16 +208,11 @@ format)</p>
 <div class="section level3">
 <h3 id="ld-reference-panel">LD reference panel<a class="anchor" aria-label="anchor" href="#ld-reference-panel"></a>
 </h3>
-<p>If you want to visualize r^2 between SNPs, we need a reference panel
-in a <code>bigSNP</code> object. (we will implement an option that takes
-LD matrix as input)</p>
-<p>If you don’t provide the <code>bigSNP</code> object, the SNPs in the
-GWAS track will be plotted in the same color.</p>
+<p>If you want to visualize r^2 between SNPs, we need a reference panel in a <code>bigSNP</code> object. (we will implement an option that takes LD matrix as input)</p>
+<p>If you don’t provide the <code>bigSNP</code> object, the SNPs in the GWAS track will be plotted in the same color.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span> <span class="co"># loading reference genotype for LD calculation</span></span></code></pre></div>
-<p>If you are in the He lab at UChicago, you can load the
-<code>bigSNP</code> object from the 1000 Genomes (1KG) European
-population.</p>
+<p>If you are in the He lab at UChicago, you can load the <code>bigSNP</code> object from the 1000 Genomes (1KG) European population.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu">bigsnpr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/bigsnpr/man/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## FBM from an old version? Reconstructing..</span></span></code></pre>

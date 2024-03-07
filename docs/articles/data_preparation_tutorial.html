@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -90,12 +90,11 @@
 
       
 
-      </header><div class="row">
+      </header><script src="data_preparation_tutorial_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Tutorial for data preparation</h1>
-                        <h4 data-toc-skip class="author">Kaixuan
-Luo</h4>
+                        <h4 data-toc-skip class="author">Kaixuan Luo</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/vignettes/data_preparation_tutorial.Rmd" class="external-link"><code>vignettes/data_preparation_tutorial.Rmd</code></a></small>
@@ -112,14 +111,12 @@ Luo</h4>
 <div class="section level2">
 <h2 id="gwas-summary-statistics">GWAS summary statistics<a class="anchor" aria-label="anchor" href="#gwas-summary-statistics"></a>
 </h2>
-<p>We need a data frame of GWAS summary statistics with the following
-columns:</p>
+<p>We need a data frame of GWAS summary statistics with the following columns:</p>
 <ul>
 <li>chr: chromosome</li>
 <li>pos: position<br>
 </li>
-<li>beta: effect size (if you have Odds Ratio, you will need to
-transform it to log(Odds Ratio))<br>
+<li>beta: effect size (if you have Odds Ratio, you will need to transform it to log(Odds Ratio))<br>
 </li>
 <li>se: standard error (SE)<br>
 </li>
@@ -128,11 +125,8 @@ transform it to log(Odds Ratio))<br>
 <li>snp: SNP ID (e.g. rsID)</li>
 <li>pval: p-value</li>
 </ul>
-<p>Let’s load a small example GWAS dataset
-(<code>test.sumstats.txt.gz</code>), and process the data (see
-below).</p>
-<p>We can use the <code>vroom</code> package to read the GWAS summary
-statistics.</p>
+<p>Let’s load a small example GWAS dataset (<code>test.sumstats.txt.gz</code>), and process the data (see below).</p>
+<p>We can use the <code>vroom</code> package to read the GWAS summary statistics.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vroom.r-lib.org" class="external-link">vroom</a></span><span class="op">)</span></span>
 <span><span class="va">gwas.file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'test.sumstats.txt.gz'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span></span>
@@ -158,55 +152,41 @@ statistics.</p>
 <div class="section level2">
 <h2 id="ld-blocks">LD blocks<a class="anchor" aria-label="anchor" href="#ld-blocks"></a>
 </h2>
-<p>For the LD blocks, we need a data frame with four columns:
-chromosome, start and end positions, and the indices of the LD
-blocks.</p>
-<p>We provided the LD blocks from <code>LDetect</code> for the 1000
-Genomes (1KG) European population (in hg19).</p>
+<p>For the LD blocks, we need a data frame with four columns: chromosome, start and end positions, and the indices of the LD blocks.</p>
+<p>We provided the LD blocks from <code>LDetect</code> for the 1000 Genomes (1KG) European population (in hg19).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">LD_blocks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'LD.blocks.EUR.hg19.rds'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">LD_blocks</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">LD_Blocks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'LD.blocks.EUR.hg19.rds'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">LD_Blocks</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   chr   start     end locus</span></span>
 <span><span class="co">## 1   1   10583 1892607     1</span></span>
 <span><span class="co">## 2   1 1892607 3582736     2</span></span>
 <span><span class="co">## 3   1 3582736 4380811     3</span></span></code></pre>
-<p><em>* You can skip this if you only need to run enrichment
-analysis.</em></p>
+<p><em>* You can skip this if you only need to run enrichment analysis.</em></p>
 </div>
 <div class="section level2">
 <h2 id="reference-panel">Reference panel<a class="anchor" aria-label="anchor" href="#reference-panel"></a>
 </h2>
 <p>Fine-mapping requires linkage-disequilibrium (LD) information.</p>
-<p>You could either provide LD matrices or use a reference genotype
-panel, which will compute LD matrices internally.</p>
-<p>To use the reference genotype panel, we utilize the R package
-<code>bigsnpr</code> to read in PLINK files (bed/bim/fam) into R and
-match alleles between GWAS summary statistics and reference genotype
-panel.</p>
-<p>If you have reference genotypes in PLINK format, you can use <a href="https://privefl.github.io/bigsnpr/reference/snp_readBed.html" class="external-link">bigsnpr::snp_readBed()</a>
-to read <code>bed/bim/fam</code> files into a <a href="https://privefl.github.io/bigsnpr/reference/bigSNP-class.html" class="external-link">bigSNP</a>
-object and save as a ‘.rds’ file. This ‘.rds’ file could be used for
-downstream analyses when attached with .</p>
-<p>We provided a <code>bigSNP</code> object of the reference genotype
-panel from the 1000 Genomes (1KG) European population. If you are in the
-He lab at UChicago, you can load the <code>bigSNP</code> object from RCC
-as below.</p>
+<p>You could either provide LD matrices or use a reference genotype panel, which will compute LD matrices internally.</p>
+<p>To use the reference genotype panel, we utilize the R package <code>bigsnpr</code> to read in PLINK files (bed/bim/fam) into R and match alleles between GWAS summary statistics and reference genotype panel.</p>
+<p>If you have reference genotypes in PLINK format, you can use <a href="https://privefl.github.io/bigsnpr/reference/snp_readBed.html" class="external-link">bigsnpr::snp_readBed()</a> to read <code>bed/bim/fam</code> files into a <a href="https://privefl.github.io/bigsnpr/reference/bigSNP-class.html" class="external-link">bigSNP</a> object and save as a ‘.rds’ file. This ‘.rds’ file could be used for downstream analyses when attached with .</p>
+<p>We provided a <code>bigSNP</code> object of the reference genotype panel from the 1000 Genomes (1KG) European population. If you are in the He lab at UChicago, you can load the <code>bigSNP</code> object from RCC as below.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://privefl.github.io/bigsnpr/" class="external-link">bigsnpr</a></span><span class="op">)</span></span>
 <span><span class="va">bigSNP</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bigsnpr/man/snp_attach.html" class="external-link">snp_attach</a></span><span class="op">(</span>rdsfile <span class="op">=</span> <span class="st">'/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds'</span><span class="op">)</span></span></code></pre></div>
-<p><em>* You can skip this if you only need to run enrichment analysis,
-or you have LD matrices, or if you only need to run downstream analysis
-(e.g. gene mapping) with precomputed fine-mapping result.</em></p>
+<p>We also have pre-computed LD matrices of European samples from UK Biobank. They can be downloaded [here][UKBB_LD]. If you are at UChicago, you can directly access those LD matrices from RCC at <code>/project2/mstephens/wcrouse/UKB_LDR_0.1_b37/</code>.</p>
+<p>We create a data frame <code>region_info</code>, with filenames of UKBB reference LD matrices and SNP info adding to the LD_Blocks.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">region_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_UKBB_region_info.html">get_UKBB_region_info</a></span><span class="op">(</span><span class="va">LD_Blocks</span>,</span>
+<span>                                    LDREF.dir <span class="op">=</span> <span class="st">"/project2/mstephens/wcrouse/UKB_LDR_0.1_b37"</span>, </span>
+<span>                                    prefix <span class="op">=</span> <span class="st">"ukb_b37_0.1"</span><span class="op">)</span></span></code></pre></div>
+<p><em>* You can skip this if you only need to run enrichment analysis, or if you only need to run downstream analysis (e.g. gene mapping) with precomputed fine-mapping result.</em></p>
 </div>
 <div class="section level2">
 <h2 id="process-gwas-summary-statistics">Process GWAS summary statistics<a class="anchor" aria-label="anchor" href="#process-gwas-summary-statistics"></a>
 </h2>
-<p>We run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to process the summary
-statistics. This checks and cleans GWAS summary statistics, (optionally)
-match alleles in GWAS SNPs with the reference panel from the
-<code>bigSNP</code> object, and (optionally) add locus ID from the
-<code>LD_Blocks</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>We run <code><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats()</a></code> to process the summary statistics. This checks and cleans GWAS summary statistics, add locus ID from the <code>LD_Blocks</code> if available, match alleles in GWAS SNPs with the reference panel from the <code>bigSNP</code> object if <code>bigSNP</code> is specified, or harmonize GWAS SNPs with the reference LD information from the precopmuted LD matrices if <code>region_info</code> is specified.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gwas.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats</a></span><span class="op">(</span><span class="va">sumstats</span>, </span>
 <span>                                       chr<span class="op">=</span><span class="st">'chr'</span>, </span>
 <span>                                       pos<span class="op">=</span><span class="st">'position_b37'</span>, </span>
@@ -216,14 +196,11 @@ match alleles in GWAS SNPs with the reference panel from the
 <span>                                       a1<span class="op">=</span><span class="st">'a1'</span>, </span>
 <span>                                       snp<span class="op">=</span><span class="st">'phase3_1kg_id'</span>, </span>
 <span>                                       pval<span class="op">=</span><span class="st">'bcac_onco2_P1df_Wald'</span>,</span>
-<span>                                       LD_Blocks<span class="op">=</span><span class="va">LD_blocks</span>,</span>
+<span>                                       LD_Blocks<span class="op">=</span><span class="va">LD_Blocks</span>,</span>
 <span>                                       bigSNP<span class="op">=</span><span class="va">bigSNP</span><span class="op">)</span></span></code></pre></div>
-<p><em>* You do not need to specify <code>bigSNP</code> and
-<code>LD_Blocks</code> if you only need to run enrichment
-analysis.</em></p>
-<p>Check that the summary statistics is processed and has appropriate
-columns:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p><em>* You do not need to specify <code>bigSNP</code>, <code>region_info</code>, or <code>LD_Blocks</code> if you only need to run enrichment analysis.</em></p>
+<p>Check that the summary statistics is processed and has appropriate columns:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">gwas.sumstats</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##   chr   pos a0 a1     beta      se                   snp    pval     zscore</span></span>
 <span><span class="co">## 1   1 13110  A  G -0.02066 0.03231           1:13110:G:A 0.52245 -0.6394305</span></span>
