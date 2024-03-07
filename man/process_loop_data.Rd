@@ -4,7 +4,7 @@
 \alias{process_loop_data}
 \title{Process chromatin loop data and save as a GRanges object}
 \usage{
-process_loop_data(loops, gene.annots, score.thresh = 0, flank = 0)
+process_loop_data(loops, gene.annots = NULL, score.thresh = 0, flank = 0)
 }
 \arguments{
 \item{loops}{A data frame of chromatin loops, with columns:

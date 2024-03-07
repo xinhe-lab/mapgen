@@ -202,6 +202,7 @@ run_finemapping <- function(sumstats,
   }
 
   finemap.locus.list <- unique(sumstats$locus)
+  cat(sprintf("Finemapping %d loci...\n", length(finemap.locus.list)))
 
   susie_results <- list()
   for(locus in finemap.locus.list){

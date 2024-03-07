@@ -4,7 +4,7 @@
 \alias{process_pcHiC}
 \title{Process PC-HiC data and save as a GRanges object}
 \usage{
-process_pcHiC(pcHiC, gene.annots, score.thresh = 0, flank = 0)
+process_pcHiC(pcHiC, gene.annots = NULL, score.thresh = 0, flank = 0)
 }
 \arguments{
 \item{pcHiC}{A data frame of PC-HiC data,

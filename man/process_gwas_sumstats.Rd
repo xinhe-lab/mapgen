@@ -2,7 +2,7 @@
 % Please edit documentation in R/gwas.R
 \name{process_gwas_sumstats}
 \alias{process_gwas_sumstats}
-\title{Cleans GWAS summary statistics and adds metadata}
+\title{Process GWAS summary statistics and harmonize with LD reference}
 \usage{
 process_gwas_sumstats(
   sumstats,
@@ -17,7 +17,7 @@ process_gwas_sumstats(
   remove_indels = TRUE,
   LD_Blocks = NULL,
   bigSNP = NULL,
-  region_info = NULL,
+  LD_snp_info = NULL,
   strand_flip = TRUE,
   remove_strand_ambig = TRUE,
   ...
@@ -46,15 +46,22 @@ you will need to transform it to log(Odds Ratio)).}
 \item{remove_indels}{If TRUE, remove indels}
 
 \item{LD_Blocks}{A data frame of LD blocks with four columns,
-'chr', 'start', 'end', and 'locus' (LD block indices).}
+'chr', 'start', 'end', and 'locus' (locus ID).}
 
 \item{bigSNP}{a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
 containing the reference genotype panel.}
+
+\item{LD_snp_info}{a data frame, SNP info in the LD reference,
+with columns 'chrom', 'id', 'pos', 'alt', 'ref', 'locus'.}
+
+\item{strand_flip}{Whether to flip signs when reverse complement matches? (default is TRUE).}
+
+\item{remove_strand_ambig}{Whether to remove ambiguous alleles (A/T and C/G)? (default is TRUE).}
 }
 \value{
 A data frame of processed GWAS summary statistics.
 }
 \description{
-Cleans GWAS summary statistics and adds metadata, including:
+Process GWAS summary statistics and adds metadata, including:
 the index in the bigSNP object of each SNP, and the LD block locus.
 }

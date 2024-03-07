@@ -14,7 +14,7 @@
 #' @return A GRanges object with processed PC-HiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
+process_pcHiC <- function(pcHiC, gene.annots = NULL, score.thresh = 0, flank = 0){
 
   pcHiC <- pcHiC %>% dplyr::select(Promoter, Interacting_fragment)
   # separate genes connecting to the same fragment
@@ -26,7 +26,7 @@ process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
     tidyr::separate(Interacting_fragment, c('chr', 'start', 'end')) %>%
     dplyr::mutate(start = as.integer(start), end = as.integer(end))
 
-  if(!missing(gene.annots)){
+  if(!is.null(gene.annots)){
     pcHiC <- pcHiC %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
@@ -62,7 +62,7 @@ process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0.015, flank = 0){
+process_ABC <- function(ABC, gene.annots = NULL, full.element = FALSE, score.thresh = 0.015, flank = 0){
 
   if(full.element){
     ABC <- ABC %>%
@@ -76,7 +76,7 @@ process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0
 
   ABC <- ABC %>% dplyr::rename(gene_name = TargetGene, score = ABC.Score)
 
-  if(!missing(gene.annots)){
+  if(!is.null(gene.annots)){
     ABC <- ABC %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
@@ -110,11 +110,11 @@ process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0
 #' @return A GRanges object with processed chromatin loops,
 #' with genomic coordinates of the regulatory elements and gene names.
 #' @export
-process_loop_data <- function(loops, gene.annots, score.thresh = 0, flank = 0){
+process_loop_data <- function(loops, gene.annots = NULL, score.thresh = 0, flank = 0){
 
   loops <- as.data.frame(loops)
 
-  if(!missing(gene.annots)){
+  if(!is.null(gene.annots)){
     loops <- loops %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
@@ -223,7 +223,7 @@ get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
   sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
   sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
 
-  if(missing(topSNP)){
+  if(is.null(topSNP)){
     if( max(sumstats$pval) <= 1 ){
       sumstats$pval <- -log10(sumstats$pval)
     }
@@ -419,3 +419,44 @@ load_UKBB_LDREF <- function(LD_Blocks,
   return(list('R' = R, 'snp_info' = snp_info))
 }
 
+#' Read all SNP info in LD reference
+#'
+#' @param region_info A data frame of region information,
+#' paths of LD matrices (R, correlation matrices),
+#' and paths of SNP information files corresponding to the LD matrices.
+#'
+#' @return A data frame of SNP information in the LD reference
+#'
+#' @export
+read_LD_SNP_info <- function(region_info){
+  LD_snp_info.list <- lapply(1:nrow(region_info), function(i){
+    df <- data.table::fread(region_info$snp_info[i])
+    if(!is.null(region_info$locus)){
+      df$locus <- region_info$locus[i]
+    }else{
+      df$locus <- i
+    }
+    df
+  })
+  LD_snp_info <- do.call(rbind, LD_snp_info.list)
+  return(LD_snp_info)
+}
+
+
+#' Match GWAS sumstats with LD reference files. Only keep variants included in
+#' LD reference.
+#'
+#' @param sumstats A data frame of GWAS summary statistics.
+#' @param R LD matrix
+#' @param snp_info Variant information for the LD matrix.
+#'
+#' @return A list, containing matched GWAS summary statistics and LD matrix.
+#' @export
+match_gwas_LDREF <- function(sumstats, R, snp_info){
+  stopifnot(nrow(R) == nrow(snp_info))
+  sumstats <- sumstats[sumstats$snp %in% snp_info$id,]
+  LD.idx <- match(sumstats$snp, snp_info$id)
+  R <- R[LD.idx, LD.idx]
+  snp_info <- snp_info[LD.idx, ]
+  return(list(sumstats = sumstats, R = R, snp_info = snp_info))
+}

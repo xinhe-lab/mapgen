@@ -195,11 +195,11 @@ pip_structure_plot <- function(mat,
 track_plot <- function(finemapstats,
                        region,
                        gene.annots,
-                       bigSNP,
-                       txdb,
-                       counts,
-                       peaks,
-                       loops,
+                       bigSNP = NULL,
+                       txdb  = NULL,
+                       counts  = NULL,
+                       peaks  = NULL,
+                       loops  = NULL,
                        genome = 'hg19',
                        filter_loop_genes = NULL,
                        filter_loop_snps = NULL,
@@ -212,7 +212,7 @@ track_plot <- function(finemapstats,
                        loops.color = 'gray',
                        highlight.color = 'pink',
                        genelabel.side = c('above', 'below', 'left', 'right'),
-                       track.sizes,
+                       track.sizes = NULL,
                        rotation.title = 0,
                        verbose = FALSE,
                        ...) {
@@ -240,7 +240,7 @@ track_plot <- function(finemapstats,
   curr.finemapstats <- as.data.frame(finemapstats[rows.in,  ])
 
   # p-value track
-  if(!missing(bigSNP)){
+  if(!is.null(bigSNP)){
     # Color SNPs by r2
     r2.breaks <- c(0, 0.1, 0.25, 0.75, 0.9, 1)
     r2.labels <- c('0-0.1','0.1-0.25','0.25-0.75','0.75-0.9','0.9-1')
@@ -328,7 +328,7 @@ track_plot <- function(finemapstats,
   Gviz::displayPars(pip.track) <- dpars.pip
 
   # Data tracks
-  if(!missing(counts) && (length(counts) > 0)){
+  if (length(counts) > 0) {
     dpars.data <- list(col.title = 'black',
                        col.axis = 'black',
                        col.border.title = 'lightgray',
@@ -364,7 +364,7 @@ track_plot <- function(finemapstats,
   }
 
   # Peak annotation tracks
-  if(!missing(peaks) && (length(peaks) > 0)){
+  if (length(peaks) > 0) {
     dpars.peaks <- list(col.title = 'black',
                         col.axis = 'black',
                         col.border.title = 'lightgray',
@@ -400,7 +400,7 @@ track_plot <- function(finemapstats,
   }
 
   # Chromatin loop tracks
-  if(!missing(loops) && (length(loops) > 0)){
+  if (length(loops) > 0) {
     dpars.loops <- list(col.interactions = loops.color,
                         col.anchors.fill = 'blue',
                         col.anchors.line = 'black',
@@ -440,13 +440,13 @@ track_plot <- function(finemapstats,
                                                             anchor2 = loops_enhancers.gr)
       loops.obj$counts <- round(loops.obj$anchor1.score)
 
-      if(!is.null(filter_loop_genes)){
+      if (length(filter_loop_genes) >0 ) {
         cat(sprintf('Only show %s loops linked to gene: %s \n',
                     x, paste(filter_loop_genes, collapse = ',')))
         loops.obj <- loops.obj[which(loops.obj$anchor1.gene %in% filter_loop_genes),]
       }
 
-      if(!is.null(filter_loop_snps)){
+      if (length(filter_loop_snps) > 0){
         cat(sprintf('Only show %s loops linked to SNP: %s \n',
                     x, paste(filter_loop_snps, collapse = ',')))
         highlighted.snps.gr <- finemapstats[finemapstats$snp %in% filter_loop_snps]
@@ -479,7 +479,7 @@ track_plot <- function(finemapstats,
   displayPars(gene.track) <- dpars.genes
 
   # Restrict to protein coding genes
-  if(filter_protein_coding_genes){
+  if (isTRUE(filter_protein_coding_genes)){
     gene.track <- gene.track[symbol(gene.track) %in% gene.annots$gene_name]
   }
 
@@ -495,7 +495,7 @@ track_plot <- function(finemapstats,
                       gene.track,
                       axisTrack)
 
-  if(missing(track.sizes)){
+  if (is.null(track.sizes)){
     track.sizes <- c(1,
                      0.6,
                      rep(0.3, length(counts.tracks)),
@@ -506,7 +506,7 @@ track_plot <- function(finemapstats,
   }
 
   # Highlight SNPs
-  if( !missing(highlight_snps) ){
+  if (length(highlight_snps) > 0){
 
     if('topSNP' %in% highlight_snps){
       highlight_snps[which(highlight_snps == "topSNP")] <- curr.finemapstats$snp[which.max(curr.finemapstats$pip)]
@@ -553,14 +553,14 @@ track_plot <- function(finemapstats,
 
 # Make gene track object for Gviz
 make_genetrack_obj <- function(region,
-                               txdb,
-                               gene.annots,
+                               txdb = NULL,
+                               gene.annots = NULL,
                                genome = 'hg19',
                                keytype = 'ENSEMBL',
                                name = 'Gene',
                                filter_protein_coding_genes = TRUE){
 
-  if(!missing(txdb)){
+  if(!is.null(txdb)){
     # use supplied txdb if available.
     cat('Making gene track object using txdb database ...\n')
     grtrack <- Gviz::GeneRegionTrack(range = txdb,
@@ -577,7 +577,7 @@ make_genetrack_obj <- function(region,
 
     symbol(grtrack) <- ifelse(is.na(symbol(grtrack)), '', symbol(grtrack))
 
-  }else if(!missing(gene.annots)){
+  }else if(!is.null(gene.annots)){
     # use supplied gene.annots if available.
     cat('txdb not available. Making gene track object using gene.annots ...\n')
     grtrack <- Gviz::GeneRegionTrack(range = gene.annots,
@@ -590,7 +590,7 @@ make_genetrack_obj <- function(region,
   }
 
   # restrict to protein coding genes
-  if(filter_protein_coding_genes){
+  if (isTRUE(filter_protein_coding_genes)){
     grtrack <- grtrack[symbol(grtrack) %in% gene.annots$gene_name]
   }
 

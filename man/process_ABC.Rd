@@ -6,7 +6,7 @@
 \usage{
 process_ABC(
   ABC,
-  gene.annots,
+  gene.annots = NULL,
   full.element = FALSE,
   score.thresh = 0.015,
   flank = 0

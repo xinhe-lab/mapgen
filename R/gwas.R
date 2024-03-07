@@ -1,5 +1,5 @@
-#' @title Cleans GWAS summary statistics and adds metadata
-#' @description Cleans GWAS summary statistics and adds metadata, including:
+#' @title Process GWAS summary statistics and harmonize with LD reference
+#' @description Process GWAS summary statistics and adds metadata, including:
 #' the index in the bigSNP object of each SNP, and the LD block locus.
 #'
 #' @param sumstats A data frame of GWAS summary statistics.
@@ -13,10 +13,15 @@
 #' @param snp Name of the SNP ID (rsID) column.
 #' @param pval Name of the p-value column.
 #' @param remove_indels If TRUE, remove indels
+#' @param LD_Blocks A data frame of LD blocks with four columns,
+#' 'chr', 'start', 'end', and 'locus' (locus ID).
 #' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
 #' containing the reference genotype panel.
-#' @param LD_Blocks A data frame of LD blocks with four columns,
-#' 'chr', 'start', 'end', and 'locus' (LD block indices).
+#' @param LD_snp_info a data frame, SNP info in the LD reference,
+#'  with columns 'chrom', 'id', 'pos', 'alt', 'ref', 'locus'.
+#' @param strand_flip Whether to flip signs when reverse complement matches? (default is TRUE).
+#' @param remove_strand_ambig Whether to remove ambiguous alleles (A/T and C/G)? (default is TRUE).
+#'
 #' @return A data frame of processed GWAS summary statistics.
 #' @export
 process_gwas_sumstats <- function(sumstats,
@@ -31,7 +36,7 @@ process_gwas_sumstats <- function(sumstats,
                                   remove_indels = TRUE,
                                   LD_Blocks = NULL,
                                   bigSNP = NULL,
-                                  region_info = NULL,
+                                  LD_snp_info = NULL,
                                   strand_flip = TRUE,
                                   remove_strand_ambig = TRUE,
                                   ...){
@@ -42,30 +47,20 @@ process_gwas_sumstats <- function(sumstats,
                              a0=a0, a1=a1, snp=snp, pval=pval,
                              remove_indels=remove_indels)
 
-  if(!missing(LD_Blocks)){
+  if(!is.null(LD_Blocks)){
     cat('Assigning GWAS SNPs to LD blocks...\n')
     sumstats <- assign_snp_locus(sumstats, LD_Blocks)
   }
 
-  if(!missing(bigSNP)){
-    cat('Matching GWAS with bigSNP reference panel...\n')
+  if(!is.null(bigSNP)){
+    cat('Matching GWAS SNPs with bigSNP reference panel...\n')
     sumstats <- match_gwas_bigsnp(sumstats,
                                   bigSNP,
                                   strand_flip = strand_flip,
                                   ...)
 
-  } else if(!missing(region_info)){
-    cat('Harmonizing GWAS with LD reference panel...\n')
-
-    # Read SNP info for all LD regions
-    cat('Reading LD reference SNPs ... \n')
-    LD_snp_info.list <- lapply(1:nrow(region_info), function(i){
-      df <- data.table::fread(region_info$snp_info[i])
-      df$locus <- region_info$locus[i]
-      df
-    })
-    LD_snp_info <- do.call(rbind, LD_snp_info.list)
-
+  } else if(!is.null(LD_snp_info)){
+    cat('Harmonizing GWAS SNPs with LD reference panel...\n')
     sumstats <- harmonize_sumstats_LD(sumstats,
                                       LD_snp_info,
                                       strand_flip = strand_flip,
@@ -194,20 +189,3 @@ assign_snp_locus <- function(sumstats, LD_Blocks){
   return(sumstats.ld.block)
 }
 
-#' Match GWAS sumstats with LD reference files. Only keep variants included in
-#' LD reference.
-#'
-#' @param sumstats A data frame of GWAS summary statistics.
-#' @param R LD matrix
-#' @param snp_info Variant information for the LD matrix.
-#'
-#' @return A list, containing matched GWAS summary statistics and LD matrix.
-#' @export
-match_gwas_LDREF <- function(sumstats, R, snp_info){
-  stopifnot(nrow(R) == nrow(snp_info))
-  sumstats <- sumstats[sumstats$snp %in% snp_info$id,]
-  LD.idx <- match(sumstats$snp, snp_info$id)
-  R <- R[LD.idx, LD.idx]
-  snp_info <- snp_info[LD.idx, ]
-  return(list(sumstats = sumstats, R = R, snp_info = snp_info))
-}

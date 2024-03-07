@@ -22,10 +22,9 @@ They can be downloaded [here][UKBB_LD].
 
 Load the packages. 
 ```{r load-packages, eval=TRUE, message=FALSE}
-# library(mapgen)
+library(mapgen)
 library(tidyverse)
 library(ggplot2)
-devtools::load_all("/home/kaixuan/projects/mapgen_package/mapgen_LD_test/mapgen/.")
 ```
 
 Load an example Asthma GWAS summary statistics
@@ -36,14 +35,19 @@ head(gwas.sumstats)
 
 n = 336210
 ```
-
-Load LD regions and add filenames of UKBB reference LD matrices and SNP info
+Load LD blocks
 ```{r}
 LD_Blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
+```
 
+get a data frame of region_info, with filenames of UKBB reference LD matrices and SNP info,
+and read all SNP info from the LD reference
+```{r}
 region_info <- get_UKBB_region_info(LD_Blocks,
                                     LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
                                     prefix = "ukb_b37_0.1")
+
+LD_snp_info <- read_LD_SNP_info(region_info)
 ```
 
 Process GWAS summary statistics and add LD block information,
@@ -53,9 +57,9 @@ flip signs when reverse complement matches and remove strand ambiguous variants
 gwas.sumstats <- process_gwas_sumstats(gwas.sumstats, 
                                        chr='chr', pos='pos', beta='beta', se='se', 
                                        a0='a0', a1='a1', snp='snp', pval='pval',
-                                       LD_Blocks = LD_Blocks,
-                                       region_info=region_info, 
-                                       strand_flip=TRUE, remove_strand_ambig=TRUE)
+                                       LD_snp_info=LD_snp_info, 
+                                       strand_flip=TRUE, 
+                                       remove_strand_ambig=TRUE)
 ```
 
 Select GWAS significant loci (pval < 5e-8)
@@ -68,23 +72,46 @@ sig.loci <- gwas.sumstats %>% dplyr::filter(pval < 5e-8) %>% dplyr::pull(locus) 
 cat(length(sig.loci), "significant loci. \n")
 ```
 
-Fine-mapping an example locus with pre-computed UKBB LD matrices (we use uniform prior in this tutorial),
+Fine-mapping significant loci with pre-computed UKBB LD matrices (we use uniform prior in this tutorial).
+
 If we set `save = TRUE`, it saves susie result as well as z-scores and R matrix for each locus, 
 which could be used later for diagnosis.
 
+```{r, eval=FALSE}
+selected.sumstats <- gwas.sumstats[gwas.sumstats$locus %in% sig.loci, ]
+
+susie.results <- run_finemapping(selected.sumstats, 
+                                 region_info = region_info, 
+                                 priortype = 'uniform', n = n, L = 10,
+                                 save = TRUE, outputdir = "./test", outname = "example")
+
+susie.sumstats <- merge_susie_sumstats(susie.results, sumstats.locus)
+```
+
+`run_finemapping()` internally runs `susie_finemap_region()` for each of the loci. 
+For finemapping a single locus, we can simply use `susie_finemap_region()` 
+with sumstats and LD information (R and snp_info) for the locus.
 ```{r}
 locus <- sig.loci[2]
 sumstats.locus <- gwas.sumstats[gwas.sumstats$locus == locus, ]
 
-susie.results <- run_finemapping(sumstats.locus, region_info = region_info, priortype = 'uniform', n = n, L = 10,
-                                 save = TRUE, outputdir = "./test", outname = "LD_test")
-susie.locus.res <- susie.results[[1]]
+# load LD matrix and SNP info for this locus
+LD_ref <- load_UKBB_LDREF(LD_Blocks, 
+                          locus, 
+                          LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
+                          prefix = "ukb_b37_0.1")
+
+# Match GWAS sumstats with LD reference, only keep variants included in LD reference.
+matched.sumstat.LD <- match_gwas_LDREF(sumstats.locus, LD_ref$R, LD_ref$snp_info)
+sumstats.locus <- matched.sumstat.LD$sumstats
+z.locus <- sumstats.locus$zscore
+R.locus <- matched.sumstat.LD$R
+snp_info.locus <- matched.sumstat.LD$snp_info
+
+susie.locus.res <- susie_finemap_region(sumstats.locus, R.locus, snp_info.locus, n = n, L = 10, save = TRUE)
 susieR::susie_plot(susie.locus.res, y='PIP')
 
-susie.locus.sumstats <- merge_susie_sumstats(susie.results, sumstats.locus)
-
-z.locus <- susie.locus.res$z
-R.locus <- susie.locus.res$R
+susie.locus.sumstats <- merge_susie_sumstats(susie.locus.res, sumstats.locus)
 ```
 
 Inconsistencies between GWAS z-scores and the LD reference could 

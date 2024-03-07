@@ -16,7 +16,7 @@ harmonize_sumstats_LD(
 including columns "snp" (SNP ID), a0" (reference allele), "a1" (effect allele), "beta", and "zscore".}
 
 \item{LD_snp_info}{a data frame, SNP info for LD reference,
-with columns "chrom", "id", "pos", "alt", "ref", "locus"}
+with columns "chrom", "id", "pos", "alt", "ref", "locus" (optional)}
 
 \item{strand_flip}{Whether to flip signs when reverse complement matches? (default is TRUE).}
 

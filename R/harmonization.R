@@ -37,7 +37,7 @@ allele.qc = function(a1,a2,ref1,ref2) {
 #' including columns "snp" (SNP ID), a0" (reference allele), "a1" (effect allele), "beta", and "zscore".
 #'
 #' @param LD_snp_info a data frame, SNP info for LD reference,
-#'  with columns "chrom", "id", "pos", "alt", "ref", "locus"
+#'  with columns "chrom", "id", "pos", "alt", "ref", "locus" (optional)
 #'
 #' @param strand_flip Whether to flip signs when reverse complement matches? (default is TRUE).
 #'
