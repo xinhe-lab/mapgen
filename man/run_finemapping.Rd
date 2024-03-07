@@ -2,17 +2,21 @@
 % Please edit documentation in R/finemapping.R
 \name{run_finemapping}
 \alias{run_finemapping}
-\title{Run fine-mapping using summary statistics}
+\title{Run functional fine-mapping using summary statistics}
 \usage{
 run_finemapping(
   sumstats,
-  bigSNP,
-  LD_matrices,
-  n,
-  priortype = c("torus", "uniform"),
+  bigSNP = NULL,
+  region_info = NULL,
+  n = NULL,
+  priortype = c("torus", "uniform", "custom"),
+  prior_weights = NULL,
   L = 1,
   estimate_residual_variance = FALSE,
   verbose = FALSE,
+  save = FALSE,
+  outputdir = getwd(),
+  outname = NULL,
   ...
 )
 }
@@ -22,30 +26,39 @@ run_finemapping(
 \item{bigSNP}{a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
 containing the reference genotype panel.}
 
-\item{LD_matrices}{A list of LD matrices (R, correlation matrices) for
-all the LD blocks in \code{sumstats}, names of the list should
-correspond to the 'locus' column in \code{sumstats}.}
+\item{region_info}{A data frame of region information,
+paths of LD matrices (R, correlation matrices),
+and paths of variant information files corresponding to the LD matrices.}
 
 \item{n}{The sample size (optional, but strongly recommended.)}
 
 \item{priortype}{prior type:
-'torus' (use the 'torus_prior' in \code{sumstats})
-or 'uniform' (uniform prior).}
+'torus' (use the 'torus_prior' in \code{sumstats}),
+'uniform' (uniform prior),
+or 'custom' (use the values provided in \code{prior_weights}).}
 
-\item{L}{Number of causal signals.}
+\item{prior_weights}{A vector of prior probability for each SNP.}
+
+\item{L}{Number of causal signals.
+If L = 1, bigSNP or region_info are not required.}
 
 \item{estimate_residual_variance}{The default is FALSE,
 the residual variance is fixed to 1 or variance of y.
 If the in-sample LD matrix is provided,
-we recommend setting estimate_residual_variance = TRUE.}
+we recommend setting \code{estimate_residual_variance = TRUE}.}
 
-\item{verbose}{If TRUE, print progress,
-and a summary of \code{susie_rss}.}
+\item{verbose}{If TRUE, print progress.}
+
+\item{save}{If TRUE, save SuSiE result and LD (R) matrix for each locus.}
+
+\item{outputdir}{Directory of SuSiE result}
+
+\item{outname}{Filename of SuSiE result}
 }
 \value{
 A list of SuSiE results; one per LD block.
 }
 \description{
 Run fine-mapping with SuSiE using summary statistics
-for all LD blocks with prior probabilities computed by TORUS
+for all LD blocks with prior probabilities
 }

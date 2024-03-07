@@ -10,14 +10,23 @@
 #' @param torus_fdr A data frame containing the FDR of each region
 #' (result from \code{run_torus()} with \code{option=\dQuote{fdr}}).
 #' Optional, if available, only keep the loci with FDR < `fdr.thresh`.
+#' @param filter filter SNPs from sumstats:
+#'   'none': do not filter SNPs,
+#'   'pval': filter SNPs with GWAS pval < \code{pval.thresh},
+#'   'torus_fdr': filter SNPs with TORUS FDR < \code{torus_fdr}.
 #' @param fdr.thresh FDR cutoff (default: 0.1)
+#' @param pval.thresh GWAS pval cutoff (default: 5e-8)
 #' @return A data frame of summary statistics with SNP-level priors
-#' to be used as input data for \code{susie_rss}.
+#' to be used as input data for finemapping with SuSiE.
 #' @export
 prepare_susie_data_with_torus_result <- function(sumstats,
                                                  torus_prior,
-                                                 torus_fdr,
-                                                 fdr.thresh = 0.1){
+                                                 torus_fdr = NULL,
+                                                 filter = c("none", "pval", "torus_fdr"),
+                                                 fdr.thresh = 0.1,
+                                                 pval.thresh = 5e-8){
+
+  filter <- match.arg(filter)
 
   # Check for required columns in sumstats
   required.cols <- c('chr','pos','snp','pval','locus','bigSNP_index')
@@ -28,114 +37,243 @@ prepare_susie_data_with_torus_result <- function(sumstats,
   }
 
   if(!'zscore' %in% colnames(sumstats)){
-    cat("'zscore' not found in sumstats. Computing z-scores using beta and se ...\n")
+    cat("'zscore' not found in sumstats. Computing z-scores ...\n")
     sumstats$zscore <- sumstats$beta / sumstats$se
   }
 
-  if(!missing(torus_fdr)){
+  # add torus priors
+  sumstats <- dplyr::inner_join(sumstats, torus_prior, by = 'snp')
+
+  if (filter == 'pval') {
+    cat('Select loci by pval <', pval.thresh, '\n')
+    if(max(sumstats$pval) > 1)
+      pval <- 10^(-sumstats$pval)
+    selected.loci <- unique(sumstats$locus[pval < pval.thresh])
+
+    if(length(selected.loci) == 0)
+      stop('No loci after filtering!')
+
+    sumstats <- sumstats[sumstats$locus %in% selected.loci, , drop = FALSE]
+  } else if (filter == 'torus_fdr') {
     # Select loci by FDR from TORUS
     cat('Select loci by TORUS FDR <', fdr.thresh, '\n')
     selected.loci <- unique(torus_fdr$region_id[torus_fdr$fdr < fdr.thresh])
-    if(length(selected.loci) == 0){
-      stop('No loci selected!')
-    }else{
-      sumstats <- sumstats[sumstats$locus %in% selected.loci, ]
-    }
-  }
 
-  # Add SNP-level priors
-  sumstats <- dplyr::inner_join(sumstats, torus_prior, by = 'snp')
+    if(length(selected.loci) == 0)
+      stop('No loci after filtering!')
+
+    sumstats <- sumstats[sumstats$locus %in% selected.loci, , drop = FALSE]
+  }
 
   return(sumstats)
 }
 
-#' @title Run fine-mapping using summary statistics
-#' @description Run fine-mapping with SuSiE using summary statistics
-#' for all LD blocks with prior probabilities computed by TORUS
+
+#' @title Run fine-mapping for one region with SuSiE using summary statistics (susie_rss)
+#' @description Run fine-mapping with SuSiE using summary statistics for one LD block
 #' @param sumstats A data frame of summary statistics
+#' @param R LD (correlation) matrix
+#' @param snp_info Variant information for the LD matrix.
 #' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
 #' containing the reference genotype panel.
-#' @param LD_matrices A list of LD matrices (R, correlation matrices) for
-#' all the LD blocks in `sumstats`, names of the list should
-#' correspond to the 'locus' column in `sumstats`.
-#' @param n The sample size (optional, but strongly recommended.)
-#' @param priortype prior type:
-#' 'torus' (use the 'torus_prior' in `sumstats`)
-#' or 'uniform' (uniform prior).
+#' @param n GWAS sample size (optional, but strongly recommended.)
+#' @param prior_weights A vector of prior probability for each SNP
 #' @param L Number of causal signals.
 #' @param estimate_residual_variance The default is FALSE,
 #' the residual variance is fixed to 1 or variance of y.
 #' If the in-sample LD matrix is provided,
 #' we recommend setting estimate_residual_variance = TRUE.
-#' @param verbose If TRUE, print progress,
-#' and a summary of \code{susie_rss}.
+#' @param verbose If TRUE, print progress
+#' @param save If TRUE, save SuSiE result and LD (R) matrix.
+#' @return a list of SuSiE results, and z-scores and LD (R) matrix used in SuSiE
+#' @export
+susie_finemap_region <- function(sumstats,
+                                 R=NULL,
+                                 snp_info=NULL,
+                                 bigSNP=NULL,
+                                 n=NULL,
+                                 L=1,
+                                 prior_weights=NULL,
+                                 estimate_residual_variance=FALSE,
+                                 verbose=FALSE,
+                                 save = FALSE,
+                                 ...){
+
+  if (!is.null(R)) {
+    # match the SNPs between GWAS sumstats with LD reference
+    res <- match_gwas_LDREF(sumstats, R, snp_info)
+    sumstats <- res$sumstats
+    R <- res$R
+    rm(res)
+  } else if (!is.null(bigSNP)) {
+    # compute LD using reference panel in bigSNP object
+    if(is.null(sumstats$bigSNP_index))
+      stop('bigSNP_index is missing in sumstats')
+    cat("Compute LD matrix using bigSNP...\n")
+    X <- bigSNP$genotypes[, sumstats$bigSNP_index]
+    X <- scale(X, center = TRUE, scale = TRUE)
+    R <- cor(X)
+  } else if (L == 1) {
+    # R does not matter for susie when L = 1
+    R <- diag(nrow(sumstats))
+  } else {
+    stop("Please provide R (LD) matrix or bigSNP object when L > 1")
+  }
+
+  if (is.null(sumstats$zscore)) {
+    cat("Compute z-scores\n")
+    sumstats$zscore <- sumstats$beta / sumstats$se
+  }
+
+  z <- sumstats$zscore
+
+  cat('Run susie_rss...\n')
+  susie.res <- susieR::susie_rss(z = z,
+                                 R = R,
+                                 n = n,
+                                 L = L,
+                                 prior_weights = prior_weights,
+                                 estimate_residual_variance = estimate_residual_variance,
+                                 verbose = verbose,
+                                 ...)
+
+  susie.res$id <- sumstats$snp
+
+  if (save) {
+    susie.res$R <- R
+    susie.res$z <- z
+  }
+
+  return(susie.res)
+
+}
+
+#' @title Run functional fine-mapping using summary statistics
+#' @description Run fine-mapping with SuSiE using summary statistics
+#' for all LD blocks with prior probabilities
+#' @param sumstats A data frame of summary statistics
+#' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
+#' containing the reference genotype panel.
+#' @param region_info A data frame of region information,
+#' paths of LD matrices (R, correlation matrices),
+#' and paths of variant information files corresponding to the LD matrices.
+#' @param n The sample size (optional, but strongly recommended.)
+#' @param priortype prior type:
+#'   'torus' (use the 'torus_prior' in `sumstats`),
+#'   'uniform' (uniform prior),
+#'   or 'custom' (use the values provided in \code{prior_weights}).
+#' @param prior_weights A vector of prior probability for each SNP.
+#' @param L Number of causal signals.
+#' If L = 1, bigSNP or region_info are not required.
+#' @param estimate_residual_variance The default is FALSE,
+#' the residual variance is fixed to 1 or variance of y.
+#' If the in-sample LD matrix is provided,
+#' we recommend setting \code{estimate_residual_variance = TRUE}.
+#' @param verbose If TRUE, print progress.
+#' @param save If TRUE, save SuSiE result and LD (R) matrix for each locus.
+#' @param outputdir Directory of SuSiE result
+#' @param outname Filename of SuSiE result
 #' @return A list of SuSiE results; one per LD block.
 #' @export
 run_finemapping <- function(sumstats,
-                            bigSNP,
-                            LD_matrices,
-                            n,
-                            priortype = c('torus', 'uniform'),
+                            bigSNP = NULL,
+                            region_info = NULL,
+                            n = NULL,
+                            priortype = c('torus', 'uniform', 'custom'),
+                            prior_weights = NULL,
                             L = 1,
                             estimate_residual_variance = FALSE,
                             verbose = FALSE,
+                            save = FALSE,
+                            outputdir = getwd(),
+                            outname = NULL,
                             ...){
 
   priortype <- match.arg(priortype)
 
   if(priortype == 'torus'){
-    useprior <- TRUE
     stopifnot('torus_prior' %in% colnames(sumstats))
+    prior_weights <- sumstats$torus_prior
   }else if(priortype == 'uniform'){
-    useprior <- FALSE
+    prior_weights <- NULL
+  }else if(priortype == 'custom'){
+    cat('use custom prior_weights \n')
+    stopifnot(length(prior_weights) == nrow(sumstats))
   }
 
   finemap.locus.list <- unique(sumstats$locus)
 
-  if(!missing(LD_matrices)){
-    if(!setequal(names(LD_matrices), finemap.locus.list)){
-      stop("Names in LD matrices do not match with the list of loci in sumstats!")
-    }
-  }
-
-  susie.res <- list()
+  susie_results <- list()
   for(locus in finemap.locus.list){
     cat(sprintf('Finemapping locus %s...\n', locus))
     sumstats_locus <- sumstats[sumstats$locus == locus, ]
-    if(!missing(LD_matrices)){
-      # use R from LD_matrices
-      R <- LD_matrices[[as.character(locus)]]
-      if(verbose){ cat("Using R from LD_matrices...\n")}
-      susie.res[[as.character(locus)]] <- run_susie_rss(sumstats_locus,
-                                                        R=R,
-                                                        n=n,
-                                                        L=L,
-                                                        useprior=useprior,
-                                                        estimate_residual_variance=estimate_residual_variance,
-                                                        verbose=verbose,
-                                                        ...)
-    }else{
-      # compute R using bigSNP reference genotype panel
-      if(missing(bigSNP)){
-        stop("Please provide LD matrix or bigSNP object!")
-      }
-      if(verbose){ cat("Computing R using bigSNP genotype matrix...\n") }
-      susie.res[[as.character(locus)]] <- run_susie_rss(sumstats_locus,
-                                                        bigSNP=bigSNP,
-                                                        n=n,
-                                                        L=L,
-                                                        useprior=useprior,
-                                                        estimate_residual_variance=estimate_residual_variance,
-                                                        verbose=verbose,
-                                                        ...)
+
+    if (!is.null(region_info)) {
+      # load precomputed LD (R) matrix and variant info
+      LD_matrix_file <- region_info$LD_matrix[region_info$locus == locus]
+      if (!file.exists(LD_matrix_file))
+        stop(paste('LD matrix file', LD_matrix_file, 'does not exist!'))
+
+      snp_info_file <- region_info$snp_info[region_info$locus == locus]
+      if (!file.exists(snp_info_file))
+        stop(paste('LD SNP info file', snp_info_file, 'does not exist!'))
+
+      R <- read_LD(LD_matrix_file)
+      snp_info <- data.table::fread(snp_info_file)
+
+      res <- susie_finemap_region(sumstats_locus,
+                                  R=R,
+                                  snp_info = snp_info,
+                                  n=n,
+                                  L=L,
+                                  prior_weights=prior_weights,
+                                  estimate_residual_variance=estimate_residual_variance,
+                                  verbose=verbose,
+                                  save = save,
+                                  ...)
+
+    } else if (!is.null(bigSNP)) {
+      # compute LD from bigSNP genotype panel
+      res  <- susie_finemap_region(sumstats_locus,
+                                   bigSNP=bigSNP,
+                                   n=n,
+                                   L=L,
+                                   prior_weights=prior_weights,
+                                   estimate_residual_variance=estimate_residual_variance,
+                                   verbose=verbose,
+                                   save = save,
+                                   ...)
+
+    } else if (L == 1) {
+      res <- susie_finemap_region(sumstats_locus,
+                                  n=n,
+                                  L=1,
+                                  prior_weights=prior_weights,
+                                  estimate_residual_variance=estimate_residual_variance,
+                                  verbose=verbose,
+                                  save = FALSE,
+                                  ...)
+    } else {
+      stop("Please provide region_info or bigSNP object when L > 1")
+    }
+
+    susie_results[[as.character(locus)]] <- res
+
+    if (isTRUE(save)) {
+      if (!dir.exists(outputdir))
+        dir.create(outputdir, recursive = TRUE)
+
+      saveRDS(res, file = file.path(outputdir, paste0(outname, '.locus', locus, '.susie.res.rds')))
+      rm(res)
     }
 
     if(verbose){
-      cat(sprintf('%.0f%% completed.\n', length(susie.res)/length(finemap.locus.list)*100))
+      cat(sprintf('%.0f%% completed.\n', length(susie_results)/length(finemap.locus.list)*100))
     }
+
   }
 
-  return(susie.res)
+  return(susie_results)
 
 }
 
@@ -150,21 +288,30 @@ merge_susie_sumstats <- function(susie_results, sumstats){
 
   sumstats$susie_pip <- NA
   sumstats$cs <- NA
-  loci <- names(susie_results)
 
-  for(locus in loci){
-    n.snps <- length(susie_results[[locus]]$pip)
-    sumstats[sumstats$locus == locus, 'susie_pip'] <- susie_results[[locus]]$pip
+  if (class(susie_results) == "susie"){
+    susie_results <- list(susie_results)
+  }
 
+  for(i in 1:length(susie_results)){
+
+    susie.locus.res <- susie_results[[i]]
+    stopifnot(class(susie.locus.res) == "susie")
+
+    # add PIP result of the SNPs in this locus
+    n.snps <- length(susie.locus.res$pip)
+    snp.idx <- match(susie.locus.res$id, sumstats$snp)
+    sumstats[snp.idx, 'susie_pip'] <- susie.locus.res$pip
+
+    # add CS index of the SNPs in this locus
+    # set cs.index = 0 for SNPs not in credible sets
     cs.index <- rep(0, n.snps)
-    snpIdx.in.cs <- unlist(susie_results[[locus]]$sets$cs)
-    if( !is.null(snpIdx.in.cs) ){
-      cs.index[snpIdx.in.cs] <- rep(susie_results[[locus]]$sets$cs_index,
-                                    lapply(susie_results[[locus]]$sets$cs, length))
+    snp.idx.inCS <- unlist(susie.locus.res$sets$cs)
+    if( length(snp.idx.inCS) > 0 ){
+      cs.index[snp.idx.inCS] <- rep(susie.locus.res$sets$cs_index,
+                                    lapply(susie.locus.res$sets$cs, length))
     }
-
-    sumstats[sumstats$locus == locus, 'cs'] <-  cs.index
-
+    sumstats[snp.idx, 'cs'] <-  cs.index
   }
 
   return(sumstats)
@@ -260,78 +407,3 @@ process_finemapping_sumstats <- function(finemapstats,
 
 }
 
-
-# Run fine-mapping with SuSiE using summary statistics (susie_rss)
-run_susie_rss <- function(sumstats,
-                          bigSNP,
-                          R,
-                          n,
-                          L=1,
-                          useprior=FALSE,
-                          estimate_residual_variance=FALSE,
-                          verbose=FALSE,
-                          ...){
-
-  if(is.null(sumstats$zscore)){
-    cat("'zscore' not found in sumstats. Computing z-scores using beta and se ...\n")
-    sumstats$zscore <- sumstats$beta / sumstats$se
-  }
-
-  z <- sumstats$zscore
-
-  if(missing(R)){
-    if(missing(bigSNP)){
-      stop("Please provide LD matrix or bigSNP object!")
-    }
-    # compute R using reference panel in bigSNP object
-    X <- bigSNP$genotypes[, sumstats$bigSNP_index]
-    X <- scale(X, center = TRUE, scale = TRUE)
-    R <- cor(X)
-  }
-
-  if(useprior){
-    prior_weights <- sumstats$torus_prior
-  }else{
-    prior_weights <- NULL
-  }
-
-  cat('Run susie_rss...\n')
-
-  if(verbose){
-    cat(sprintf('n=%d, L=%d, useprior=%s, estimate_residual_variance=%s...\n',
-                n, L, useprior, estimate_residual_variance))
-  }
-
-  res <- susieR::susie_rss(z = z,
-                           R = R,
-                           n = n,
-                           L = L,
-                           prior_weights = prior_weights,
-                           estimate_residual_variance = estimate_residual_variance,
-                           verbose = verbose,
-                           ...)
-  return(res)
-
-}
-
-#' Perform diagnosis to check the consistency between the z-scores and LD matrix,
-#' and detect problematic z-scores (e.g. allele switch issue) using
-#' diagnostic functions from SuSiE RSS.
-#'
-#' @param z z scores.
-#' @param R LD correlation matrix.
-#' @param n The sample size. (Optional, but highly recommended.)
-#'
-#' @return a data frame of expected z-scores and test statistics
-#' from \code{susieR::kriging_rss}.
-#' @export
-LD_diagnosis_susie_rss <- function(z, R, n){
-  cat('Estimate consistency between the z-scores and reference LD matrix ...\n')
-  lambda <- susieR::estimate_s_rss(z = z, R = R, n = n)
-  cat('Estimated lambda =', lambda, '\n')
-
-  cat('Compute expected z-scores based on conditional distribution of z-scores ...\n')
-  condz <- susieR::kriging_rss(z = z, R = R, n = n, s = lambda)
-
-  return(condz)
-}

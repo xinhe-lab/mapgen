@@ -124,7 +124,7 @@ process_loop_data <- function(loops, gene.annots, score.thresh = 0, flank = 0){
 
   if(flank > 0){
     loops <- loops %>% dplyr::mutate(start = start - as.integer(flank),
-                                 end = end + as.integer(flank))
+                                     end = end + as.integer(flank))
   }
 
   loops.gr <- GenomicRanges::makeGRangesFromDataFrame(loops, keep.extra.columns = TRUE)
@@ -326,3 +326,96 @@ get_gene_region <- function(gene.mapping.res,
   }
   return(region)
 }
+
+#' read LD matrix data by file format
+read_LD <- function(file, format = c("rds", "rdata", "csv", "txt", "tsv")) {
+  format <- match.arg(format)
+
+  # if format is missing, try to guess format by file extension
+  if (missing(format)) {
+    file_ext_lower <- tolower(tools::file_ext(file))
+
+    if (file_ext_lower == "rds"){
+      format <- "rds"
+    } else if (file_ext_lower %in% c("rdata", "rd", "rda", "rdat")){
+      format <- "rd"
+    } else if (file_ext_upper %in% c("csv", "csv.gz")) {
+      format <- "csv"
+    } else if (file_ext_lower %in% c("txt", "txt.gz")){
+      format <- "txt"
+    } else if (file_ext_lower %in% c("tsv", "tsv.gz")){
+      format <- "tsv"
+    } else {
+      stop("Unknown file format!")
+    }
+  }
+
+  if (format == "rds"){
+    R <- readRDS(file)
+  } else if (format == "rd"){
+    R <- get(load(file))
+  } else if (format == "csv"){
+    R <- as.matrix(read.csv(file, sep=",", row.names=1))
+  } else if (format %in% c("txt", "tsv")){
+    R <- as.matrix(data.table::fread(file))
+  } else {
+    stop("Unknown file format!")
+  }
+
+  return(R)
+}
+
+
+#' Get region info with filenames of LD matrices and variant information
+#'
+#' @param LD_Blocks A data frame of LD blocks
+#' @param LDREF.dir Directory of UKBB LD reference files
+#' @param prefix prefix name of the UKBB LD reference files
+#' @param LD_matrix_ext File extension of LD matrix files
+#' @param snp_info_ext File extension of SNP information files
+#' @return A data frame with information of the variants in the LD matrix.
+#' @export
+get_UKBB_region_info <- function(LD_Blocks,
+                                 LDREF.dir,
+                                 prefix = "ukb_b37_0.1",
+                                 LD_matrix_ext = "RDS",
+                                 snp_info_ext = "Rvar") {
+
+  LD.file <- sprintf("%s_chr%d.R_snp.%d_%d", prefix, LD_Blocks$chr, LD_Blocks$start, LD_Blocks$end)
+  LD_matrix_file <- file.path(LDREF.dir, paste0(LD.file, ".", LD_matrix_ext))
+  snp_info_file <- file.path(LDREF.dir, paste0(LD.file, ".", snp_info_ext))
+  region_info <- data.frame(LD_Blocks,
+                            LD_matrix = LD_matrix_file,
+                            snp_info = snp_info_file)
+
+  return(region_info)
+}
+
+#' Load UK Biobank LD reference matrix and variant information
+#'
+#' @param LD_Blocks A data frame of LD blocks
+#' @param locus locus ID
+#' @param LDREF.dir Directory of UKBB LD reference files
+#' @param prefix prefix name of the UKBB LD reference files
+#' @param LD_matrix_ext File extension of LD matrix files
+#' @param snp_info_ext File extension of SNP information files
+#'
+#' @return A list, containing LD (correlation) matrix R and
+#' a data frame with information of the variants in the LD matrix.
+#' @export
+load_UKBB_LDREF <- function(LD_Blocks,
+                            locus,
+                            LDREF.dir,
+                            prefix = "ukb_b37_0.1",
+                            LD_matrix_ext = "RDS",
+                            snp_info_ext = "Rvar"){
+  if(!locus %in% LD_Blocks$locus){
+    stop("locus is not in LD_blocks!")
+  }
+  LD_Block <- LD_Blocks[LD_Blocks$locus == locus, ]
+  LD.file <- sprintf("%s_chr%d.R_snp.%d_%d", prefix, LD_Block$chr, LD_Block$start, LD_Block$end)
+  R <- readRDS(file.path(LDREF.dir, paste0(LD.file, ".", LD_matrix_ext)))
+  snp_info <- data.table::fread(file.path(LDREF.dir, paste0(LD.file, ".", snp_info_ext)))
+  return(list('R' = R, 'snp_info' = snp_info))
+}
+

@@ -15,8 +15,11 @@ process_gwas_sumstats(
   snp = "snp",
   pval = "pval",
   remove_indels = TRUE,
-  LD_Blocks,
-  bigSNP,
+  LD_Blocks = NULL,
+  bigSNP = NULL,
+  region_info = NULL,
+  strand_flip = TRUE,
+  remove_strand_ambig = TRUE,
   ...
 )
 }

@@ -29,27 +29,51 @@ process_gwas_sumstats <- function(sumstats,
                                   snp = 'snp',
                                   pval = 'pval',
                                   remove_indels = TRUE,
-                                  LD_Blocks,
-                                  bigSNP,
+                                  LD_Blocks = NULL,
+                                  bigSNP = NULL,
+                                  region_info = NULL,
+                                  strand_flip = TRUE,
+                                  remove_strand_ambig = TRUE,
                                   ...){
 
   cat('Cleaning summary statistics...\n')
-  cleaned.sumstats <- clean_sumstats(sumstats,
-                                     chr=chr, pos=pos, beta=beta, se=se,
-                                     a0=a0, a1=a1, snp=snp, pval=pval,
-                                     remove_indels=remove_indels)
+  sumstats <- clean_sumstats(sumstats,
+                             chr=chr, pos=pos, beta=beta, se=se,
+                             a0=a0, a1=a1, snp=snp, pval=pval,
+                             remove_indels=remove_indels)
 
   if(!missing(LD_Blocks)){
     cat('Assigning GWAS SNPs to LD blocks...\n')
-    cleaned.sumstats <- assign_snp_locus(cleaned.sumstats, LD_Blocks)
+    sumstats <- assign_snp_locus(sumstats, LD_Blocks)
   }
 
   if(!missing(bigSNP)){
     cat('Matching GWAS with bigSNP reference panel...\n')
-    cleaned.sumstats <- match_gwas_bigsnp(cleaned.sumstats, bigSNP, ...)
+    sumstats <- match_gwas_bigsnp(sumstats,
+                                  bigSNP,
+                                  strand_flip = strand_flip,
+                                  ...)
+
+  } else if(!missing(region_info)){
+    cat('Harmonizing GWAS with LD reference panel...\n')
+
+    # Read SNP info for all LD regions
+    cat('Reading LD reference SNPs ... \n')
+    LD_snp_info.list <- lapply(1:nrow(region_info), function(i){
+      df <- data.table::fread(region_info$snp_info[i])
+      df$locus <- region_info$locus[i]
+      df
+    })
+    LD_snp_info <- do.call(rbind, LD_snp_info.list)
+
+    sumstats <- harmonize_sumstats_LD(sumstats,
+                                      LD_snp_info,
+                                      strand_flip = strand_flip,
+                                      remove_strand_ambig = remove_strand_ambig)
+
   }
 
-  return(cleaned.sumstats)
+  return(sumstats)
 
 }
 
@@ -88,13 +112,13 @@ clean_sumstats <- function(sumstats,
   cols.to.keep <- c(chr, pos, beta, se, a0, a1, snp, pval)
 
   if(!all(cols.to.keep %in% colnames(sumstats))){
-    stop(sprintf('Column: %s cannot be found in the summary statistics!',
-                 cols.to.keep[which(!cols.to.keep %in% colnames(sumstats))]))
-  }else{
-    # Extract relevant columns
-    cleaned.sumstats <- sumstats[, cols.to.keep]
-    colnames(cleaned.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
+    stop("sumstats needs to contain the following columns: ",
+         paste(cols.to.keep, collapse = " "))
   }
+
+  # Extract relevant columns
+  cleaned.sumstats <- sumstats[, cols.to.keep]
+  colnames(cleaned.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
 
   # Check chromosomes
   # Remove 'chr'
@@ -170,86 +194,20 @@ assign_snp_locus <- function(sumstats, LD_Blocks){
   return(sumstats.ld.block)
 }
 
-#' @title Match alleles between GWAS summary statistics and bigSNP reference panel.
-#' @description
-#' Match alleles between summary statistics and SNP information in the
-#' bigSNP reference panel using the \code{bigsnpr::snp_match()} function.
-#' Match by ("chr", "a0", "a1") and ("pos" or "rsid"),
-#' accounting for possible strand flips and reverse reference alleles (opposite effects).
-#'
-#' @param sumstats  A data frame of GWAS summary statistics,
-#' with columns "chr", "pos", "a0", "a1" and "beta".
-#' @param bigSNP a \code{bigsnpr} object attached via \code{bigsnpr::snp_attach()}
-#' containing the reference genotype panel.
-#' @param strand_flip Whether to try to flip strand? (default is TRUE).
-#' If so, ambiguous alleles A/T and C/G are removed.
-#' @param match.min.prop Minimum proportion of variants in the smallest data
-#' to be matched, otherwise stops with an error. Default: 10%
-#' @return A data frame with matched summary statistics.
-#' Values in column "beta" are multiplied by -1 for variants with
-#' alleles reversed (i.e. swapped).
-#' New variable "ss_index" returns the corresponding row indices of the sumstats,
-#' and "bigSNP_index" corresponding to the indices of the bigSNP.
-#' @export
-match_gwas_bigsnp <- function(sumstats,
-                              bigSNP,
-                              strand_flip = TRUE,
-                              match.min.prop = 0.1, ...){
-
-  map <- bigSNP$map
-  snp_info <- map[,c('chromosome','physical.pos','allele1','allele2')]
-  colnames(snp_info) <- c('chr','pos','a0','a1')
-
-  matched.sumstats <- bigsnpr::snp_match(sumstats,
-                                         snp_info,
-                                         strand_flip = strand_flip,
-                                         match.min.prop = match.min.prop,
-                                         ...)
-
-  matched.sumstats <- matched.sumstats %>%
-    tibble::as_tibble() %>%
-    dplyr::rename(ss_index = `_NUM_ID_.ss`) %>%
-    dplyr::rename(bigSNP_index = `_NUM_ID_`) %>%
-    dplyr::mutate(zscore = beta/se)
-
-  return(matched.sumstats)
-}
-
-
-#' Load UKBB LD reference matrix and variant information
-#'
-#' @param LD_Blocks A data frame of LD blocks
-#' @param locus locus ID
-#' @param LDREF.dir Directory of UKBB LD reference files
-#' @param prefix prefix name of the UKBB LD reference files
-#'
-#' @return A list, containing LD (correlation) matrix R and
-#' a data frame with information of the variants in the LD matrix.
-#' @export
-load_UKBB_LDREF <- function(LD_Blocks, locus, LDREF.dir, prefix = "ukb_b37_0.1"){
-  if(!locus %in% LD_Blocks$locus){
-    stop("locus is not in LD_blocks!")
-  }
-  LD_Block <- LD_Blocks[LD_Blocks$locus == locus, ]
-  LD.file <- sprintf("%s_chr%d.R_snp.%d_%d", prefix, LD_Block$chr, LD_Block$start, LD_Block$end)
-  R <- readRDS(file.path(LDREF.dir, paste0(LD.file, ".RDS")))
-  var_info <- data.table::fread(file.path(LDREF.dir, paste0(LD.file, ".Rvar")))
-  res <- list(R = R, var_info = var_info)
-}
-
 #' Match GWAS sumstats with LD reference files. Only keep variants included in
 #' LD reference.
 #'
 #' @param sumstats A data frame of GWAS summary statistics.
 #' @param R LD matrix
-#' @param var_info Variant information for the LD matrix.
+#' @param snp_info Variant information for the LD matrix.
 #'
 #' @return A list, containing matched GWAS summary statistics and LD matrix.
 #' @export
-match_gwas_LDREF <- function(sumstats, R, var_info){
-  sumstats <- sumstats[sumstats$snp %in% var_info$id,]
-  LDREF.index <- na.omit(match(sumstats$snp, var_info$id))
-  R <- R[LDREF.index, LDREF.index]
-  stopifnot(nrow(sumstats) == nrow(R))
-  return(list(sumstats = sumstats, R = R))
+match_gwas_LDREF <- function(sumstats, R, snp_info){
+  stopifnot(nrow(R) == nrow(snp_info))
+  sumstats <- sumstats[sumstats$snp %in% snp_info$id,]
+  LD.idx <- match(sumstats$snp, snp_info$id)
+  R <- R[LD.idx, LD.idx]
+  snp_info <- snp_info[LD.idx, ]
+  return(list(sumstats = sumstats, R = R, snp_info = snp_info))
 }
