@@ -5,7 +5,13 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=TRUE)
+knitr::opts_chunk$set(message = FALSE,
+                      warning = FALSE,
+                      fig.width = 6,
+                      fig.height = 4,
+                      fig.align = "center",
+                      fig.cap = "&nbsp;",
+                      dpi = 120)
 ```
 
 Inconsistencies between GWAS z-scores and the LD reference could 
@@ -108,7 +114,7 @@ z.locus <- sumstats.locus$zscore
 R.locus <- matched.sumstat.LD$R
 snp_info.locus <- matched.sumstat.LD$snp_info
 
-susie.locus.res <- susie_finemap_region(sumstats.locus, R.locus, snp_info.locus, n = n, L = 10, save = TRUE)
+susie.locus.res <- susie_finemap_region(sumstats.locus, R.locus, snp_info.locus, n = n, L = 10)
 susieR::susie_plot(susie.locus.res, y='PIP')
 
 susie.locus.sumstats <- merge_susie_sumstats(susie.locus.res, sumstats.locus)
@@ -127,7 +133,9 @@ condz <- LD_diagnosis_susie_rss(z.locus, R.locus, n)
 condz$plot
 ```
 
-Next, we introduce LD mismatches by flipping alleles for 10 variants (with large effects) 
+The estimated lambda is very small, and the LD mismatch diagnosis plot looks good (with no allele flipping detected), which suggests that the GWAS z-scores and reference LD are consistent.
+
+Next, we manually introduces LD mismatches by flipping alleles for 10 variants (with large effects) 
 and see if we can detect those.
 ```{r}
 seed = 1
@@ -161,7 +169,6 @@ cat("Possible allele switched variants:", sort(sumstats.locus.flip$snp[detected_
 
 condz$conditional_dist$flipped <- 0
 condz$conditional_dist$flipped[flip_index] <- 1
-
 condz$conditional_dist$detected <- 0
 condz$conditional_dist$detected[detected_index] <- 1
 
