@@ -104,7 +104,6 @@
 
     
     
-<p>Inconsistencies between GWAS z-scores and the LD reference could potentially inflate PIPs from SuSiE finemapping. It would be helpful to check potential LD mismatch issue, for example using <a href="https://doi.org/10.1038/s41467-021-27438-7" class="external-link">DENTIST</a> or the <a href="https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html" class="external-link">diagnostic</a> from <code>susie_rss</code>.</p>
 <p>In this tutorial, we show an example of performing fine-mapping and LD mismatch diagnosis (using <code>susie_rss</code>) with pre-computed LD matrices from UK Biobank reference.</p>
 <p>We have pre-computed the LD matrices of European samples from UK Biobank. They can be downloaded <a href="https://uchicago.box.com/s/jqocacd2fulskmhoqnasrknbt59x3xkn" class="external-link">here</a>.</p>
 <p>Load the packages.</p>
@@ -131,15 +130,16 @@
 <p>Load LD blocks</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">LD_Blocks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, <span class="st">'LD.blocks.EUR.hg19.rds'</span>, package<span class="op">=</span><span class="st">'mapgen'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>get a data frame of region_info, with filenames of UKBB reference LD matrices and SNP info, and read all SNP info from the LD reference</p>
+<p>Obtain a data frame of region_info, rows are LD block coordinates together with the filenames of UKBB reference LD matrices and SNP info.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">region_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_UKBB_region_info.html">get_UKBB_region_info</a></span><span class="op">(</span><span class="va">LD_Blocks</span>,</span>
 <span>                                    LDREF.dir <span class="op">=</span> <span class="st">"/project2/mstephens/wcrouse/UKB_LDR_0.1_b37"</span>, </span>
-<span>                                    prefix <span class="op">=</span> <span class="st">"ukb_b37_0.1"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">LD_snp_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_LD_SNP_info.html">read_LD_SNP_info</a></span><span class="op">(</span><span class="va">region_info</span><span class="op">)</span></span></code></pre></div>
-<p>Process GWAS summary statistics and add LD block information, harmonize GWAS summary statistics with LD reference, flip signs when reverse complement matches and remove strand ambiguous variants</p>
+<span>                                    prefix <span class="op">=</span> <span class="st">"ukb_b37_0.1"</span><span class="op">)</span></span></code></pre></div>
+<p>Read all SNP info from the LD reference</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">LD_snp_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_LD_SNP_info.html">read_LD_SNP_info</a></span><span class="op">(</span><span class="va">region_info</span><span class="op">)</span></span></code></pre></div>
+<p>Process GWAS summary statistics and add LD block information, harmonize GWAS summary statistics with LD reference, flip signs when reverse complement matches and remove strand ambiguous variants</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gwas.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_gwas_sumstats.html">process_gwas_sumstats</a></span><span class="op">(</span><span class="va">gwas.sumstats</span>, </span>
 <span>                                       chr<span class="op">=</span><span class="st">'chr'</span>, pos<span class="op">=</span><span class="st">'pos'</span>, beta<span class="op">=</span><span class="st">'beta'</span>, se<span class="op">=</span><span class="st">'se'</span>, </span>
 <span>                                       a0<span class="op">=</span><span class="st">'a0'</span>, a1<span class="op">=</span><span class="st">'a1'</span>, snp<span class="op">=</span><span class="st">'snp'</span>, pval<span class="op">=</span><span class="st">'pval'</span>,</span>
@@ -153,7 +153,7 @@
 <span><span class="co">## Flip signs for 6419677 (100.00%) variants with allele flipped. </span></span>
 <span><span class="co">## Remove 994657 (18.33%) strand ambiguous variants.</span></span></code></pre>
 <p>Select GWAS significant loci (pval &lt; 5e-8)</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">gwas.sumstats</span><span class="op">$</span><span class="va">pval</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">gwas.sumstats</span> <span class="op">&lt;-</span> <span class="va">gwas.sumstats</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pval <span class="op">=</span> <span class="fl">10</span><span class="op">^</span><span class="op">(</span><span class="op">-</span><span class="va">pval</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -161,9 +161,12 @@
 <span><span class="va">sig.loci</span> <span class="op">&lt;-</span> <span class="va">gwas.sumstats</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">pval</span> <span class="op">&lt;</span> <span class="fl">5e-8</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">locus</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sig.loci</span><span class="op">)</span>, <span class="st">"significant loci. \n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## 17 significant loci.</span></span></code></pre>
+<div class="section level3">
+<h3 id="fine-mapping">Fine-mapping<a class="anchor" aria-label="anchor" href="#fine-mapping"></a>
+</h3>
 <p>Fine-mapping significant loci with pre-computed UKBB LD matrices (we use uniform prior in this tutorial).</p>
 <p>If we set <code>save = TRUE</code>, it saves susie result as well as z-scores and R matrix for each locus, which could be used later for diagnosis.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">selected.sumstats</span> <span class="op">&lt;-</span> <span class="va">gwas.sumstats</span><span class="op">[</span><span class="va">gwas.sumstats</span><span class="op">$</span><span class="va">locus</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">sig.loci</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="va">susie.results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span><span class="va">selected.sumstats</span>, </span>
@@ -173,7 +176,7 @@
 <span></span>
 <span><span class="va">susie.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span><span class="va">susie.results</span>, <span class="va">sumstats.locus</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/run_finemapping.html">run_finemapping()</a></code> internally runs <code><a href="../reference/susie_finemap_region.html">susie_finemap_region()</a></code> for each of the loci. For finemapping a single locus, we can simply use <code><a href="../reference/susie_finemap_region.html">susie_finemap_region()</a></code> with sumstats and LD information (R and snp_info) for the locus.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">locus</span> <span class="op">&lt;-</span> <span class="va">sig.loci</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
 <span><span class="va">sumstats.locus</span> <span class="op">&lt;-</span> <span class="va">gwas.sumstats</span><span class="op">[</span><span class="va">gwas.sumstats</span><span class="op">$</span><span class="va">locus</span> <span class="op">==</span> <span class="va">locus</span>, <span class="op">]</span></span>
 <span></span>
@@ -192,32 +195,36 @@
 <span></span>
 <span><span class="va">susie.locus.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/susie_finemap_region.html">susie_finemap_region</a></span><span class="op">(</span><span class="va">sumstats.locus</span>, <span class="va">R.locus</span>, <span class="va">snp_info.locus</span>, n <span class="op">=</span> <span class="va">n</span>, L <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Run susie_rss...</span></span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">susieR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/susieR/man/susie_plots.html" class="external-link">susie_plot</a></span><span class="op">(</span><span class="va">susie.locus.res</span>, y<span class="op">=</span><span class="st">'PIP'</span><span class="op">)</span></span></code></pre></div>
-<div class="figure" style="text-align: center">
-<img src="finemapping_ukbb_ld_diagnosis_files/figure-html/unnamed-chunk-4-1.png" alt="&amp;nbsp;" width="720"><p class="caption">
- 
-</p>
-</div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">susie.locus.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span><span class="va">susie.locus.res</span>, <span class="va">sumstats.locus</span><span class="op">)</span></span></code></pre></div>
-<p>Inconsistencies between GWAS z-scores and the LD reference could potentially inflate PIPs from SuSiE finemapping. It would be helpful to check for potential LD mismatch issues, for example using <a href="https://doi.org/10.1038/s41467-021-27438-7" class="external-link">DENTIST</a> or <a href="https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html" class="external-link">susie_rss</a>.</p>
-<p>Here we perform LD mismatch diagnosis for this example locus using <a href="https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html" class="external-link">susie_rss</a>:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">condz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LD_diagnosis_susie_rss.html">LD_diagnosis_susie_rss</a></span><span class="op">(</span><span class="va">z.locus</span>, <span class="va">R.locus</span>, <span class="va">n</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Estimate consistency between the z-scores and reference LD matrix ...</span></span>
-<span><span class="co">## Estimated lambda = 7.30936e-05 </span></span>
-<span><span class="co">## Compute expected z-scores based on conditional distribution of z-scores ...</span></span></code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">condz</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">susieR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/susieR/man/susie_plots.html" class="external-link">susie_plot</a></span><span class="op">(</span><span class="va">susie.locus.res</span>, y<span class="op">=</span><span class="st">'PIP'</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="finemapping_ukbb_ld_diagnosis_files/figure-html/unnamed-chunk-5-1.png" alt="&amp;nbsp;" width="720"><p class="caption">
  
 </p>
 </div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">susie.locus.sumstats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_susie_sumstats.html">merge_susie_sumstats</a></span><span class="op">(</span><span class="va">susie.locus.res</span>, <span class="va">sumstats.locus</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="ld-mismatch-diagnosis">LD mismatch diagnosis<a class="anchor" aria-label="anchor" href="#ld-mismatch-diagnosis"></a>
+</h3>
+<p>Inconsistencies between GWAS z-scores and the LD reference could potentially inflate PIPs from SuSiE finemapping when L &gt; 1. It would be helpful to check for potential LD mismatch issues, for example using <a href="https://doi.org/10.1038/s41467-021-27438-7" class="external-link">DENTIST</a> or <a href="https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html" class="external-link">susie_rss</a>.</p>
+<p>Here we perform LD mismatch diagnosis for this example locus using <a href="https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html" class="external-link">susie_rss</a>:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">condz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LD_diagnosis_susie_rss.html">LD_diagnosis_susie_rss</a></span><span class="op">(</span><span class="va">z.locus</span>, <span class="va">R.locus</span>, <span class="va">n</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Estimate consistency between the z-scores and reference LD matrix ...</span></span>
+<span><span class="co">## Estimated lambda = 7.30936e-05 </span></span>
+<span><span class="co">## Compute expected z-scores based on conditional distribution of z-scores ...</span></span></code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">condz</span><span class="op">$</span><span class="va">plot</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="finemapping_ukbb_ld_diagnosis_files/figure-html/unnamed-chunk-6-1.png" alt="&amp;nbsp;" width="720"><p class="caption">
+ 
+</p>
+</div>
 <p>The estimated lambda is very small, and the LD mismatch diagnosis plot looks good (with no allele flipping detected), which suggests that the GWAS z-scores and reference LD are consistent.</p>
 <p>Next, we manually introduces LD mismatches by flipping alleles for 10 variants (with large effects) and see if we can detect those.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seed</span> <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="va">seed</span><span class="op">)</span></span>
 <span></span>
@@ -229,36 +236,36 @@
 <pre><code><span><span class="co">## 10 allele flipped variants:</span></span>
 <span><span class="co">##  rs10184597 rs10189629 rs10203707 rs10207579 rs13392285 rs2110727 rs2215945 rs62154973 rs72823628 rs72823646</span></span></code></pre>
 <p>Then, we run fine-mapping including variants with flipped alleles.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">susie.results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_finemapping.html">run_finemapping</a></span><span class="op">(</span><span class="va">sumstats.locus.flip</span>, region_info <span class="op">=</span> <span class="va">region_info</span>, priortype <span class="op">=</span> <span class="st">'uniform'</span>, n <span class="op">=</span> <span class="va">n</span>, L <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Finemapping 1 loci...</span></span>
 <span><span class="co">## Finemapping locus 193...</span></span>
 <span><span class="co">## Run susie_rss...</span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">susie.locus.res</span> <span class="op">&lt;-</span> <span class="va">susie.results</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="fu">susieR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/susieR/man/susie_plots.html" class="external-link">susie_plot</a></span><span class="op">(</span><span class="va">susie.locus.res</span>, y<span class="op">=</span><span class="st">'PIP'</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="finemapping_ukbb_ld_diagnosis_files/figure-html/unnamed-chunk-7-1.png" alt="&amp;nbsp;" width="720"><p class="caption">
+<img src="finemapping_ukbb_ld_diagnosis_files/figure-html/unnamed-chunk-8-1.png" alt="&amp;nbsp;" width="720"><p class="caption">
  
 </p>
 </div>
 <p>Let’s compare observed z-scores vs the expected z-scores.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">condz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/LD_diagnosis_susie_rss.html">LD_diagnosis_susie_rss</a></span><span class="op">(</span><span class="va">sumstats.locus.flip</span><span class="op">$</span><span class="va">zscore</span>, R <span class="op">=</span> <span class="va">R.locus</span>, n <span class="op">=</span> <span class="va">n</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Estimate consistency between the z-scores and reference LD matrix ...</span></span>
 <span><span class="co">## Estimated lambda = 0.4730198 </span></span>
 <span><span class="co">## Compute expected z-scores based on conditional distribution of z-scores ...</span></span></code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># condz$plot</span></span></code></pre></div>
 <p>Detect possible allele flipped variants (logLR &gt; 2 and abs(z) &gt; 2).</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">detected_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span><span class="op">$</span><span class="va">logLR</span> <span class="op">&gt;</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span><span class="op">$</span><span class="va">z</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Detected %d variants with possible allele flipping"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">detected_index</span><span class="op">)</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Detected 10 variants with possible allele flipping</span></span></code></pre>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Possible allele switched variants:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">sumstats.locus.flip</span><span class="op">$</span><span class="va">snp</span><span class="op">[</span><span class="va">detected_index</span><span class="op">]</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Possible allele switched variants: rs10184597 rs10189629 rs10203707 rs10207579 rs13392285 rs2110727 rs2215945 rs62154973 rs72823628 rs72823646</span></span></code></pre>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span><span class="op">$</span><span class="va">flipped</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span><span class="op">$</span><span class="va">flipped</span><span class="op">[</span><span class="va">flip_index</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span><span class="op">$</span><span class="va">detected</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
@@ -267,7 +274,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%d out of %d flipped variants detected with logLR &gt; 2 and abs(z) &gt; 2. \n"</span>, </span>
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/generics/man/setops.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">detected_index</span>, <span class="va">flip_index</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">flip_index</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## 10 out of 10 flipped variants detected with logLR &gt; 2 and abs(z) &gt; 2.</span></span></code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/pkg/generics/man/setops.html" class="external-link">union</a></span><span class="op">(</span><span class="va">flip_index</span>, <span class="va">detected_index</span><span class="op">)</span>,<span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">##              z condmean   condvar z_std_diff    logLR flipped detected</span></span>
 <span><span class="co">## 529  -6.965514 6.321319 0.4847394 -19.083908 8.381969       1        1</span></span>
@@ -280,7 +287,7 @@
 <span><span class="co">## 433  -6.686770 6.123010 0.4997885 -18.119598 8.451238       1        1</span></span>
 <span><span class="co">## 624  -6.934847 6.350230 0.4841194 -19.093601 8.509518       1        1</span></span>
 <span><span class="co">## 142  -4.512544 4.337933 0.4937149 -12.595882 8.385750       1        1</span></span></code></pre>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span>, <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">condmean</span>, y <span class="op">=</span> <span class="va">z</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">flipped</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html" class="external-link">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span> <span class="op">=</span> <span class="st">"black"</span>, <span class="st">"1"</span> <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -291,7 +298,7 @@
  
 </p>
 </div>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">condz</span><span class="op">$</span><span class="va">conditional_dist</span>, <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">condmean</span>, y <span class="op">=</span> <span class="va">z</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">detected</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html" class="external-link">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0"</span> <span class="op">=</span> <span class="st">"black"</span>, <span class="st">"1"</span> <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -301,6 +308,7 @@
 <img src="finemapping_ukbb_ld_diagnosis_files/figure-html/diagnosis-plots-2.png" alt="&amp;nbsp;" width="720"><p class="caption">
  
 </p>
+</div>
 </div>
   </div>
 

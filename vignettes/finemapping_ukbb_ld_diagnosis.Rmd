@@ -14,11 +14,6 @@ knitr::opts_chunk$set(message = FALSE,
                       dpi = 120)
 ```
 
-Inconsistencies between GWAS z-scores and the LD reference could 
-potentially inflate PIPs from SuSiE finemapping. It would be helpful to 
-check potential LD mismatch issue, for example using [DENTIST][DENTIST] or 
-the [diagnostic][diagnostic-susie-rss] from `susie_rss`.
-
 In this tutorial, we show an example of performing fine-mapping and
 LD mismatch diagnosis (using `susie_rss`) 
 with pre-computed LD matrices from UK Biobank reference.
@@ -27,7 +22,7 @@ We have pre-computed the LD matrices of European samples from UK Biobank.
 They can be downloaded [here][UKBB_LD].
 
 Load the packages. 
-```{r load-packages, eval=TRUE, message=FALSE}
+```{r load-packages, message=FALSE}
 library(mapgen)
 library(tidyverse)
 library(ggplot2)
@@ -41,18 +36,22 @@ head(gwas.sumstats)
 
 n = 336210
 ```
+
 Load LD blocks
 ```{r}
 LD_Blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
 ```
 
-get a data frame of region_info, with filenames of UKBB reference LD matrices and SNP info,
-and read all SNP info from the LD reference
+Obtain a data frame of region_info, 
+rows are LD block coordinates together with the filenames of UKBB reference LD matrices and SNP info.
 ```{r}
 region_info <- get_UKBB_region_info(LD_Blocks,
                                     LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
                                     prefix = "ukb_b37_0.1")
+```
 
+Read all SNP info from the LD reference
+```{r}
 LD_snp_info <- read_LD_SNP_info(region_info)
 ```
 
@@ -77,6 +76,8 @@ if (max(gwas.sumstats$pval) > 1) {
 sig.loci <- gwas.sumstats %>% dplyr::filter(pval < 5e-8) %>% dplyr::pull(locus) %>% unique()
 cat(length(sig.loci), "significant loci. \n")
 ```
+
+### Fine-mapping
 
 Fine-mapping significant loci with pre-computed UKBB LD matrices (we use uniform prior in this tutorial).
 
@@ -120,8 +121,10 @@ susieR::susie_plot(susie.locus.res, y='PIP')
 susie.locus.sumstats <- merge_susie_sumstats(susie.locus.res, sumstats.locus)
 ```
 
+### LD mismatch diagnosis
+
 Inconsistencies between GWAS z-scores and the LD reference could 
-potentially inflate PIPs from SuSiE finemapping. It would be helpful to 
+potentially inflate PIPs from SuSiE finemapping when L > 1. It would be helpful to 
 check for potential LD mismatch issues, for example using [DENTIST][DENTIST] or 
 [susie_rss][diagnostic-susie-rss]. 
 

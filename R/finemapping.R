@@ -29,7 +29,7 @@ prepare_susie_data_with_torus_result <- function(sumstats,
   filter <- match.arg(filter)
 
   # Check for required columns in sumstats
-  required.cols <- c('chr','pos','snp','pval','locus','bigSNP_index')
+  required.cols <- c('chr','pos','snp','pval','locus')
 
   if(!all(required.cols %in% colnames(sumstats))){
     stop(sprintf('Column \"%s\" cannot be found in the summary statistics!',
@@ -208,6 +208,7 @@ run_finemapping <- function(sumstats,
   for(locus in finemap.locus.list){
     cat(sprintf('Finemapping locus %s...\n', locus))
     sumstats_locus <- sumstats[sumstats$locus == locus, ]
+    prior_weights_locus <- prior_weights[sumstats$locus == locus]
 
     if (!is.null(region_info)) {
       # load precomputed LD (R) matrix and variant info
@@ -227,7 +228,7 @@ run_finemapping <- function(sumstats,
                                   snp_info = snp_info,
                                   n=n,
                                   L=L,
-                                  prior_weights=prior_weights,
+                                  prior_weights=prior_weights_locus,
                                   estimate_residual_variance=estimate_residual_variance,
                                   verbose=verbose,
                                   save = save,
@@ -239,7 +240,7 @@ run_finemapping <- function(sumstats,
                                    bigSNP=bigSNP,
                                    n=n,
                                    L=L,
-                                   prior_weights=prior_weights,
+                                   prior_weights=prior_weights_locus,
                                    estimate_residual_variance=estimate_residual_variance,
                                    verbose=verbose,
                                    save = save,
@@ -249,7 +250,7 @@ run_finemapping <- function(sumstats,
       res <- susie_finemap_region(sumstats_locus,
                                   n=n,
                                   L=1,
-                                  prior_weights=prior_weights,
+                                  prior_weights=prior_weights_locus,
                                   estimate_residual_variance=estimate_residual_variance,
                                   verbose=verbose,
                                   save = FALSE,
