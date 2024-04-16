@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="LD_diagnosis_susie_rss.html">LD_diagnosis_susie_rss()</a></code> </p>
         </td>
-        <td><p>Perform diagnosis to check the consistency between the z-scores and LD matrix,
+        <td><p>Perform diagnosis to check the consistency between the GWAS z-scores and LD matrix,
 and detect problematic z-scores (e.g. allele switch issue) using
 diagnostic functions from SuSiE RSS.</p></td>
       </tr><tr><td>
@@ -118,13 +118,21 @@ diagnostic functions from SuSiE RSS.</p></td>
         </td>
         <td><p>Gene view summary table</p></td>
       </tr><tr><td>
+          <p><code><a href="get_UKBB_region_info.html">get_UKBB_region_info()</a></code> </p>
+        </td>
+        <td><p>Get region info with filenames of LD matrices and variant information</p></td>
+      </tr><tr><td>
           <p><code><a href="get_locus_level_gene_pip.html">get_locus_level_gene_pip()</a></code> </p>
         </td>
         <td><p>Get locus level gene PIP</p></td>
       </tr><tr><td>
+          <p><code><a href="harmonize_sumstats_LD.html">harmonize_sumstats_LD()</a></code> </p>
+        </td>
+        <td><p>Harmonize GWAS summary statistics with LD reference</p></td>
+      </tr><tr><td>
           <p><code><a href="load_UKBB_LDREF.html">load_UKBB_LDREF()</a></code> </p>
         </td>
-        <td><p>Load UKBB LD reference matrix and variant information</p></td>
+        <td><p>Load UK Biobank LD reference matrix and variant information</p></td>
       </tr><tr><td>
           <p><code><a href="make_genomic_annots.html">make_genomic_annots()</a></code> </p>
         </td>
@@ -178,7 +186,7 @@ input data for SuSiE</p></td>
       </tr><tr><td>
           <p><code><a href="process_gwas_sumstats.html">process_gwas_sumstats()</a></code> </p>
         </td>
-        <td><p>Cleans GWAS summary statistics and adds metadata</p></td>
+        <td><p>Process GWAS summary statistics and harmonize with LD reference</p></td>
       </tr><tr><td>
           <p><code><a href="process_loop_data.html">process_loop_data()</a></code> </p>
         </td>
@@ -188,9 +196,17 @@ input data for SuSiE</p></td>
         </td>
         <td><p>Process PC-HiC data and save as a GRanges object</p></td>
       </tr><tr><td>
+          <p><code><a href="read_LD.html">read_LD()</a></code> </p>
+        </td>
+        <td><p>read LD matrix data by file format</p></td>
+      </tr><tr><td>
+          <p><code><a href="read_LD_SNP_info.html">read_LD_SNP_info()</a></code> </p>
+        </td>
+        <td><p>Read all SNP info in LD reference</p></td>
+      </tr><tr><td>
           <p><code><a href="run_finemapping.html">run_finemapping()</a></code> </p>
         </td>
-        <td><p>Run fine-mapping using summary statistics</p></td>
+        <td><p>Run functional fine-mapping using summary statistics</p></td>
       </tr><tr><td>
           <p><code><a href="run_torus.html">run_torus()</a></code> </p>
         </td>
@@ -199,6 +215,10 @@ input data for SuSiE</p></td>
           <p><code><a href="snp_view_summary.html">snp_view_summary()</a></code> </p>
         </td>
         <td><p>SNP view summary table</p></td>
+      </tr><tr><td>
+          <p><code><a href="susie_finemap_region.html">susie_finemap_region()</a></code> </p>
+        </td>
+        <td><p>Run fine-mapping for one region with SuSiE using summary statistics (susie_rss)</p></td>
       </tr><tr><td>
           <p><code><a href="track_plot.html">track_plot()</a></code> </p>
         </td>

@@ -14,7 +14,7 @@
 #' @return A GRanges object with processed PC-HiC links, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
+process_pcHiC <- function(pcHiC, gene.annots = NULL, score.thresh = 0, flank = 0){
 
   pcHiC <- pcHiC %>% dplyr::select(Promoter, Interacting_fragment)
   # separate genes connecting to the same fragment
@@ -26,7 +26,7 @@ process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
     tidyr::separate(Interacting_fragment, c('chr', 'start', 'end')) %>%
     dplyr::mutate(start = as.integer(start), end = as.integer(end))
 
-  if(!missing(gene.annots)){
+  if(!is.null(gene.annots)){
     pcHiC <- pcHiC %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
@@ -62,7 +62,7 @@ process_pcHiC <- function(pcHiC, gene.annots, score.thresh = 0, flank = 0){
 #' @return a GRanges object with processed ABC scores, with genomic coordinates
 #' of the interacting regions and gene names (promoters).
 #' @export
-process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0.015, flank = 0){
+process_ABC <- function(ABC, gene.annots = NULL, full.element = FALSE, score.thresh = 0.015, flank = 0){
 
   if(full.element){
     ABC <- ABC %>%
@@ -76,7 +76,7 @@ process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0
 
   ABC <- ABC %>% dplyr::rename(gene_name = TargetGene, score = ABC.Score)
 
-  if(!missing(gene.annots)){
+  if(!is.null(gene.annots)){
     ABC <- ABC %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
@@ -110,11 +110,11 @@ process_ABC <- function(ABC, gene.annots, full.element = FALSE, score.thresh = 0
 #' @return A GRanges object with processed chromatin loops,
 #' with genomic coordinates of the regulatory elements and gene names.
 #' @export
-process_loop_data <- function(loops, gene.annots, score.thresh = 0, flank = 0){
+process_loop_data <- function(loops, gene.annots = NULL, score.thresh = 0, flank = 0){
 
   loops <- as.data.frame(loops)
 
-  if(!missing(gene.annots)){
+  if(!is.null(gene.annots)){
     loops <- loops %>% dplyr::filter(gene_name %in% gene.annots$gene_name)
   }
 
@@ -124,7 +124,7 @@ process_loop_data <- function(loops, gene.annots, score.thresh = 0, flank = 0){
 
   if(flank > 0){
     loops <- loops %>% dplyr::mutate(start = start - as.integer(flank),
-                                 end = end + as.integer(flank))
+                                     end = end + as.integer(flank))
   }
 
   loops.gr <- GenomicRanges::makeGRangesFromDataFrame(loops, keep.extra.columns = TRUE)
@@ -223,7 +223,7 @@ get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
   sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
   sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
 
-  if(missing(topSNP)){
+  if(is.null(topSNP)){
     if( max(sumstats$pval) <= 1 ){
       sumstats$pval <- -log10(sumstats$pval)
     }
@@ -325,4 +325,138 @@ get_gene_region <- function(gene.mapping.res,
     })
   }
   return(region)
+}
+
+#' read LD matrix data by file format
+read_LD <- function(file, format = c("rds", "rdata", "csv", "txt", "tsv")) {
+  format <- match.arg(format)
+
+  # if format is missing, try to guess format by file extension
+  if (missing(format)) {
+    file_ext_lower <- tolower(tools::file_ext(file))
+
+    if (file_ext_lower == "rds"){
+      format <- "rds"
+    } else if (file_ext_lower %in% c("rdata", "rd", "rda", "rdat")){
+      format <- "rd"
+    } else if (file_ext_upper %in% c("csv", "csv.gz")) {
+      format <- "csv"
+    } else if (file_ext_lower %in% c("txt", "txt.gz")){
+      format <- "txt"
+    } else if (file_ext_lower %in% c("tsv", "tsv.gz")){
+      format <- "tsv"
+    } else {
+      stop("Unknown file format!")
+    }
+  }
+
+  if (format == "rds"){
+    R <- readRDS(file)
+  } else if (format == "rd"){
+    R <- get(load(file))
+  } else if (format == "csv"){
+    R <- as.matrix(read.csv(file, sep=",", row.names=1))
+  } else if (format %in% c("txt", "tsv")){
+    R <- as.matrix(data.table::fread(file))
+  } else {
+    stop("Unknown file format!")
+  }
+
+  return(R)
+}
+
+
+#' Get region info with filenames of LD matrices and variant information
+#'
+#' @param LD_Blocks A data frame of LD blocks
+#' @param LDREF.dir Directory of UKBB LD reference files
+#' @param prefix prefix name of the UKBB LD reference files
+#' @param LD_matrix_ext File extension of LD matrix files
+#' @param snp_info_ext File extension of SNP information files
+#' @return A data frame with information of the variants in the LD matrix.
+#' @export
+get_UKBB_region_info <- function(LD_Blocks,
+                                 LDREF.dir,
+                                 prefix = "ukb_b37_0.1",
+                                 LD_matrix_ext = "RDS",
+                                 snp_info_ext = "Rvar") {
+
+  LD.file <- sprintf("%s_chr%d.R_snp.%d_%d", prefix, LD_Blocks$chr, LD_Blocks$start, LD_Blocks$end)
+  LD_matrix_file <- file.path(LDREF.dir, paste0(LD.file, ".", LD_matrix_ext))
+  snp_info_file <- file.path(LDREF.dir, paste0(LD.file, ".", snp_info_ext))
+  region_info <- data.frame(LD_Blocks,
+                            LD_matrix = LD_matrix_file,
+                            snp_info = snp_info_file)
+
+  return(region_info)
+}
+
+#' Load UK Biobank LD reference matrix and variant information
+#'
+#' @param LD_Blocks A data frame of LD blocks
+#' @param locus locus ID
+#' @param LDREF.dir Directory of UKBB LD reference files
+#' @param prefix prefix name of the UKBB LD reference files
+#' @param LD_matrix_ext File extension of LD matrix files
+#' @param snp_info_ext File extension of SNP information files
+#'
+#' @return A list, containing LD (correlation) matrix R and
+#' a data frame with information of the variants in the LD matrix.
+#' @export
+load_UKBB_LDREF <- function(LD_Blocks,
+                            locus,
+                            LDREF.dir,
+                            prefix = "ukb_b37_0.1",
+                            LD_matrix_ext = "RDS",
+                            snp_info_ext = "Rvar"){
+  if(!locus %in% LD_Blocks$locus){
+    stop("locus is not in LD_blocks!")
+  }
+  LD_Block <- LD_Blocks[LD_Blocks$locus == locus, ]
+  LD.file <- sprintf("%s_chr%d.R_snp.%d_%d", prefix, LD_Block$chr, LD_Block$start, LD_Block$end)
+  R <- readRDS(file.path(LDREF.dir, paste0(LD.file, ".", LD_matrix_ext)))
+  snp_info <- data.table::fread(file.path(LDREF.dir, paste0(LD.file, ".", snp_info_ext)))
+  return(list('R' = R, 'snp_info' = snp_info))
+}
+
+#' Read all SNP info in LD reference
+#'
+#' @param region_info A data frame of region information,
+#' paths of LD matrices (R, correlation matrices),
+#' and paths of SNP information files corresponding to the LD matrices.
+#'
+#' @return A data frame of SNP information in the LD reference
+#'
+#' @export
+read_LD_SNP_info <- function(region_info){
+  LD_snp_info.list <- lapply(1:nrow(region_info), function(i){
+    df <- data.table::fread(region_info$snp_info[i])
+    if(!is.null(region_info$locus)){
+      df$locus <- region_info$locus[i]
+    }else{
+      df$locus <- i
+    }
+    df
+  })
+  LD_snp_info <- do.call(rbind, LD_snp_info.list)
+  return(LD_snp_info)
+}
+
+
+#' Match GWAS sumstats with LD reference files. Only keep variants included in
+#' LD reference.
+#'
+#' @param sumstats A data frame of GWAS summary statistics.
+#' @param R LD matrix
+#' @param snp_info Variant information for the LD matrix.
+#'
+#' @return A list, containing matched GWAS summary statistics and LD matrix.
+#' @export
+match_gwas_LDREF <- function(sumstats, R, snp_info){
+  stopifnot(nrow(R) == nrow(snp_info))
+  sumstats <- sumstats[sumstats$snp %in% snp_info$id,]
+  LD.idx <- match(sumstats$snp, snp_info$id)
+  R <- R[LD.idx, LD.idx]
+  snp_info <- snp_info[LD.idx, ]
+  return(list(sumstats = sumstats, R = R, snp_info = snp_info))
 }

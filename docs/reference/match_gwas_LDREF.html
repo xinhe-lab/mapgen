@@ -20,7 +20,7 @@ LD reference."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mapgen</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.9</span>
       </span>
     </div>
 
@@ -73,7 +73,7 @@ LD reference."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/li
     <div class="page-header">
     <h1>Match GWAS sumstats with LD reference files. Only keep variants included in
 LD reference.</h1>
-    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/gwas.R" class="external-link"><code>R/gwas.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/xinhe-lab/mapgen/blob/HEAD/R/utils.R" class="external-link"><code>R/utils.R</code></a></small>
     <div class="hidden name"><code>match_gwas_LDREF.Rd</code></div>
     </div>
 
@@ -83,7 +83,7 @@ LD reference.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">match_gwas_LDREF</span><span class="op">(</span><span class="va">sumstats</span>, <span class="va">R</span>, <span class="va">var_info</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">match_gwas_LDREF</span><span class="op">(</span><span class="va">sumstats</span>, <span class="va">R</span>, <span class="va">snp_info</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -96,7 +96,7 @@ LD reference.</p>
 <dd><p>LD matrix</p></dd>
 
 
-<dt>var_info</dt>
+<dt>snp_info</dt>
 <dd><p>Variant information for the LD matrix.</p></dd>
 
 </dl></div>

@@ -171,7 +171,7 @@ annotate_snps_binary <- function(sumstats, annotations, keep.annot.only=TRUE){
     sumstats <- dplyr::mutate(sumstats, !!name := ifelse(snp %in% snpsIn, 1, 0))
   }
 
-  if(keep.annot.only){
+  if(isTRUE(keep.annot.only)){
     sumstats <- sumstats[,c('snp', paste0(basename(annotations), '_d'))]
   }
 

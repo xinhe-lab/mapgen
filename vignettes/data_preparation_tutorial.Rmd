@@ -47,8 +47,8 @@ the indices of the LD blocks.
 
 We provided the LD blocks from `LDetect` for the 1000 Genomes (1KG) European population (in hg19).
 ```{r load-LD-blocks}
-LD_blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
-head(LD_blocks, 3)
+LD_Blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
+head(LD_Blocks, 3)
 ```
 
 _* You can skip this if you only need to run enrichment analysis._
@@ -77,16 +77,34 @@ library(bigsnpr)
 bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
 
-_* You can skip this if you only need to run enrichment analysis, 
-or you have LD matrices, or if you only need to run 
-downstream analysis (e.g. gene mapping) with precomputed fine-mapping result._
+We also have pre-computed LD matrices of European samples from UK Biobank. 
+They can be downloaded [here][UKBB_LD].
+If you are at UChicago, 
+you can directly access those LD matrices from RCC at
+`/project2/mstephens/wcrouse/UKB_LDR_0.1_b37/`.
+
+We create a data frame `region_info`, with filenames of UKBB reference LD matrices and SNP info 
+adding to the LD_Blocks.
+```{r get-region-info}
+region_info <- get_UKBB_region_info(LD_Blocks,
+                                    LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
+                                    prefix = "ukb_b37_0.1")
+```
+
+_* You can skip this if 
+you only need to run enrichment analysis, 
+or if you only need to run downstream analysis (e.g. gene mapping) with 
+precomputed fine-mapping result._
 
 ## Process GWAS summary statistics
 
 We run `process_gwas_sumstats()` to process the summary statistics.
 This checks and cleans GWAS summary statistics, 
-(optionally) match alleles in GWAS SNPs with the reference panel from
-the `bigSNP` object, and (optionally) add locus ID from the `LD_Blocks`.
+add locus ID from the `LD_Blocks` if available,
+match alleles in GWAS SNPs with the reference panel from
+the `bigSNP` object if `bigSNP` is specified, 
+or harmonize GWAS SNPs with the reference LD information 
+from the precopmuted LD matrices if `region_info` is specified. 
 
 ```{r process-gwas-sumstats, eval=FALSE}
 gwas.sumstats <- process_gwas_sumstats(sumstats, 
@@ -98,11 +116,11 @@ gwas.sumstats <- process_gwas_sumstats(sumstats,
                                        a1='a1', 
                                        snp='phase3_1kg_id', 
                                        pval='bcac_onco2_P1df_Wald',
-                                       LD_Blocks=LD_blocks,
+                                       LD_Blocks=LD_Blocks,
                                        bigSNP=bigSNP)
 ```
 
-_* You do not need to specify `bigSNP` and `LD_Blocks` if you only need to run enrichment analysis._
+_* You do not need to specify `bigSNP`, `region_info`, or `LD_Blocks` if you only need to run enrichment analysis._
 
 Check that the summary statistics is processed and has appropriate columns:
 ```{r include=FALSE}

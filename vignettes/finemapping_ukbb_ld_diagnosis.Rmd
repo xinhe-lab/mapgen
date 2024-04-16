@@ -5,13 +5,14 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval=TRUE)
+knitr::opts_chunk$set(message = FALSE,
+                      warning = FALSE,
+                      fig.width = 6,
+                      fig.height = 4,
+                      fig.align = "center",
+                      fig.cap = "&nbsp;",
+                      dpi = 120)
 ```
-
-Inconsistencies between GWAS z-scores and the LD reference could 
-potentially inflate PIPs from SuSiE finemapping. It would be helpful to 
-check potential LD mismatch issue, for example using [DENTIST][DENTIST] or 
-the [diagnostic][diagnostic-susie-rss] from `susie_rss`.
 
 In this tutorial, we show an example of performing fine-mapping and
 LD mismatch diagnosis (using `susie_rss`) 
@@ -21,9 +22,8 @@ We have pre-computed the LD matrices of European samples from UK Biobank.
 They can be downloaded [here][UKBB_LD].
 
 Load the packages. 
-```{r load-packages, eval=TRUE, message=FALSE}
+```{r load-packages, message=FALSE}
 library(mapgen)
-library(susieR)
 library(tidyverse)
 library(ggplot2)
 ```
@@ -37,69 +37,109 @@ head(gwas.sumstats)
 n = 336210
 ```
 
-LD blocks
+Load LD blocks
 ```{r}
-LD_blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
-head(LD_blocks, 3)
+LD_Blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='mapgen'))
 ```
 
-Process GWAS summary statistics 
+Obtain a data frame of region_info, 
+rows are LD block coordinates together with the filenames of UKBB reference LD matrices and SNP info.
+```{r}
+region_info <- get_UKBB_region_info(LD_Blocks,
+                                    LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
+                                    prefix = "ukb_b37_0.1")
+```
+
+Read all SNP info from the LD reference
+```{r}
+LD_snp_info <- read_LD_SNP_info(region_info)
+```
+
+Process GWAS summary statistics and add LD block information,
+harmonize GWAS summary statistics with LD reference,
+flip signs when reverse complement matches and remove strand ambiguous variants
 ```{r process-GWAS}
 gwas.sumstats <- process_gwas_sumstats(gwas.sumstats, 
-                                       chr='chr', 
-                                       pos='pos', 
-                                       beta='beta', 
-                                       se='se',
-                                       a0='a0', 
-                                       a1='a1', 
-                                       snp='snp', 
-                                       pval='pval',
-                                       LD_Blocks=LD_blocks)
+                                       chr='chr', pos='pos', beta='beta', se='se', 
+                                       a0='a0', a1='a1', snp='snp', pval='pval',
+                                       LD_snp_info=LD_snp_info, 
+                                       strand_flip=TRUE, 
+                                       remove_strand_ambig=TRUE)
 ```
 
 Select GWAS significant loci (pval < 5e-8)
 ```{r select-gwas}
-if(max(gwas.sumstats$pval) <= 1){
-  gwas.sumstats <- gwas.sumstats %>% dplyr::mutate(pval = -log10(pval))
+if (max(gwas.sumstats$pval) > 1) {
+  gwas.sumstats <- gwas.sumstats %>% dplyr::mutate(pval = 10^(-pval))
 }
 
-sig.loci <- gwas.sumstats %>% dplyr::filter(pval > -log10(5e-8)) %>% dplyr::pull(locus) %>% unique()
+sig.loci <- gwas.sumstats %>% dplyr::filter(pval < 5e-8) %>% dplyr::pull(locus) %>% unique()
+cat(length(sig.loci), "significant loci. \n")
 ```
 
-Choose one example locus, load UKBB reference LD matrix, and
-match variants between GWAS and LD reference.
-```{r load-LDREF}
-locus <- sig.loci[2]
-gwas.sumstats.locus <- gwas.sumstats[gwas.sumstats$locus == locus, ]
-LDREF <- load_UKBB_LDREF(LD_blocks, 
-                         locus = locus, 
-                         LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
-                         prefix = "ukb_b37_0.1")
-matched.sumstat.LD <- match_gwas_LDREF(gwas.sumstats.locus, LDREF$R, LDREF$var_info)
-sumstats.locus <- matched.sumstat.LD$sumstats
-R.locus <- matched.sumstat.LD$R
+### Fine-mapping
+
+Fine-mapping significant loci with pre-computed UKBB LD matrices (we use uniform prior in this tutorial).
+
+If we set `save = TRUE`, it saves susie result as well as z-scores and R matrix for each locus, 
+which could be used later for diagnosis.
+
+```{r, eval=FALSE}
+selected.sumstats <- gwas.sumstats[gwas.sumstats$locus %in% sig.loci, ]
+
+susie.results <- run_finemapping(selected.sumstats, 
+                                 region_info = region_info, 
+                                 priortype = 'uniform', n = n, L = 10,
+                                 save = TRUE, outputdir = "./test", outname = "example")
+
+susie.sumstats <- merge_susie_sumstats(susie.results, sumstats.locus)
 ```
 
-We run finemapping with pre-computed UKBB LD matrices (we use uniform prior in this tutorial)
+`run_finemapping()` internally runs `susie_finemap_region()` for each of the loci. 
+For finemapping a single locus, we can simply use `susie_finemap_region()` 
+with sumstats and LD information (R and snp_info) for the locus.
 ```{r}
-# LD_matrices is a list of loci to be finemapped
-LD_matrices <- list(R.locus)
-names(LD_matrices) <- locus
+locus <- sig.loci[2]
+sumstats.locus <- gwas.sumstats[gwas.sumstats$locus == locus, ]
 
-susie.locus.res <- run_finemapping(sumstats.locus, LD_matrices = LD_matrices, priortype = 'uniform', n = n, L = 10)
-susie_plot(susie.locus.res[[1]], y='PIP')
+# load LD matrix and SNP info for this locus
+LD_ref <- load_UKBB_LDREF(LD_Blocks, 
+                          locus, 
+                          LDREF.dir = "/project2/mstephens/wcrouse/UKB_LDR_0.1_b37", 
+                          prefix = "ukb_b37_0.1")
+
+# Match GWAS sumstats with LD reference, only keep variants included in LD reference.
+matched.sumstat.LD <- match_gwas_LDREF(sumstats.locus, LD_ref$R, LD_ref$snp_info)
+sumstats.locus <- matched.sumstat.LD$sumstats
+z.locus <- sumstats.locus$zscore
+R.locus <- matched.sumstat.LD$R
+snp_info.locus <- matched.sumstat.LD$snp_info
+
+susie.locus.res <- susie_finemap_region(sumstats.locus, R.locus, snp_info.locus, n = n, L = 10)
+susieR::susie_plot(susie.locus.res, y='PIP')
 
 susie.locus.sumstats <- merge_susie_sumstats(susie.locus.res, sumstats.locus)
 ```
 
+### LD mismatch diagnosis
+
+Inconsistencies between GWAS z-scores and the LD reference could 
+potentially inflate PIPs from SuSiE finemapping when L > 1. It would be helpful to 
+check for potential LD mismatch issues, for example using [DENTIST][DENTIST] or 
+[susie_rss][diagnostic-susie-rss]. 
+
+Here we perform LD mismatch diagnosis for this example locus using 
+[susie_rss][diagnostic-susie-rss]:
+
 ```{r, message=FALSE}
-condz <- LD_diagnosis_susie_rss(sumstats.locus$zscore, R = R.locus, n = n)
+condz <- LD_diagnosis_susie_rss(z.locus, R.locus, n)
 condz$plot
 ```
 
-Now we perform LD mismatch diagnosis.
+The estimated lambda is very small, and the LD mismatch diagnosis plot looks good (with no allele flipping detected), which suggests that the GWAS z-scores and reference LD are consistent.
 
-We introduce LD mismatches by flipping alleles for 10 variants (with large effects) and see if we can detect those.
+Next, we manually introduces LD mismatches by flipping alleles for 10 variants (with large effects) 
+and see if we can detect those.
 ```{r}
 seed = 1
 set.seed(seed)
@@ -113,14 +153,9 @@ cat(length(flip_index), "allele flipped variants:\n", sort(sumstats.locus.flip$s
 
 Then, we run fine-mapping including variants with flipped alleles.
 ```{r}
-LD_matrices <- list(R.locus)
-names(LD_matrices) <- locus
-
-susie.locus.res <- run_finemapping(sumstats.locus.flip, LD_matrices = LD_matrices, priortype = 'uniform', n = n, L = 10)
-
-susie_plot(susie.locus.res[[1]], y='PIP')
-
-susie.locus.sumstats <- merge_susie_sumstats(susie.locus.res, sumstats.locus)
+susie.results <- run_finemapping(sumstats.locus.flip, region_info = region_info, priortype = 'uniform', n = n, L = 10)
+susie.locus.res <- susie.results[[1]]
+susieR::susie_plot(susie.locus.res, y='PIP')
 ```
 
 Let's compare observed z-scores vs the expected z-scores.
@@ -137,7 +172,6 @@ cat("Possible allele switched variants:", sort(sumstats.locus.flip$snp[detected_
 
 condz$conditional_dist$flipped <- 0
 condz$conditional_dist$flipped[flip_index] <- 1
-
 condz$conditional_dist$detected <- 0
 condz$conditional_dist$detected[detected_index] <- 1
 
@@ -159,26 +193,6 @@ ggplot(condz$conditional_dist, aes(x = condmean, y = z, col = factor(detected)))
   scale_colour_manual(values = c("0" = "black", "1" = "red")) + 
   labs(x = "Expected value", y = "Observed z scores", color = "Detected allele flipping") + 
   theme_bw()
-```
-
-Now we rerun fine-mapping after filtering out those detected problematic variants.
-```{r}
-sumstats.locus.filtered <- sumstats.locus.flip[-detected_index, ]
-R.locus.filtered <- R.locus[-detected_index, -detected_index]
-LD_matrices <- list(R.locus.filtered)
-names(LD_matrices) <- locus
-
-susie.locus.res <- run_finemapping(sumstats.locus.filtered, LD_matrices = LD_matrices, priortype = 'uniform', n = n, L = 10)
-
-susie_plot(susie.locus.res[[1]], y='PIP')
-
-susie.locus.sumstats.filtered <- merge_susie_sumstats(susie.locus.res, sumstats.locus.filtered)
-```
-
-Let's compare observed z-scores vs the expected z-scores again.
-```{r, message=FALSE}
-condz <- LD_diagnosis_susie_rss(sumstats.locus.filtered$zscore, R = R.locus.filtered, n = n)
-condz$plot
 ```
 
 [DENTIST]: https://doi.org/10.1038/s41467-021-27438-7

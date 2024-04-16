@@ -8,8 +8,10 @@ input data for SuSiE}
 prepare_susie_data_with_torus_result(
   sumstats,
   torus_prior,
-  torus_fdr,
-  fdr.thresh = 0.1
+  torus_fdr = NULL,
+  filter = c("none", "pval", "torus_fdr"),
+  fdr.thresh = 0.1,
+  pval.thresh = 5e-08
 )
 }
 \arguments{
@@ -22,11 +24,18 @@ prepare_susie_data_with_torus_result(
 (result from \code{run_torus()} with \code{option=\dQuote{fdr}}).
 Optional, if available, only keep the loci with FDR < \code{fdr.thresh}.}
 
+\item{filter}{filter SNPs from sumstats:
+'none': do not filter SNPs,
+'pval': filter SNPs with GWAS pval < \code{pval.thresh},
+'torus_fdr': filter SNPs with TORUS FDR < \code{torus_fdr}.}
+
 \item{fdr.thresh}{FDR cutoff (default: 0.1)}
+
+\item{pval.thresh}{GWAS pval cutoff (default: 5e-8)}
 }
 \value{
 A data frame of summary statistics with SNP-level priors
-to be used as input data for \code{susie_rss}.
+to be used as input data for finemapping with SuSiE.
 }
 \description{
 Check for required columns in summary statistics and

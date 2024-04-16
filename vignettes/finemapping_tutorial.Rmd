@@ -42,8 +42,9 @@ sumstats.for.susie <- prepare_susie_data_with_torus_result(sumstats = gwas.sumst
                                                            torus_prior = torus.res$snp_prior)
 ```
 
-We could limit loci with GWAS p-value cutoff (e.g. 5e-8),
-or by FDR cutoff from running `run_torus()` with `option = "fdr"`. 
+We could set `filter == "pval"` to limit loci with GWAS p-value cutoff (default: 5e-8),
+or set `filter == "torus_fdr"` by the FDR cutoff (default: 0.1) 
+from running `run_torus()` with `option = "fdr"`. 
 
 ## Fine-mapping
 
@@ -73,17 +74,18 @@ susie.res <- run_finemapping(sumstats = sumstats.for.susie,
                              L = 1)
 ```
 
-If you have the LD matrices, you can provide those instead of 
-using the bigSNP object.
-
-We have pre-computed the LD matrices of European samples from UK Biobank. 
-They can be downloaded [here][UKBB_LD]. See the 
-[Fine-mapping and LD diagnosis tutorial][finemapping-ukbb-ld-diagnosis-tutorial] 
-for details.
-
 We did not provide sample size (n) for this toy example, 
 but it is highly encouraged to provide that (set argument `n` = sample size) 
 in the real data analysis.
+
+If you have the LD matrices, you can use those instead of the bigSNP object.
+
+We have pre-computed the LD matrices of European samples from UK Biobank. 
+They can be downloaded [here][UKBB_LD]. 
+
+See [Fine-mapping with UK Biobank LD tutorial][finemapping-ukbb-ld-tutorial] 
+and [LD diagnosis tutorial][ld-diagnosis-tutorial] 
+for details.
 
 We ran `SuSiE` with `L = 1` here, which allows a single causal signal for 
 each LD block and is robust to mismatching LD patterns. 
@@ -100,8 +102,9 @@ being causal estimated using `SuSiE`.
 _Note_: Inconsistencies between GWAS z-scores and the LD reference could 
 potentially inflate PIPs from SuSiE finemapping. It would be helpful to 
 check potential LD mismatch issue, for example using [DENTIST][DENTIST] or 
-the [diagnostic][diagnostic-susie-rss] from `susie_rss`. See the 
-[Fine-mapping and LD diagnosis tutorial][finemapping-ukbb-ld-diagnosis-tutorial] 
+the [diagnostic][diagnostic-susie-rss] from `susie_rss`. 
+
+See [Fine-mapping with UK Biobank LD tutorial][finemapping-ukbb-ld-tutorial] 
 for details.
 
 So to be conservative, you could use `L = 1` if you have "out-of-sample" LD reference, 
@@ -111,4 +114,5 @@ and focus on the loci with significant GWAS signals (e.g. `pval < 5e-8`).
 [enrichment-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
 [DENTIST]: https://doi.org/10.1038/s41467-021-27438-7
 [diagnostic-susie-rss]: https://stephenslab.github.io/susieR/articles/susierss_diagnostic.html
-[finemapping-ukbb-ld-diagnosis-tutorial]: https://xinhe-lab.github.io/mapgen/articles/finemapping_ukbb_ld_diagnosis.html
+[finemapping-ukbb-ld-tutorial]: https://xinhe-lab.github.io/mapgen/articles/finemapping_ukbb_ld_diagnosis.html
+[UKBB_LD]: https://uchicago.box.com/s/jqocacd2fulskmhoqnasrknbt59x3xkn
