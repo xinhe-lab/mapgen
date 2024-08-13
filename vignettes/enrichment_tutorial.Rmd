@@ -22,13 +22,30 @@ will be used in the [fine-mapping tutorial][finemapping-tutorial].
 
 ## Enrichment analysis
 
-Next, we perform enrichment analysis using the software `TORUS`, 
-which requires annotation files in `.bed` format. 
+We perform enrichment analysis using the software `TORUS`. 
 
-Use the `prepare_torus_input_files()` function, which takes the GWAS summary 
-statistics, and annotation files (in `.bed` format). 
+TORUS needs a SNP annotation file, which contains SNP-level genomic annotations. 
+The annotation file uses a header to specify the number and the nature 
+(categorical or continuous) of the anntations. For example,
 
-The annotation files should be in `.bed` format, and 
+```
+SNP   binding_d
+chr1.51479  0
+chr1.52058  2
+chr1.52238  1
+```
+
+The first column with the header "SNP" represents the SNP name. 
+The following columns represent specific annotations.
+For categorical/discrete annotations, the header should alwasy have a suffix "_d"; 
+whereas for continuous annotations, the header should ends with "_c".
+
+For binary annotations, we could use the function `prepare_torus_input_files()` 
+to create a SNP annotation file and a z-score file as TORUS inputs.
+The function takes the processed GWAS summary statistics obtained from 
+the [data preparation tutorial][data-preparation-tutorial], 
+and binary annotation files. The annotation files 
+should be in `.bed` format, and 
 contain the columns "chr", "start", "end". 
 Chromosomes should be just the numbers (no "chr"). 
 
@@ -39,7 +56,12 @@ annotation_bed_files <- list.files(path = system.file('extdata', 'test_bed_dir',
 # annotation_bed_files: Path to the annotation (.bed) files.
 gwas.sumstats <- readRDS(system.file('extdata', 'test.processed.sumstats.rds', package='mapgen'))
 torus.files <- prepare_torus_input_files(gwas.sumstats, annotation_bed_files, torus_input_dir = './torus_input')
+torus_annot_file <- torus.files$torus_annot_file
+torus_zscore_file <- torus.files$torus_zscore_file
 ```
+
+If you use continuous annotations or annotations with multiple categories,
+you would need to create your own annotation files.
 
 Now that the appropriate files have been generated, 
 let's perform the enrichment analysis using `TORUS`. 
@@ -49,8 +71,8 @@ enrichment estimates (log odds ratio) and 95% confidence intervals for each anno
 as well as SNP-level priors (which could be used as priors in fine-mapping).
 
 ```{r run-torus-est-prior, eval=FALSE}
-torus.res <- run_torus(torus.files$torus_annot_file, 
-                       torus.files$torus_zscore_file,
+torus.res <- run_torus(torus_annot_file, 
+                       torus_zscore_file,
                        option = 'est-prior',
                        torus_path = 'torus') # set the path to 'torus' executable.
 torus.enrich <- torus.res$enrich
@@ -61,17 +83,17 @@ If you only want to estimate enrichment but do not need SNP-level priors,
 you can set `option = "est"` to save time computing the priors.
 
 ```{r run-torus-est, eval=FALSE}
-torus.enrich <- run_torus(torus.files$torus_annot_file, 
-                       torus.files$torus_zscore_file,
-                       option = 'est',
-                       torus_path = 'torus')$enrich
+torus.enrich <- run_torus(torus_annot_file, 
+                          torus_zscore_file,
+                          option = 'est',
+                          torus_path = 'torus')$enrich
 ```
 
 TORUS also gives us the uncertainty of whether each locus contains a causal variant or not. 
 You can set `option = "fdr"` to get the FDR associated with each locus.
 ```{r run-torus-fdr, eval=FALSE}
-torus.fdr <- run_torus(torus.files$torus_annot_file, 
-                       torus.files$torus_zscore_file,
+torus.fdr <- run_torus(torus_annot_file, 
+                       torus_zscore_file,
                        option = 'fdr',
                        torus_path = 'torus')$fdr
 ```

@@ -39,11 +39,15 @@ sumstats <- vroom(gwas.file, col_names = TRUE, show_col_types = FALSE)
 head(as.data.frame(sumstats),3)
 ```
 
-## LD blocks
+## Reference data
 
-For the LD blocks, we need a data frame with four columns: 
-chromosome, start and end positions, and 
-the indices of the LD blocks.
+Fine-mapping requires linkage-disequilibrium (LD) information. 
+You could use either reference genotype panel or LD matrices for the LD blocks. 
+
+### LD blocks
+
+We need a data frame defining LD blocks, with four columns: 
+chromosome, start, end positions, and the indices of the LD blocks.
 
 We provided the LD blocks from `LDetect` for the 1000 Genomes (1KG) European population (in hg19).
 ```{r load-LD-blocks}
@@ -51,14 +55,8 @@ LD_Blocks <- readRDS(system.file('extdata', 'LD.blocks.EUR.hg19.rds', package='m
 head(LD_Blocks, 3)
 ```
 
-_* You can skip this if you only need to run enrichment analysis._
 
-## Reference panel
-
-Fine-mapping requires linkage-disequilibrium (LD) information. 
-
-You could either provide LD matrices or 
-use a reference genotype panel, which will compute LD matrices internally. 
+### Reference panel
 
 To use the reference genotype panel, we utilize the R package `bigsnpr` to 
 read in PLINK files (bed/bim/fam) into R and 
@@ -77,6 +75,8 @@ library(bigsnpr)
 bigSNP <- snp_attach(rdsfile = '/project2/xinhe/1kg/bigsnpr/EUR_variable_1kg.rds')
 ```
 
+### LD matrices
+
 We also have pre-computed LD matrices of European samples from UK Biobank. 
 They can be downloaded [here][UKBB_LD].
 If you are at UChicago, 
@@ -91,7 +91,7 @@ region_info <- get_UKBB_region_info(LD_Blocks,
                                     prefix = "ukb_b37_0.1")
 ```
 
-_* You can skip this if 
+_* You can skip the LD matrices if 
 you only need to run enrichment analysis, 
 or if you only need to run downstream analysis (e.g. gene mapping) with 
 precomputed fine-mapping result._
@@ -119,8 +119,6 @@ gwas.sumstats <- process_gwas_sumstats(sumstats,
                                        LD_Blocks=LD_Blocks,
                                        bigSNP=bigSNP)
 ```
-
-_* You do not need to specify `bigSNP`, `region_info`, or `LD_Blocks` if you only need to run enrichment analysis._
 
 Check that the summary statistics is processed and has appropriate columns:
 ```{r include=FALSE}
