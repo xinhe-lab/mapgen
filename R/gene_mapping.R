@@ -435,11 +435,9 @@ find_nearest_genes <- function(top.snps,
   top.snps$nearest_gene <- NA
 
   if(dist.to == 'tss'){
-    gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
-    gene.locations.gr <- GenomicRanges::makeGRangesFromDataFrame(gene.locations,
-                                                                 start.field = 'tss',
-                                                                 end.field = 'tss',
-                                                                 keep.extra.columns = T)
+    gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(genes, width = 1))
+    gene.locations$start <- gene.locations$end <- gene.locations$tss
+    gene.locations.gr <- GenomicRanges::makeGRangesFromDataFrame(gene.locations, keep.extra.columns = T)
     snp.nearest.gene.idx <- GenomicRanges::nearest(top.snps, gene.locations.gr)
     top.snps$nearest_gene <- gene.locations.gr$gene_name[snp.nearest.gene.idx]
   }else if(dist.to == 'genebody'){

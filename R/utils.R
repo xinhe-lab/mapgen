@@ -39,8 +39,8 @@ process_pcHiC <- function(pcHiC, gene.annots = NULL, score.thresh = 0, flank = 0
                                      end = end + as.integer(flank))
   }
 
-  columns <- c('chr', 'start', 'end', 'promoter_start', 'promoter_end', 'gene_name', 'score')
-  pcHiC <- pcHiC %>% dplyr::select(columns)
+  # columns <- c('chr', 'start', 'end', 'promoter_start', 'promoter_end', 'gene_name', 'score')
+  # pcHiC <- pcHiC %>% dplyr::select(columns)
 
   pcHiC.gr <- GenomicRanges::makeGRangesFromDataFrame(pcHiC, keep.extra.columns = TRUE)
   GenomeInfoDb::seqlevelsStyle(pcHiC.gr) <- 'UCSC'

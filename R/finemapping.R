@@ -291,14 +291,14 @@ merge_susie_sumstats <- function(susie_results, sumstats){
   sumstats$susie_pip <- NA
   sumstats$cs <- NA
 
-  if (class(susie_results) == "susie"){
+  if (inherits(susie_results, "susie")){
     susie_results <- list(susie_results)
   }
 
   for(i in 1:length(susie_results)){
 
     susie.locus.res <- susie_results[[i]]
-    stopifnot(class(susie.locus.res) == "susie")
+    stopifnot(inherits(susie.locus.res, "susie"))
 
     # add PIP result of the SNPs in this locus
     n.snps <- length(susie.locus.res$pip)
