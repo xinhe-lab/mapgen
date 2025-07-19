@@ -133,3 +133,4 @@ head(as.data.frame(gwas.sumstats),3)
 [finemapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/enrichment_finemapping_tutorial.html
 [gene-mapping-tutorial]: https://xinhe-lab.github.io/mapgen/articles/gene_mapping_tutorial.html
 [bigSNP]: https://privefl.github.io/bigsnpr/reference/bigSNP-class.html
+[UKBB_LD]: https://uchicago.box.com/s/jqocacd2fulskmhoqnasrknbt59x3xkn
