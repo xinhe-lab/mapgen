@@ -95,6 +95,8 @@ harmonize_sumstats_LD <- function(sumstats,
                 length(remove.idx), length(remove.idx)/length(sumstats$snp)*100))
   }
 
+  cat(sprintf("%d variants in sumstats after harmonization...\n", nrow(sumstats)))
+
   return(sumstats)
 }
 
@@ -143,3 +145,14 @@ match_gwas_bigsnp <- function(sumstats,
 
   return(matched.sumstats)
 }
+
+
+# get sorted alleles, this is used for harmonizing variants based on chr, pos and alleles
+get_sorted_alleles <- function(df, allele_cols = c("REF", "ALT")){
+  df <- as.data.frame(df)
+  df <- df[,allele_cols]
+  alleles <- t(apply(df, 1, sort))
+  alleles <- paste(alleles[,1], alleles[,2], sep = "/")
+  return(alleles)
+}
+
