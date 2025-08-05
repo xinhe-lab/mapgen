@@ -104,6 +104,8 @@ clean_sumstats <- function(sumstats,
                            pval = 'pval',
                            remove_indels = TRUE){
 
+  sumstats <- as.data.frame(sumstats)
+
   cols.to.keep <- c(chr, pos, beta, se, a0, a1, snp, pval)
 
   if(!all(cols.to.keep %in% colnames(sumstats))){
@@ -116,14 +118,13 @@ clean_sumstats <- function(sumstats,
   colnames(cleaned.sumstats) <- c('chr','pos','beta','se','a0','a1','snp','pval')
 
   # Check chromosomes
-  # Remove 'chr'
+  # Remove 'chr' and only keep autosomes
   if( any(grepl('chr', cleaned.sumstats$chr)) ){
+    cleaned.sumstats <- cleaned.sumstats[cleaned.sumstats$chr %in% paste0("chr",1:22), ]
     cleaned.sumstats$chr <- gsub('chr', '', cleaned.sumstats$chr)
   }
-
-  # Remove X, Y chromosomes
-  cleaned.sumstats <- cleaned.sumstats[!(cleaned.sumstats$chr %in% c('X','Y')), ]
   cleaned.sumstats$chr <- as.integer(cleaned.sumstats$chr)
+  cleaned.sumstats <- cleaned.sumstats[cleaned.sumstats$chr %in% 1:22, ]
 
   # Compute z-scores
   zscore <- cleaned.sumstats$beta/cleaned.sumstats$se
@@ -139,6 +140,9 @@ clean_sumstats <- function(sumstats,
     nucs <- c('A','C','T','G')
     cleaned.sumstats <- cleaned.sumstats %>% dplyr::filter(a0 %in% nucs, a1 %in% nucs)
   }
+
+  # Remove missing values
+  cleaned.sumstats <- cleaned.sumstats %>% dplyr::filter(snp != ".", !is.na(pos))
 
   # Sort by chromosome and position
   cleaned.sumstats <- cleaned.sumstats %>% dplyr::arrange(chr, pos)
