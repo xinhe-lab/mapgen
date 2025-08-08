@@ -69,10 +69,10 @@ process_ABC <- function(ABC, gene.annots = NULL, full.element = FALSE, score.thr
       tidyr::separate(name, c(NA, 'element_region'), sep = '\\|', remove = FALSE) %>%
       tidyr::separate(element_region, c(NA, 'element_location'), sep = '\\:') %>%
       tidyr::separate(element_location, c('element_start', 'element_end'), sep = '\\-') %>%
-      dplyr::mutate(start = as.numeric(element_start), end = as.numeric(element_end),
-                    promoter_start = TargetGeneTSS,
-                    promoter_end = TargetGeneTSS)
+      dplyr::mutate(start = as.numeric(element_start), end = as.numeric(element_end))
   }
+
+  ABC <- ABC %>% dplyr::mutate(promoter_start = TargetGeneTSS, promoter_end = TargetGeneTSS)
 
   ABC <- ABC %>% dplyr::rename(gene_name = TargetGene, score = ABC.Score)
 
@@ -216,36 +216,36 @@ get_tss <- function(gr, type = c('promoter', 'gene')){
   return(tss)
 }
 
-# get LD (r^2) between each SNP and the top SNP in sumstats from bigSNP
-get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
-
-  # only include SNPs in bigSNP markers
-  sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
-  sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
-
-  if(is.null(topSNP)){
-    if( max(sumstats$pval) <= 1 ){
-      sumstats$pval <- -log10(sumstats$pval)
-    }
-    top_snp_idx <- sumstats$bigSNP_idx[which.max(sumstats$pval)]
-  }else{
-    top_snp_idx <- sumstats$bigSNP_idx[sumstats$snp == topSNP]
-  }
-
-  top_snp_genotype <- bigSNP$genotypes[,top_snp_idx]
-  genotype.mat <- bigSNP$genotypes[,sumstats$bigSNP_idx]
-
-  r2.vals <- as.vector(cor(top_snp_genotype, genotype.mat))^2
-  sumstats$r2 <- round(r2.vals, 4)
-
-  return(sumstats)
-}
+# # get LD (r^2) between each SNP and the top SNP in sumstats from bigSNP
+# get_LD_bigSNP <- function(sumstats, bigSNP, topSNP = NULL){
+#
+#   # only include SNPs in bigSNP markers
+#   sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
+#   sumstats$bigSNP_idx <- match(sumstats$snp, bigSNP$map$marker.ID)
+#
+#   if(is.null(topSNP)){
+#     if( max(sumstats$pval) <= 1 ){
+#       sumstats$pval <- -log10(sumstats$pval)
+#     }
+#     top_snp_idx <- sumstats$bigSNP_idx[which.max(sumstats$pval)]
+#   }else{
+#     top_snp_idx <- sumstats$bigSNP_idx[sumstats$snp == topSNP]
+#   }
+#
+#   top_snp_genotype <- bigSNP$genotypes[,top_snp_idx]
+#   genotype.mat <- bigSNP$genotypes[,sumstats$bigSNP_idx]
+#
+#   r2.vals <- as.vector(cor(top_snp_genotype, genotype.mat))^2
+#   sumstats$r2 <- round(r2.vals, 4)
+#
+#   return(sumstats)
+# }
 
 
 # Add LD information from bigSNP
-add_LD_bigSNP <- function(sumstats, bigSNP,
-                          r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
-                          r2.labels = c('0-0.1','0.1-0.25','0.25-0.75','0.75-0.9','0.9-1')) {
+add_LD_from_bigSNP <- function(sumstats, bigSNP,
+                               r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
+                               r2.labels = c('0-0.1','0.1-0.25','0.25-0.75','0.75-0.9','0.9-1')) {
 
   # only include SNPs in bigSNP markers
   sumstats <- sumstats[sumstats$snp %in% bigSNP$map$marker.ID, ]
@@ -266,7 +266,42 @@ add_LD_bigSNP <- function(sumstats, bigSNP,
 
     r2.vals <- as.vector(cor(top_snp_genotype, genotype.mat))^2
     r2.brackets <- cut(r2.vals, breaks = r2.breaks, labels = r2.labels)
-    curr_sumstats$r2 <- r2.brackets
+    curr_sumstats$r2 <- r2.vals
+    curr_sumstats$r2.brackets <- r2.brackets
+    sumstats.r2.df <- rbind(sumstats.r2.df, curr_sumstats)
+  }
+
+  return(sumstats.r2.df)
+}
+
+# Add LD information from reference LD matrix (R)
+add_LD_from_R <- function(sumstats, R, LD_snp_ids,
+                          r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
+                          r2.labels = c('0-0.1','0.1-0.25','0.25-0.75','0.75-0.9','0.9-1')) {
+
+  stopifnot(nrow(R) == length(LD_snp_ids))
+
+  # only include SNPs in LD reference SNP list
+  sumstats <- sumstats[sumstats$snp %in% LD_snp_ids, ]
+  if (nrow(sumstats) == 0) {
+    stop("No SNPs in sumstats in LD reference!")
+  }
+  sumstats$LD_snp_idx <- match(sumstats$snp, LD_snp_ids)
+
+  if( max(sumstats$pval) <= 1 ){
+    sumstats$pval <- -log10(sumstats$pval)
+  }
+
+  locus_list <- unique(sumstats$locus)
+
+  sumstats.r2.df <- data.frame()
+  for(locus in locus_list){
+    curr_sumstats <- sumstats[sumstats$locus == locus, ]
+    top_snp_idx <- curr_sumstats$LD_snp_idx[which.max(curr_sumstats$pval)]
+    r2.vals <- as.vector(R[top_snp_idx, curr_sumstats$LD_snp_idx]^2)
+    r2.brackets <- cut(r2.vals, breaks = r2.breaks, labels = r2.labels)
+    curr_sumstats$r2 <- r2.vals
+    curr_sumstats$r2.brackets <- r2.brackets
     sumstats.r2.df <- rbind(sumstats.r2.df, curr_sumstats)
   }
 
