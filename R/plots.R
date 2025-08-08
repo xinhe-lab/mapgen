@@ -554,12 +554,20 @@ track_plot <- function(finemapstats,
                       axisTrack)
 
   if (missing(track.sizes)){
+    n.counts.tracks <- length(counts.tracks)
+    n.peaks.tracks <- length(peaks.tracks)
+    n.loops.tracks <- length(loops.tracks)
+    if (is.null(gene.track)){
+      n.gene.track <- 0
+    }else{
+      n.gene.track <- 1
+    }
     track.sizes <- c(1,
                      0.6,
-                     rep(0.3, length(counts.tracks)),
-                     rep(0.2, length(peaks.tracks)),
-                     rep(0.6, length(loops.tracks)),
-                     rep(0.5, length(gene.track)),
+                     rep(0.3, n.counts.tracks),
+                     rep(0.2, n.peaks.tracks),
+                     rep(0.6, n.loops.tracks),
+                     rep(0.5, n.gene.track),
                      0.3)
   }
 
