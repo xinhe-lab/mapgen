@@ -7,9 +7,11 @@
 track_plot(
   finemapstats,
   region,
-  gene.annots,
-  bigSNP = NULL,
+  gene.annots = NULL,
   txdb = NULL,
+  R = NULL,
+  LD_snp_ids = NULL,
+  bigSNP = NULL,
   counts = NULL,
   peaks = NULL,
   loops = NULL,
@@ -17,16 +19,21 @@ track_plot(
   filter_loop_genes = NULL,
   filter_loop_snps = NULL,
   filter_protein_coding_genes = TRUE,
+  r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
+  r2.colors = c("black", "blue", "green", "orange", "red"),
   color_piptrack_by = c("locus", "cs", "none"),
-  highlight_snps = NULL,
   counts.ylim = c(0, 1),
   counts.color,
   peaks.color = "navy",
   loops.color = "gray",
+  highlight_snps = NULL,
   highlight.color = "pink",
+  highlight.width = 1000,
   genelabel.side = c("above", "below", "left", "right"),
-  track.sizes = NULL,
+  track.sizes,
   rotation.title = 0,
+  background.title = "white",
+  frame = FALSE,
   verbose = FALSE,
   ...
 )
@@ -36,11 +43,16 @@ track_plot(
 
 \item{region}{The genomic region to visualize in the format of "chr:start-end".}
 
-\item{gene.annots}{A GRanges object of gene annotations}
+\item{gene.annots}{A GRanges object of gene annotations,
+needed when plotting loops and gene track.}
+
+\item{txdb}{A \code{txdb} object of gene annotations, needed for plotting gene track.}
+
+\item{R}{LD (correlation) matrix}
+
+\item{LD_snp_ids}{Variant IDs for the LD matrix.}
 
 \item{bigSNP}{A \code{bigsnpr} object attached via bigsnpr::snp_attach()}
-
-\item{txdb}{A \code{txdb} object of gene annotations}
 
 \item{counts}{A list of counts data to display as quantitativ data tracks}
 
@@ -56,10 +68,12 @@ track_plot(
 
 \item{filter_protein_coding_genes}{Logical. If TRUE, only shows protein coding gene.}
 
+\item{r2.breaks}{breaks for LD (r2) levels}
+
+\item{r2.colors}{colors for LD (r2) levels}
+
 \item{color_piptrack_by}{Color SNPs in the PIP track by
 \code{locus}, \code{cs} (credible sets), or \code{none} (same color).}
-
-\item{highlight_snps}{SNPs (rsIDs) to highlight. Or highlight top SNP ('topSNP').}
 
 \item{counts.ylim}{ylim range (default: between 0 and 1) for the \code{counts} tracks}
 
@@ -67,7 +81,11 @@ track_plot(
 
 \item{peaks.color}{Colors for the \code{peak} tracks}
 
+\item{highlight_snps}{SNPs (rsIDs) to highlight. Or highlight top SNP ('topSNP').}
+
 \item{highlight.color}{Colors for the highlighted SNPs}
+
+\item{highlight.width}{Width for the highlighted locations}
 
 \item{genelabel.side}{Side to put gene labels,
 options are: 'above' (default), 'below', 'left', 'right'.}
@@ -75,6 +93,10 @@ options are: 'above' (default), 'below', 'left', 'right'.}
 \item{track.sizes}{Sizes of the tracks}
 
 \item{rotation.title}{The rotation angle for the text in the track title}
+
+\item{background.title}{The background color for the title panel.}
+
+\item{frame}{If TRUE, plot frames in the panels.}
 
 \item{verbose}{If TRUE, print detail messages for plotting}
 }

@@ -37,5 +37,5 @@ Suggests:
     GenomicInteractions
 biocViews: Genetics, GenomeAnnotation, SingleCell, Software
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr

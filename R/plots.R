@@ -167,9 +167,12 @@ pip_structure_plot <- function(mat,
 #'
 #' @param finemapstats A GRanges object of processed finemapping summary statistics
 #' @param region The genomic region to visualize in the format of "chr:start-end".
-#' @param gene.annots A GRanges object of gene annotations
+#' @param gene.annots A GRanges object of gene annotations,
+#' needed when plotting loops and gene track.
+#' @param txdb A `txdb` object of gene annotations, needed for plotting gene track.
+#' @param R LD (correlation) matrix
+#' @param LD_snp_ids Variant IDs for the LD matrix.
 #' @param bigSNP A `bigsnpr` object attached via bigsnpr::snp_attach()
-#' @param txdb A `txdb` object of gene annotations
 #' @param counts A list of counts data to display as quantitativ data tracks
 #' @param peaks A list of peaks to display as binary data tracks
 #' @param loops A list of chromatin loops, e.g. PC-HiC, ABC, etc.
@@ -177,26 +180,33 @@ pip_structure_plot <- function(mat,
 #' @param filter_loop_genes A vector of gene names. Only show loops connected to the genes.
 #' @param filter_loop_snps A vector of SNP IDs. Only show loops connected to the SNPs.
 #' @param filter_protein_coding_genes Logical. If TRUE, only shows protein coding gene.
+#' @param r2.breaks breaks for LD (r2) levels
+#' @param r2.colors colors for LD (r2) levels
 #' @param color_piptrack_by Color SNPs in the PIP track by
 #' `locus`, `cs` (credible sets), or `none` (same color).
-#' @param highlight_snps SNPs (rsIDs) to highlight. Or highlight top SNP ('topSNP').
 #' @param counts.ylim ylim range (default: between 0 and 1) for the `counts` tracks
 #' @param counts.color Colors for the `counts` tracks
 #' @param peaks.color Colors for the `peak` tracks
+#' @param highlight_snps SNPs (rsIDs) to highlight. Or highlight top SNP ('topSNP').
 #' @param highlight.color Colors for the highlighted SNPs
+#' @param highlight.width Width for the highlighted locations
 #' @param genelabel.side Side to put gene labels,
 #' options are: 'above' (default), 'below', 'left', 'right'.
 #' @param track.sizes Sizes of the tracks
 #' @param rotation.title The rotation angle for the text in the track title
+#' @param background.title The background color for the title panel.
+#' @param frame If TRUE, plot frames in the panels.
 #' @param verbose If TRUE, print detail messages for plotting
 #' @import GenomicRanges
 #' @import tidyverse
 #' @export
 track_plot <- function(finemapstats,
                        region,
-                       gene.annots,
-                       bigSNP = NULL,
+                       gene.annots = NULL,
                        txdb  = NULL,
+                       R = NULL,
+                       LD_snp_ids = NULL,
+                       bigSNP = NULL,
                        counts  = NULL,
                        peaks  = NULL,
                        loops  = NULL,
@@ -204,16 +214,21 @@ track_plot <- function(finemapstats,
                        filter_loop_genes = NULL,
                        filter_loop_snps = NULL,
                        filter_protein_coding_genes = TRUE,
+                       r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
+                       r2.colors = c('black','blue','green','orange','red'),
                        color_piptrack_by = c('locus', 'cs', 'none'),
-                       highlight_snps = NULL,
                        counts.ylim = c(0,1),
                        counts.color,
                        peaks.color = 'navy',
                        loops.color = 'gray',
+                       highlight_snps = NULL,
                        highlight.color = 'pink',
+                       highlight.width = 1000,
                        genelabel.side = c('above', 'below', 'left', 'right'),
-                       track.sizes = NULL,
+                       track.sizes,
                        rotation.title = 0,
+                       background.title = "white",
+                       frame = FALSE,
                        verbose = FALSE,
                        ...) {
 
@@ -240,31 +255,67 @@ track_plot <- function(finemapstats,
   curr.finemapstats <- as.data.frame(finemapstats[rows.in,  ])
 
   # p-value track
-  if(!is.null(bigSNP)){
+  if (!is.null(R)) {
     # Color SNPs by r2
-    r2.breaks <- c(0, 0.1, 0.25, 0.75, 0.9, 1)
-    r2.labels <- c('0-0.1','0.1-0.25','0.25-0.75','0.75-0.9','0.9-1')
-    r2.colors <- c('black','blue','green','orange','red')
+    if (is.null(LD_snp_ids)) {
+      stop("LD_snp_ids is required when using R as input.")
+    }
+
+    if (length(r2.breaks) != length(r2.colors)+1) {
+      stop("length(r2.breaks) != length(r2.colors) + 1!")
+    }
+
+    r2.labels <- sapply(1:(length(r2.breaks)-1), function(x){
+      sprintf("%s-%s", r2.breaks[x], r2.breaks[x+1])
+    })
     names(r2.colors) <- r2.labels
 
-    curr.finemapstats <- add_LD_bigSNP(curr.finemapstats, bigSNP, r2.breaks, r2.labels)
+    curr.finemapstats <- add_LD_from_R(curr.finemapstats, R, LD_snp_ids, r2.breaks, r2.labels)
     if(verbose){ cat(nrow(curr.finemapstats), 'snps included.\n')}
 
-    pval.df <- curr.finemapstats %>% dplyr::select(chr, pos, pval, r2) %>%
-      dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
-    pval.df <- pval.df %>% tidyr::pivot_wider(names_from = r2, names_sort = TRUE, values_from = 'pval')
+    pval.df <- curr.finemapstats %>%
+      dplyr::select(chr, pos, pval, r2.brackets) %>%
+      dplyr::mutate(start = pos, end = pos) %>%
+      dplyr::select(-pos) %>%
+      tidyr::pivot_wider(names_from = r2.brackets, names_sort = TRUE, values_from = 'pval')
     pval.gr <- makeGRangesFromDataFrame(pval.df, keep.extra.columns = T)
     seqlevelsStyle(pval.gr) <- 'UCSC'
-    avail.r2.groups <- names(mcols(pval.gr))
+    # r2.groups <- names(mcols(pval.gr))
+    r2.groups <- factor(names(mcols(pval.gr)), levels = r2.labels)
 
     pval.track <- Gviz::DataTrack(range = pval.gr,
                                   genome = genome,
-                                  groups = avail.r2.groups,
-                                  col = r2.colors[avail.r2.groups],
-                                  name = '-log10 P',
-                                  legend = TRUE,
-                                  box.legend = TRUE)
-  }else{
+                                  groups = r2.groups,
+                                  col = r2.colors,
+                                  name = '-log10 p-value')
+  } else if (!is.null(bigSNP)) {
+    # Color SNPs by r2
+    if (length(r2.breaks) != length(r2.colors)+1) {
+      stop("length(r2.breaks) != length(r2.colors) + 1!")
+    }
+
+    r2.labels <- sapply(1:(length(r2.breaks)-1), function(x){
+      sprintf("%s-%s", r2.breaks[x], r2.breaks[x+1])
+    })
+    names(r2.colors) <- r2.labels
+
+    curr.finemapstats <- add_LD_from_bigSNP(curr.finemapstats, bigSNP, r2.breaks, r2.labels)
+    if(verbose){ cat(nrow(curr.finemapstats), 'snps included.\n')}
+
+    pval.df <- curr.finemapstats %>% dplyr::select(chr, pos, pval, r2.brackets) %>%
+      dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
+    pval.df <- pval.df %>% tidyr::pivot_wider(names_from = r2.brackets, names_sort = TRUE, values_from = 'pval')
+    pval.gr <- makeGRangesFromDataFrame(pval.df, keep.extra.columns = T)
+    seqlevelsStyle(pval.gr) <- 'UCSC'
+    # r2.groups <- names(mcols(pval.gr))
+    r2.groups <- factor(names(mcols(pval.gr)), levels = r2.labels)
+
+    pval.track <- Gviz::DataTrack(range = pval.gr,
+                                  genome = genome,
+                                  groups = r2.groups,
+                                  col = r2.colors,
+                                  name = '-log10 p-value')
+  } else {
     if(verbose){ cat(nrow(curr.finemapstats), 'snps included.\n')}
     pval.df <- curr.finemapstats %>% dplyr::select(chr, pos, pval) %>%
       dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
@@ -273,17 +324,16 @@ track_plot <- function(finemapstats,
 
     pval.track <- Gviz::DataTrack(range = pval.gr,
                                   genome = genome,
-                                  name = '-log10 P',
-                                  col = 'black',
-                                  legend = FALSE)
+                                  name = '-log10 p-value',
+                                  col = 'black')
   }
 
   dpars.pval <- list(col.title = 'black',
                      col.axis = 'black',
-                     col.border.title = 'lightgray',
-                     col.frame = 'lightgray',
+                     # col.border.title = 'lightgray',
+                     # col.frame = 'lightgray',
+                     frame = frame,
                      # rotation.title = rotation.title,
-                     frame = TRUE,
                      cex.axis = 0.6)
   Gviz::displayPars(pval.track) <- dpars.pval
 
@@ -295,7 +345,7 @@ track_plot <- function(finemapstats,
     pip.df <- pip.df %>% tidyr::pivot_wider(names_from = locus, names_sort = TRUE, values_from = 'pip')
     pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
     seqlevelsStyle(pip.gr) <- 'UCSC'
-    avail.pip.groups <- names(mcols(pip.gr))
+    pip.groups <- names(mcols(pip.gr))
   }else if(color_piptrack_by == 'cs'){
     if(verbose){ cat('Color SNPs in PIP track by credible sets.\n')}
     pip.df <- curr.finemapstats %>% dplyr::select(chr, pos, pip, cs) %>%
@@ -303,27 +353,27 @@ track_plot <- function(finemapstats,
     pip.df <- pip.df %>% tidyr::pivot_wider(names_from = cs, names_sort = TRUE, values_from = 'pip')
     pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
     seqlevelsStyle(pip.gr) <- 'UCSC'
-    avail.pip.groups <- names(mcols(pip.gr))
+    pip.groups <- names(mcols(pip.gr))
   }else{
     pip.df <- curr.finemapstats %>% dplyr::select(chr, pos, pip) %>%
       dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
     pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
     seqlevelsStyle(pip.gr) <- 'UCSC'
-    avail.pip.groups <- NULL
+    pip.groups <- NULL
   }
 
   pip.track <- Gviz::DataTrack(range = pip.gr,
                                genome = genome,
-                               groups = avail.pip.groups,
+                               groups = pip.groups,
                                name = 'PIP',
                                legend = FALSE)
 
   dpars.pip <- list(col.title = 'black',
                     col.axis = 'black',
-                    col.border.title = 'lightgray',
-                    col.frame = 'lightgray',
+                    # col.border.title = 'lightgray',
+                    # col.frame = 'lightgray',
+                    frame = frame,
                     # rotation.title = rotation.title,
-                    frame = TRUE,
                     cex.axis = 0.6)
   Gviz::displayPars(pip.track) <- dpars.pip
 
@@ -331,10 +381,10 @@ track_plot <- function(finemapstats,
   if (length(counts) > 0) {
     dpars.data <- list(col.title = 'black',
                        col.axis = 'black',
-                       col.border.title = 'lightgray',
-                       col.frame = 'lightgray',
+                       # col.border.title = 'lightgray',
+                       # col.frame = 'lightgray',
+                       frame = frame,
                        rotation.title = rotation.title,
-                       frame = TRUE,
                        cex.axis = 0.2)
 
     if(missing(counts.color)){
@@ -367,10 +417,10 @@ track_plot <- function(finemapstats,
   if (length(peaks) > 0) {
     dpars.peaks <- list(col.title = 'black',
                         col.axis = 'black',
-                        col.border.title = 'lightgray',
-                        col.frame = 'lightgray',
+                        # col.border.title = 'lightgray',
+                        # col.frame = 'lightgray',
+                        frame = frame,
                         rotation.title = rotation.title,
-                        frame = FALSE,
                         cex.axis = 0.2)
 
     if(missing(peaks.color)){
@@ -410,21 +460,24 @@ track_plot <- function(finemapstats,
                         plot.outside = FALSE,
                         col.outside='lightblue',
                         anchor.height = 0.1,
-                        rotation.title = rotation.title,
                         col.title = 'black',
                         col.axis = 'black',
-                        col.border.title = 'lightgray',
-                        col.frame = 'lightgray',
-                        frame = FALSE,
+                        # col.border.title = 'lightgray',
+                        # col.frame = 'lightgray',
+                        frame = frame,
+                        rotation.title = rotation.title,
                         cex.axis = 0.2)
 
+    if (is.null(gene.annots)){
+      stop("'gene.annots' is needed for plotting loops!")
+    }
     gene.annots$chr <- as.character(seqnames(gene.annots))
     gene.annots$tss <- start(resize(gene.annots, width = 1))
 
     loops.tracks <- lapply(names(loops), function(x){
       if(verbose){ cat('Adding', x, 'track...\n') }
       loops.gr <- loops[[x]]
-      if(filter_protein_coding_genes){
+      if (filter_protein_coding_genes){
         loops.gr <- loops.gr[loops.gr$gene_name %in% gene.annots$gene_name]
       }
 
@@ -462,25 +515,30 @@ track_plot <- function(finemapstats,
   }
 
   # gene track
-  gene.track <- make_genetrack_obj(region,
-                                   txdb,
-                                   gene.annots,
-                                   genome,
-                                   name = 'Gene',
-                                   filter_protein_coding_genes = filter_protein_coding_genes)
+  if (!is.null(txdb)) {
+    gene.track <- make_genetrack_obj(region,
+                                     txdb,
+                                     gene.annots,
+                                     genome,
+                                     name = 'Gene',
+                                     filter_protein_coding_genes = filter_protein_coding_genes)
 
-  dpars.genes <- list(col.title = 'black',
-                      col.axis = 'black',
-                      col.border.title = 'lightgray',
-                      col.frame = 'lightgray',
-                      rotation.title = rotation.title,
-                      frame = FALSE,
-                      cex.axis = 0.2)
-  displayPars(gene.track) <- dpars.genes
+    dpars.genes <- list(col.title = 'black',
+                        col.axis = 'black',
+                        # col.border.title = 'lightgray',
+                        # col.frame = 'lightgray',
+                        frame = FALSE,
+                        rotation.title = rotation.title,
+                        cex.axis = 0.2)
+    displayPars(gene.track) <- dpars.genes
 
-  # Restrict to protein coding genes
-  if (isTRUE(filter_protein_coding_genes)){
-    gene.track <- gene.track[symbol(gene.track) %in% gene.annots$gene_name]
+    # Restrict to protein coding genes
+    if (isTRUE(filter_protein_coding_genes)){
+      gene.track <- gene.track[symbol(gene.track) %in% gene.annots$gene_name]
+    }
+
+  } else {
+    gene.track <- NULL
   }
 
   # Genome axis track
@@ -495,14 +553,14 @@ track_plot <- function(finemapstats,
                       gene.track,
                       axisTrack)
 
-  if (is.null(track.sizes)){
+  if (missing(track.sizes)){
     track.sizes <- c(1,
                      0.6,
                      rep(0.3, length(counts.tracks)),
                      rep(0.2, length(peaks.tracks)),
                      rep(0.6, length(loops.tracks)),
-                     0.5,
-                     0.4)
+                     rep(0.5, length(gene.track)),
+                     0.3)
   }
 
   # Highlight SNPs
@@ -515,28 +573,19 @@ track_plot <- function(finemapstats,
     highlight_snps <- intersect(highlight_snps, curr.finemapstats$snp)
     highlight.pos <- curr.finemapstats$pos[match(highlight_snps, curr.finemapstats$snp)]
     cat('Highlight SNP:', highlight_snps[which(highlight_snps %in% curr.finemapstats$snp)], '\n')
-
-    if(length(highlight.pos) == 1){
-      list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
-                                             start = c(highlight.pos-500),
-                                             width = 1000,
-                                             chromosome = as.character(seqnames(region)),
-                                             col = highlight.color)
-    }else if(length(highlight.pos) > 1){
-      cat('Highlight position:', highlight.pos, '\n')
-
-      if(length(highlight.color) > 1){
-        highlight.color <- highlight.color[which(highlight_snps %in% curr.finemapstats$snp)]
-      }
-      list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
-                                             start = highlight.pos,
-                                             width = 1,
-                                             chromosome = as.character(seqnames(region)),
-                                             col = highlight.color)
+    cat('Highlight position:', highlight.pos, '\n')
+    if (length(highlight.color) > 1){
+      highlight.color <- highlight.color[which(highlight_snps %in% curr.finemapstats$snp)]
     }
+    list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
+                                           start = c(highlight.pos-highlight.width/2),
+                                           width = highlight.width,
+                                           chromosome = as.character(seqnames(region)),
+                                           col = 'white',
+                                           fill = highlight.color)
   }
 
-  if(verbose){ cat('Making track plot ...\n') }
+  if(verbose){ cat('Making track plot...\n') }
 
   Gviz::plotTracks(list.of.tracks,
                    chromosome = as.character(seqnames(region)),
@@ -546,6 +595,10 @@ track_plot <- function(finemapstats,
                    to = end(region),
                    sizes = track.sizes,
                    just.group = genelabel.side,
+                   panel.only = FALSE,
+                   background.title = background.title,
+                   col.title = "black",
+                   col.axis = "black",
                    ...)
 
 }
