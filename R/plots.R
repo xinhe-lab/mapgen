@@ -579,18 +579,23 @@ track_plot <- function(finemapstats,
     }
 
     highlight_snps <- intersect(highlight_snps, curr.finemapstats$snp)
-    highlight.pos <- curr.finemapstats$pos[match(highlight_snps, curr.finemapstats$snp)]
-    cat('Highlight SNP:', highlight_snps[which(highlight_snps %in% curr.finemapstats$snp)], '\n')
-    cat('Highlight position:', highlight.pos, '\n')
-    if (length(highlight.color) > 1){
-      highlight.color <- highlight.color[which(highlight_snps %in% curr.finemapstats$snp)]
+    if (length(highlight_snps) == 0) {
+      warning('Highlight SNPs not found in the finemapping result!')
+    } else {
+      highlight.pos <- curr.finemapstats$pos[match(highlight_snps, curr.finemapstats$snp)]
+      cat('Highlight SNP:', highlight_snps[which(highlight_snps %in% curr.finemapstats$snp)], '\n')
+      cat('Highlight position:', highlight.pos, '\n')
+      if (length(highlight.color) > 1){
+        highlight.color <- highlight.color[which(highlight_snps %in% curr.finemapstats$snp)]
+      }
+      list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
+                                             start = c(highlight.pos-highlight.width/2),
+                                             width = highlight.width,
+                                             chromosome = as.character(seqnames(region)),
+                                             col = 'white',
+                                             fill = highlight.color)
     }
-    list.of.tracks <- Gviz::HighlightTrack(trackList = list.of.tracks,
-                                           start = c(highlight.pos-highlight.width/2),
-                                           width = highlight.width,
-                                           chromosome = as.character(seqnames(region)),
-                                           col = 'white',
-                                           fill = highlight.color)
+
   }
 
   if(verbose){ cat('Making track plot...\n') }
