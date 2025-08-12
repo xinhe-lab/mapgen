@@ -284,7 +284,7 @@ add_LD_from_R <- function(sumstats, R, LD_snp_ids,
   # only include SNPs in LD reference SNP list
   sumstats <- sumstats[sumstats$snp %in% LD_snp_ids, ]
   if (nrow(sumstats) == 0) {
-    stop("No SNPs in sumstats in LD reference!")
+    stop("None of the SNPs in sumstats are in LD reference!")
   }
   sumstats$LD_snp_idx <- match(sumstats$snp, LD_snp_ids)
 

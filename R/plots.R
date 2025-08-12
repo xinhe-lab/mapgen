@@ -252,6 +252,10 @@ track_plot <- function(finemapstats,
                      (finemapstats$pos >= start(region)) &
                      (finemapstats$pos <= end(region)))
 
+  if (length(rows.in) == 0){
+    stop("No finemapping result found in the region!")
+  }
+
   curr.finemapstats <- as.data.frame(finemapstats[rows.in,  ])
 
   # p-value track
