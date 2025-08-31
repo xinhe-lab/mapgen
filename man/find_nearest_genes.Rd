@@ -6,15 +6,17 @@
 \usage{
 find_nearest_genes(
   top.snps,
-  genes,
+  gene.annots,
   dist.to = c("genebody", "tss"),
   cols.to.keep = c("snp", "chr", "pos", "nearest_gene")
 )
 }
 \arguments{
-\item{top.snps}{A GRanges object of the GWAS summary statistics for the top SNPs}
+\item{top.snps}{A GRanges object for the top SNPs, including a metadata
+column \code{snp} with the variant IDs.}
 
-\item{genes}{A GRanges object of gene information}
+\item{gene.annots}{A GRanges object of gene information,
+including a metadata column of \code{gene_name}.}
 
 \item{dist.to}{Find nearest genes by distance to gene body or TSS}
 

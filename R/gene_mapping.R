@@ -413,29 +413,36 @@ get_locus_level_gene_pip <- function(gene.mapping.res){
 
 #' @title Find the nearest genes for top SNPs in each locus.
 #'
-#' @param top.snps A GRanges object of the GWAS summary statistics for the top SNPs
-#' @param genes A GRanges object of gene information
+#' @param top.snps A GRanges object for the top SNPs, including a metadata
+#' column `snp` with the variant IDs.
+#' @param gene.annots A GRanges object of gene information,
+#' including a metadata column of `gene_name`.
 #' @param dist.to Find nearest genes by distance to gene body or TSS
 #' @param cols.to.keep columns to keep in the result
 #' @return A data frame with SNP locations and nearest genes.
 #' @export
 #'
 find_nearest_genes <- function(top.snps,
-                               genes,
+                               gene.annots,
                                dist.to = c('genebody', 'tss'),
                                cols.to.keep = c('snp','chr','pos','nearest_gene')){
 
   dist.to <- match.arg(dist.to)
 
   GenomeInfoDb::seqlevelsStyle(top.snps) <- 'UCSC'
-  GenomeInfoDb::seqlevelsStyle(genes) <- 'UCSC'
+  GenomeInfoDb::seqlevelsStyle(gene.annots) <- 'UCSC'
 
-  gene.locations <- as.data.frame(genes)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
+  if (is.null(top.snps.gr$snp)){
+    warnings("top.snps.gr needs to have a column `snp` with the variant IDs.")
+    top.snps.gr$snp <- paste0(seqnames(top.snps.gr), ":", start(top.snps.gr))
+  }
+
+  gene.locations <- as.data.frame(gene.annots)[, c('seqnames', 'start', 'end', 'gene_name', 'strand')]
 
   top.snps$nearest_gene <- NA
 
   if(dist.to == 'tss'){
-    gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(genes, width = 1))
+    gene.locations$tss <- GenomicRanges::start(GenomicRanges::resize(gene.annots, width = 1))
     gene.locations$start <- gene.locations$end <- gene.locations$tss
     gene.locations.gr <- GenomicRanges::makeGRangesFromDataFrame(gene.locations, keep.extra.columns = T)
     snp.nearest.gene.idx <- GenomicRanges::nearest(top.snps, gene.locations.gr)
@@ -456,7 +463,11 @@ find_nearest_genes <- function(top.snps,
     top.snps$nearest_gene <- snp.nearest.gene.df$nearest_gene[match(top.snps$snp, snp.nearest.gene.df$snp)]
   }
 
-  return(as.data.frame(top.snps)[,cols.to.keep])
+  top.snps.df <- top.snps %>% as.data.frame() %>%
+    dplyr::rename(chr = seqnames, pos = start) %>%
+    dplyr::select(all_of(cols.to.keep))
+
+  return(top.snps.df)
 }
 
 # Find genes around SNPs and assign weights based on distance
