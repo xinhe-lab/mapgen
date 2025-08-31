@@ -166,7 +166,7 @@ pip_structure_plot <- function(mat,
 #' @title Make gene track plot using Gviz
 #'
 #' @param finemapstats A GRanges object of processed finemapping summary statistics
-#' @param region The genomic region to visualize in the format of "chr:start-end".
+#' @param region The genomic region to visualize in the format of 'chr:start-end'.
 #' @param gene.annots A GRanges object of gene annotations,
 #' needed when plotting loops and gene track.
 #' @param txdb A `txdb` object of gene annotations, needed for plotting gene track.
@@ -176,12 +176,13 @@ pip_structure_plot <- function(mat,
 #' @param counts A list of counts data to display as quantitativ data tracks
 #' @param peaks A list of peaks to display as binary data tracks
 #' @param loops A list of chromatin loops, e.g. PC-HiC, ABC, etc.
-#' @param genome Genome assembly version (default: "hg19").
+#' @param genome Genome assembly version (default: 'hg19').
 #' @param filter_loop_genes A vector of gene names. Only show loops connected to the genes.
 #' @param filter_loop_snps A vector of SNP IDs. Only show loops connected to the SNPs.
 #' @param filter_protein_coding_genes Logical. If TRUE, only shows protein coding gene.
 #' @param r2.breaks breaks for LD (r2) levels
 #' @param r2.colors colors for LD (r2) levels
+#' @param cs.colors colors for credible sets
 #' @param color_piptrack_by Color SNPs in the PIP track by
 #' `locus`, `cs` (credible sets), or `none` (same color).
 #' @param counts.ylim ylim range (default: between 0 and 1) for the `counts` tracks
@@ -216,6 +217,7 @@ track_plot <- function(finemapstats,
                        filter_protein_coding_genes = TRUE,
                        r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
                        r2.colors = c('black','blue','green','orange','red'),
+                       cs.colors = c('gray60', 'magenta', 'dodgerblue2', 'darkred', 'green4', '#6A3D9A', '#FF7F00', 'skyblue2', '#FDBF6F', 'maroon', 'orchid1'),
                        color_piptrack_by = c('locus', 'cs', 'none'),
                        counts.ylim = c(0,1),
                        counts.color,
@@ -227,7 +229,7 @@ track_plot <- function(finemapstats,
                        genelabel.side = c('above', 'below', 'left', 'right'),
                        track.sizes,
                        rotation.title = 0,
-                       background.title = "white",
+                       background.title = 'white',
                        frame = FALSE,
                        verbose = FALSE,
                        ...) {
@@ -253,7 +255,7 @@ track_plot <- function(finemapstats,
                      (finemapstats$pos <= end(region)))
 
   if (length(rows.in) == 0){
-    stop("No finemapping result found in the region!")
+    stop('No finemapping result found in the region!')
   }
 
   curr.finemapstats <- as.data.frame(finemapstats[rows.in,  ])
@@ -262,15 +264,15 @@ track_plot <- function(finemapstats,
   if (!is.null(R)) {
     # Color SNPs by r2
     if (is.null(LD_snp_ids)) {
-      stop("LD_snp_ids is required when using R as input.")
+      stop('LD_snp_ids is required when using R as input.')
     }
 
     if (length(r2.breaks) != length(r2.colors)+1) {
-      stop("length(r2.breaks) != length(r2.colors) + 1!")
+      stop('length(r2.breaks) != length(r2.colors) + 1!')
     }
 
     r2.labels <- sapply(1:(length(r2.breaks)-1), function(x){
-      sprintf("%s-%s", r2.breaks[x], r2.breaks[x+1])
+      sprintf('%s-%s', r2.breaks[x], r2.breaks[x+1])
     })
     names(r2.colors) <- r2.labels
 
@@ -295,11 +297,11 @@ track_plot <- function(finemapstats,
   } else if (!is.null(bigSNP)) {
     # Color SNPs by r2
     if (length(r2.breaks) != length(r2.colors)+1) {
-      stop("length(r2.breaks) != length(r2.colors) + 1!")
+      stop('length(r2.breaks) != length(r2.colors) + 1!')
     }
 
     r2.labels <- sapply(1:(length(r2.breaks)-1), function(x){
-      sprintf("%s-%s", r2.breaks[x], r2.breaks[x+1])
+      sprintf('%s-%s', r2.breaks[x], r2.breaks[x+1])
     })
     names(r2.colors) <- r2.labels
 
@@ -350,6 +352,10 @@ track_plot <- function(finemapstats,
     pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
     seqlevelsStyle(pip.gr) <- 'UCSC'
     pip.groups <- names(mcols(pip.gr))
+    pip.track <- Gviz::DataTrack(range = pip.gr,
+                                 genome = genome,
+                                 groups = pip.groups,
+                                 name = 'PIP')
   }else if(color_piptrack_by == 'cs'){
     if(verbose){ cat('Color SNPs in PIP track by credible sets.\n')}
     pip.df <- curr.finemapstats %>% dplyr::select(chr, pos, pip, cs) %>%
@@ -358,19 +364,23 @@ track_plot <- function(finemapstats,
     pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
     seqlevelsStyle(pip.gr) <- 'UCSC'
     pip.groups <- names(mcols(pip.gr))
+    pip.track <- Gviz::DataTrack(range = pip.gr,
+                                 genome = genome,
+                                 groups = pip.groups,
+                                 col = cs.colors,
+                                 name = 'PIP')
   }else{
     pip.df <- curr.finemapstats %>% dplyr::select(chr, pos, pip) %>%
       dplyr::mutate(start = pos, end = pos) %>% dplyr::select(-pos)
     pip.gr <- makeGRangesFromDataFrame(pip.df, keep.extra.columns = T)
     seqlevelsStyle(pip.gr) <- 'UCSC'
-    pip.groups <- NULL
+    pip.track <- Gviz::DataTrack(range = pip.gr,
+                                 genome = genome,
+                                 name = 'PIP',
+                                 legend = FALSE)
   }
 
-  pip.track <- Gviz::DataTrack(range = pip.gr,
-                               genome = genome,
-                               groups = pip.groups,
-                               name = 'PIP',
-                               legend = FALSE)
+
 
   dpars.pip <- list(col.title = 'black',
                     col.axis = 'black',
@@ -473,7 +483,7 @@ track_plot <- function(finemapstats,
                         cex.axis = 0.2)
 
     if (is.null(gene.annots)){
-      stop("'gene.annots' is needed for plotting loops!")
+      stop('`gene.annots` is needed for plotting loops!')
     }
     gene.annots$chr <- as.character(seqnames(gene.annots))
     gene.annots$tss <- start(resize(gene.annots, width = 1))
@@ -579,7 +589,7 @@ track_plot <- function(finemapstats,
   if (length(highlight_snps) > 0){
 
     if('topSNP' %in% highlight_snps){
-      highlight_snps[which(highlight_snps == "topSNP")] <- curr.finemapstats$snp[which.max(curr.finemapstats$pip)]
+      highlight_snps[which(highlight_snps == 'topSNP')] <- curr.finemapstats$snp[which.max(curr.finemapstats$pip)]
     }
 
     highlight_snps <- intersect(highlight_snps, curr.finemapstats$snp)
@@ -614,8 +624,8 @@ track_plot <- function(finemapstats,
                    just.group = genelabel.side,
                    panel.only = FALSE,
                    background.title = background.title,
-                   col.title = "black",
-                   col.axis = "black",
+                   col.title = 'black',
+                   col.axis = 'black',
                    ...)
 
 }

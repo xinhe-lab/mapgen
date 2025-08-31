@@ -21,6 +21,8 @@ track_plot(
   filter_protein_coding_genes = TRUE,
   r2.breaks = c(0, 0.1, 0.25, 0.75, 0.9, 1),
   r2.colors = c("black", "blue", "green", "orange", "red"),
+  cs.colors = c("gray60", "magenta", "dodgerblue2", "darkred", "green4", "#6A3D9A",
+    "#FF7F00", "skyblue2", "#FDBF6F", "maroon", "orchid1"),
   color_piptrack_by = c("locus", "cs", "none"),
   counts.ylim = c(0, 1),
   counts.color,
@@ -41,7 +43,7 @@ track_plot(
 \arguments{
 \item{finemapstats}{A GRanges object of processed finemapping summary statistics}
 
-\item{region}{The genomic region to visualize in the format of "chr:start-end".}
+\item{region}{The genomic region to visualize in the format of 'chr:start-end'.}
 
 \item{gene.annots}{A GRanges object of gene annotations,
 needed when plotting loops and gene track.}
@@ -60,7 +62,7 @@ needed when plotting loops and gene track.}
 
 \item{loops}{A list of chromatin loops, e.g. PC-HiC, ABC, etc.}
 
-\item{genome}{Genome assembly version (default: "hg19").}
+\item{genome}{Genome assembly version (default: 'hg19').}
 
 \item{filter_loop_genes}{A vector of gene names. Only show loops connected to the genes.}
 
@@ -71,6 +73,8 @@ needed when plotting loops and gene track.}
 \item{r2.breaks}{breaks for LD (r2) levels}
 
 \item{r2.colors}{colors for LD (r2) levels}
+
+\item{cs.colors}{colors for credible sets}
 
 \item{color_piptrack_by}{Color SNPs in the PIP track by
 \code{locus}, \code{cs} (credible sets), or \code{none} (same color).}
